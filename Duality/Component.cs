@@ -14,38 +14,9 @@ using ICloneable = Duality.Cloning.ICloneable;
 namespace Duality
 {
 	/// <summary>
-	/// Base interface for Components and Component specialization interfaces.
-	/// </summary>
-	public interface IComponent
-	{
-		/// <summary>
-		/// [GET] Whether or not the Component is currently active. To return true,
-		/// both the Component itsself and its parent GameObject need to be active.
-		/// </summary>
-		/// <seealso cref="ActiveSingle"/>
-		bool Active { get; }
-		/// <summary>
-		/// [GET] Whether or not the Component is currently active. Unlike <see cref="Active"/>,
-		/// this property ignores parent activation states and depends only on this single Component.
-		/// The scene graph and other Duality instances usually check <see cref="Active"/>, not ActiveSingle.
-		/// </summary>
-		/// <seealso cref="Active"/>
-		bool ActiveSingle { get; }
-		/// <summary>
-		/// [GET] Returns whether this Component has been disposed. Disposed Components are not to be used and should
-		/// be treated specifically or as null references by your code.
-		/// </summary>
-		bool Disposed { get; }
-		/// <summary>
-		/// [GET] The <see cref="GameObject"/> to which this Component belongs.
-		/// </summary>
-		GameObject GameObj { get; }
-	}
-
-	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that require per-frame updates.
 	/// </summary>
-	public interface ICmpUpdatable : IComponent
+	public interface ICmpUpdatable
 	{
 		/// <summary>
 		/// Called once per frame in order to update the Component.
@@ -55,7 +26,7 @@ namespace Duality
 	/// <summary>
 	/// Implement this interface in C<see cref="Component">Components</see> that require per-frame updates in the editor.
 	/// </summary>
-	public interface ICmpEditorUpdatable : IComponent
+	public interface ICmpEditorUpdatable
 	{
 		/// <summary>
 		/// Called once per frame in order to update the Component in the editor.
@@ -66,7 +37,7 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notifications for other Components 
 	/// being added or removed at the same GameObject.
 	/// </summary>
-	public interface ICmpComponentListener : IComponent
+	public interface ICmpComponentListener
 	{
 		/// <summary>
 		/// Called whenever another Component has been added to this Components GameObject.
@@ -83,7 +54,7 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notification if the location of 
 	/// their GameObject inside the scene graph changes.
 	/// </summary>
-	public interface ICmpGameObjectListener : IComponent
+	public interface ICmpGameObjectListener
 	{
 		/// <summary>
 		/// Called whenever this Components GameObjects <see cref="GameObject.Parent"/> has changed.
@@ -95,7 +66,7 @@ namespace Duality
 	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that require specific init and shutdown logic.
 	/// </summary>
-	public interface ICmpInitializable : IComponent
+	public interface ICmpInitializable
 	{
 		/// <summary>
 		/// Called in order to initialize the Component in a specific way.
@@ -111,7 +82,7 @@ namespace Duality
 	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that are considered renderable. 
 	/// </summary>
-	public interface ICmpRenderer : IComponent
+	public interface ICmpRenderer
 	{
 		/// <summary>
 		/// [GET] The Renderers bounding radius.
@@ -134,7 +105,7 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notification of
 	/// collision events that occur to the <see cref="GameObject"/> they belong to.
 	/// </summary>
-	public interface ICmpCollisionListener : IComponent
+	public interface ICmpCollisionListener
 	{
 		/// <summary>
 		/// Called whenever the GameObject starts to collide with something.
@@ -277,7 +248,7 @@ namespace Duality
 	/// Also, a Component may not belong to multiple GameObjects at once.
 	/// </summary>
 	[Serializable]
-	public abstract class Component : IManageableObject, ICloneable, IComponent
+	public abstract class Component : IManageableObject, ICloneable
 	{
 		/// <summary>
 		/// Describes the kind of initialization that can be performed on a Component

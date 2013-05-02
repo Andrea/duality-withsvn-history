@@ -940,7 +940,7 @@ namespace Duality.Components.Physics
 		{
 			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>())
 			{
-				if (!c.Active) continue;
+				if (!(c as Component).Active) continue;
 				c.OnCollisionBegin(this, args);
 			}
 		}
@@ -948,7 +948,7 @@ namespace Duality.Components.Physics
 		{
 			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>())
 			{
-				if (!c.Active) continue;
+				if (!(c as Component).Active) continue;
 				c.OnCollisionEnd(this, args);
 			}
 		}
@@ -956,7 +956,7 @@ namespace Duality.Components.Physics
 		{
 			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>())
 			{
-				if (!c.Active) continue;
+				if (!(c as Component).Active) continue;
 				c.OnCollisionSolve(this, args);
 			}
 		}

@@ -486,6 +486,7 @@ namespace Duality
 		/// <seealso cref="GetComponentsInChildren(System.Type)"/>
 		public IEnumerable<T> GetComponentsInChildren<T>() where T : class
 		{
+			if (this.children == null) return new T[0];
 			return this.children.SelectMany(o => o.GetComponentsDeep<T>());
 		}
 		/// <summary>
@@ -517,6 +518,7 @@ namespace Duality
 		/// <seealso cref="GetComponentsInChildren{T}()"/>
 		public IEnumerable<Component> GetComponentsInChildren(Type t)
 		{
+			if (this.children == null) return new Component[0];
 			return this.children.SelectMany(o => o.GetComponentsDeep(t));
 		}
 		/// <summary>
