@@ -143,7 +143,7 @@ namespace Duality.Components.Physics
 			j.LocalXAxis = this.moveAxis;
 			j.MotorEnabled = this.motorEnabled;
 			j.MotorSpeed = this.motorSpeed / Time.SPFMult;
-			j.MaxMotorTorque = this.maxMotorTorque / Time.SPFMult;
+			j.MaxMotorTorque = PhysicsConvert.ToPhysicalUnit(this.maxMotorTorque / Time.SPFMult);
 			j.DampingRatio = this.dampingRatio;
 			j.Frequency = this.frequency;
 		}

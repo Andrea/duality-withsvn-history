@@ -79,7 +79,7 @@ namespace Duality.Components.Physics
 			j.TargetAngle = this.angle;
 			j.BiasFactor = this.biasFactor;
 			j.Softness = this.softness;
-			j.MaxImpulse = this.maxImpulse < 0.0f ? float.MaxValue : this.maxImpulse;
+			j.MaxImpulse = this.maxImpulse < 0.0f ? float.MaxValue : PhysicsConvert.ToPhysicalUnit(this.maxImpulse);
 		}
 
 		protected override void CopyTo(JointInfo target)
