@@ -1082,6 +1082,7 @@ namespace EditorBase.CamViewStates
 			Vector3 movLock = this.actionBeginLocSpace - this.actionLastLocSpace;
 			Vector3 mov = target - this.actionLastLocSpace;
 			mov.Z = zMovement;
+			target.Z = 0;
 
 			mov = this.ApplyAxisLock(mov, movLock, target + (Vector3.UnitZ * this.CameraObj.Transform.Pos.Z) - this.actionBeginLocSpace);
 
