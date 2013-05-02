@@ -18,7 +18,7 @@ namespace Duality.Resources
 {
 	/// <summary>
 	/// Represents a font. While any system font or imported TrueType font can be used, they are internally
-	/// pre-rasterized and stored in a <see cref="Duality.Resources.Texture"/> with an <see cref="Duality.Resources.Texture.Atlas"/>.
+	/// pre-rasterized and stored in a <see cref="Duality.Resources.Texture"/> with an <see cref="Duality.Resources.Pixmap.Atlas"/>.
 	/// </summary>
 	[Serializable]
 	public class Font : Resource

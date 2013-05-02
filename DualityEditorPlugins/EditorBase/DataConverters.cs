@@ -74,7 +74,7 @@ namespace EditorBase.DataConverters
 				{
 					// First try to get one from the resultset that has an open slot for this kind of Component
 					if (gameObj == null)
-						gameObj = convert.Result.OfType<GameObject>().FirstOrDefault(g => g.GetComponent(cmpType, true) == null);
+						gameObj = convert.Result.OfType<GameObject>().FirstOrDefault(g => g.GetComponent(cmpType) == null);
 					// Still none? Create a new GameObject
 					if (gameObj == null)
 					{

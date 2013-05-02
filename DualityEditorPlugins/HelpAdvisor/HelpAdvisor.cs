@@ -47,15 +47,16 @@ namespace HelpAdvisor
 
 			e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-			StringFormat format = StringFormat.GenericDefault;
-			format.Alignment = StringAlignment.Near;
-			format.LineAlignment = StringAlignment.Center;
-			format.Trimming = StringTrimming.EllipsisCharacter;
-
 			Color lastColorBase = this.lastHelp == advisorHelp ? SystemColors.GrayText : SystemColors.ControlText;
 			Color curColorBase = this.currentHelp == advisorHelp ? SystemColors.GrayText : SystemColors.ControlText;
 			Color lastColor = Color.FromArgb((int)((1.0f - this.AnimProgress) * 255.0f), lastColorBase);
 			Color curColor = Color.FromArgb((int)(this.AnimProgress * 255.0f), curColorBase);
+
+			StringFormat format = StringFormat.GenericDefault;
+			format.Alignment = StringAlignment.Near;
+			format.LineAlignment = StringAlignment.Center;
+			format.Trimming = StringTrimming.EllipsisCharacter;
+			format.FormatFlags |= StringFormatFlags.NoWrap;
 
 			if (this.lastHelp != null)
 				e.Graphics.DrawString(this.lastHelp.Topic, this.labelTopic.Font, new SolidBrush(lastColor), topicRect, format);

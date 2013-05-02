@@ -110,7 +110,9 @@ namespace Duality.Resources
 			GameObject baseObj = this.objTree.ChildAtIndexPath(baseObjAddress);
 			if (baseObj == null) return;
 
-			Component baseCmp = baseObj.GetComponent(target.GetType(), true);
+			Component baseCmp = baseObj.GetComponent(target.GetType());
+			if (baseCmp == null) return;
+
 			baseCmp.CopyTo(target);
 		}
 

@@ -577,7 +577,7 @@ namespace EditorBase
 			// There already is such Component? Return it.
 			else
 			{
-				Component existingComponent = baseObj.GetComponent(cmpType, true);
+				Component existingComponent = baseObj.GetComponent(cmpType);
 				if (existingComponent != null) return existingComponent;
 			}
 
@@ -919,7 +919,7 @@ namespace EditorBase
 						// Create Components
 						CreateComponentAction createAction = new CreateComponentAction(dropObj, componentQuery.Where(c => c.GameObj == null));
 						UndoRedoManager.BeginMacro();
-						UndoRedoManager.Do(new DeleteComponentAction(componentQuery.Select(c => dropObj.GetComponent(c.GetType(), true)).NotNull()));
+						UndoRedoManager.Do(new DeleteComponentAction(componentQuery.Select(c => dropObj.GetComponent(c.GetType())).NotNull()));
 						UndoRedoManager.Do(createAction);
 						UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromLast);
 

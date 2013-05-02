@@ -28,11 +28,13 @@ namespace Duality.Resources
 		public new const string FileExt = ".Scene" + Resource.FileExt;
 		private const float PhysicsAccStart = Time.MsPFMult;
 
+
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
 		private	static	float				physicsAcc		= 0.0f;
 		private	static	bool				physicsLowFps	= false;
 		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen		= false;
+
 
 		/// <summary>
 		/// [GET] When using fixed-timestep physics, the alpha value [0.0 - 1.0] indicates how
@@ -95,6 +97,7 @@ namespace Duality.Resources
 			get { return current.Res != null ? current.Res.Path : current.Path; }
 		}
 
+
 		/// <summary>
 		/// Fired just before leaving the current Scene.
 		/// </summary>
@@ -123,6 +126,7 @@ namespace Duality.Resources
 		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
 		public static event EventHandler<ComponentEventArgs> ComponentRemoved;
+
 
 		private static void OnLeaving()
 		{
@@ -182,11 +186,13 @@ namespace Duality.Resources
 			if (ComponentRemoved != null) ComponentRemoved(current, args);
 		}
 
-		private	Vector2					globalGravity	= Vector2.UnitY * 33.0f;
-		private	GameObject[]			serializeObj	= null;
+
+		private	Vector2			globalGravity	= Vector2.UnitY * 33.0f;
+		private	GameObject[]	serializeObj	= null;
 		[NonSerialized] private	GameObjectManager		objectManager	= new GameObjectManager();
 		[NonSerialized] private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
 		[NonSerialized] private	RendererManager			rendererManager	= new RendererManager();
+
 
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
@@ -272,6 +278,7 @@ namespace Duality.Resources
 		{
 			get { return !this.objectManager.AllObjects.Any(); }
 		}
+
 
 		/// <summary>
 		/// Creates a new, empty scene which does not contain any <see cref="GameObject">GameObjects</see>.
@@ -463,6 +470,98 @@ namespace Duality.Resources
 		public IEnumerable<ICmpRenderer> QueryVisibleRenderers(IDrawDevice device)
 		{
 			return this.rendererManager.QueryVisible(device);
+		}
+
+		/// <summary>
+		/// Finds all GameObjects in the Scene that match the specified name or name path.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public IEnumerable<GameObject> FindGameObjects(string name)
+		{
+			return this.AllObjects.ByName(name);
+		}
+		/// <summary>
+		/// Finds all GameObjects in the Scene which have a Component of the specified type.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public IEnumerable<GameObject> FindGameObjects(Type hasComponentOfType)
+		{
+			return this.AllObjects.Where(o => o.GetComponent(hasComponentOfType) != null);
+		}
+		/// <summary>
+		/// Finds all GameObjects in the Scene which have a Component of the specified type.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public IEnumerable<GameObject> FindGameObjects<T>() where T : class
+		{
+			return this.AllObjects.Where(o => o.GetComponent<T>() != null);
+		}
+		/// <summary>
+		/// Finds all Components of the specified type in this Scene.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public IEnumerable<T> FindComponents<T>() where T : class
+		{
+			return this.AllObjects.GetComponents<T>();
+		}
+		/// <summary>
+		/// Finds all Components of the specified type in this Scene.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public IEnumerable<Component> FindComponents(Type type)
+		{
+			return this.AllObjects.SelectMany(g => g.GetComponents(type));
+		}
+		
+		/// <summary>
+		/// Finds a single GameObjects in the Scene that match the specified name or name path.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public GameObject FindGameObject(string name, bool activeOnly = true)
+		{
+			return (activeOnly ? this.ActiveObjects : this.AllObjects).ByName(name).FirstOrDefault();
+		}
+		/// <summary>
+		/// Finds a single GameObject in the Scene that has a Component of the specified type.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public GameObject FindGameObject(Type hasComponentOfType, bool activeOnly = true)
+		{
+			return (activeOnly ? this.ActiveObjects : this.AllObjects).Where(o => o.GetComponent(hasComponentOfType) != null).FirstOrDefault();
+		}
+		/// <summary>
+		/// Finds a single GameObject in the Scene that has a Component of the specified type.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public GameObject FindGameObject<T>(bool activeOnly = true) where T : class
+		{
+			return (activeOnly ? this.ActiveObjects : this.AllObjects).Where(o => o.GetComponent<T>() != null).FirstOrDefault();
+		}
+		/// <summary>
+		/// Finds a single Component of the specified type in this Scene.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public T FindComponent<T>(bool activeOnly = true) where T : class
+		{
+			return (activeOnly ? this.ActiveObjects : this.AllObjects).GetComponents<T>().FirstOrDefault();
+		}
+		/// <summary>
+		/// Finds a single Component of the specified type in this Scene.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public Component FindComponent(Type type, bool activeOnly = true)
+		{
+			return (activeOnly ? this.ActiveObjects : this.AllObjects).SelectMany(g => g.GetComponents(type)).FirstOrDefault();
 		}
 
 		private void AddToManagers(GameObject obj)

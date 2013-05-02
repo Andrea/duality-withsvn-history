@@ -454,130 +454,91 @@ namespace Duality
 			else
 				return false;
 		}
-
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this GameObject that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponents(System.Type,bool)"/>
-		public IEnumerable<T> GetComponents<T>(bool activeOnly = false) where T : class
-		{
-			if (activeOnly)
-				return this.compList.Where(c => c.Active).OfType<T>();
-			else
-				return this.compList.OfType<T>();
-		}
-
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this object's child GameObjects that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponentsInChildren(System.Type,bool)"/>
-		public IEnumerable<T> GetComponentsInChildren<T>(bool activeOnly = false) where T : class
-		{
-			if (this.children == null) yield break;
-			foreach (GameObject g in this.children)
-			{
-				foreach (T c in g.GetComponentsDeep<T>(activeOnly))
-				{
-					yield return c;
-				}
-			}
-		}
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this GameObject or any child GameObject that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponentsDeep(System.Type,bool)"/>
-		public IEnumerable<T> GetComponentsDeep<T>(bool activeOnly = false) where T : class
-		{
-			foreach (T c in this.GetComponents<T>(activeOnly))
-			{
-				yield return c;
-			}
-			foreach (T c in this.GetComponentsInChildren<T>(activeOnly))
-			{
-				yield return c;
-			}
-		}
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this GameObject that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <param name="t">The base Type to match when iterating through the Components.</param>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponents{T}(bool)"/>
-		public IEnumerable<Component> GetComponents(Type t, bool activeOnly = false)
-		{
-			if (activeOnly)
-				return this.compList.Where(c => c.Active && t.IsInstanceOfType(c));
-			else
-				return this.compList.Where(c => t.IsInstanceOfType(c));
-		}
-
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this object's child GameObjects that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <param name="t">The base Type to match when iterating through the Components.</param>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponentsInChildren{T}(bool)"/>
-		public IEnumerable<Component> GetComponentsInChildren(Type t, bool activeOnly = false)
-		{
-			if (this.children == null) yield break;
-			foreach (GameObject g in this.children)
-			{
-				foreach (Component c in g.GetComponentsDeep(t, activeOnly))
-				{
-					yield return c;
-				}
-			}
-		}
-		/// <summary>
-		/// Enumerates all <see cref="Component"/>s of this GameObject or any child GameObject that match the specified <see cref="Type"/> or subclass it.
-		/// </summary>
-		/// <param name="t">The base Type to match when iterating through the Components.</param>
-		/// <param name="activeOnly">If true, only <see cref="Component.Active">active</see> Components are enumerated.</param>
-		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
-		/// <seealso cref="GetComponentsDeep{T}(bool)"/>
-		public IEnumerable<Component> GetComponentsDeep(Type t, bool activeOnly = false)
-		{
-			foreach (Component c in this.GetComponents(t, activeOnly))
-			{
-				yield return c;
-			}
-			foreach (Component c in this.GetComponentsInChildren(t, activeOnly))
-			{
-				yield return c;
-			}
-		}
-
+		
 		/// <summary>
 		/// Returns a single <see cref="Component"/> that matches the specified <see cref="System.Type"/>.
 		/// </summary>
 		/// <typeparam name="T">The Type to match the Components with.</typeparam>
-		/// <param name="exactType">If true, the Component must match the specified Type exactly. If false, subclasses of it are also valid.</param>
 		/// <returns>A single Component that matches the specified Type. Null, if none was found.</returns>
-		public T GetComponent<T>(bool exactType = false) where T : class
+		public T GetComponent<T>() where T : class
 		{
-			return GetComponent(typeof(T), exactType) as T;
+			Component result;
+			if (!this.compMap.TryGetValue(typeof(T), out result))
+				return this.GetComponents<T>().FirstOrDefault();
+			else
+				return result as T;
+		}
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this GameObject that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponents(System.Type)"/>
+		public IEnumerable<T> GetComponents<T>() where T : class
+		{
+			return this.compList.OfType<T>();
+		}
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this object's child GameObjects that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponentsInChildren(System.Type)"/>
+		public IEnumerable<T> GetComponentsInChildren<T>() where T : class
+		{
+			return this.children.SelectMany(o => o.GetComponentsDeep<T>());
+		}
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this GameObject or any child GameObject that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponentsDeep(System.Type)"/>
+		public IEnumerable<T> GetComponentsDeep<T>() where T : class
+		{
+			return this.GetComponents<T>().Concat(this.GetComponentsInChildren<T>());
+		}
+
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this GameObject that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <param name="t">The base Type to match when iterating through the Components.</param>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponents{T}()"/>
+		public IEnumerable<Component> GetComponents(Type t)
+		{
+			return this.compList.Where(c => t.IsInstanceOfType(c));
+		}
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this object's child GameObjects that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <param name="t">The base Type to match when iterating through the Components.</param>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponentsInChildren{T}()"/>
+		public IEnumerable<Component> GetComponentsInChildren(Type t)
+		{
+			return this.children.SelectMany(o => o.GetComponentsDeep(t));
+		}
+		/// <summary>
+		/// Enumerates all <see cref="Component"/>s of this GameObject or any child GameObject that match the specified <see cref="Type"/> or subclass it.
+		/// </summary>
+		/// <param name="t">The base Type to match when iterating through the Components.</param>
+		/// <returns>An enumeration of all Components that match the specified conditions.</returns>
+		/// <seealso cref="GetComponentsDeep{T}()"/>
+		public IEnumerable<Component> GetComponentsDeep(Type t)
+		{
+			return this.GetComponents(t).Concat(this.GetComponentsInChildren(t));
 		}
 		/// <summary>
 		/// Returns a single <see cref="Component"/> that matches the specified <see cref="System.Type"/>.
 		/// </summary>
 		/// <param name="t">The Type to match the Components with.</param>
-		/// <param name="exactType">If true, the Component must match the specified Type exactly. If false, subclasses of it are also valid.</param>
 		/// <returns>A single Component that matches the specified Type. Null, if none was found.</returns>
-		public Component GetComponent(Type t, bool exactType = false)
+		/// <seealso cref="GetComponent{T}()"/>
+		public Component GetComponent(Type t)
 		{
 			Component result;
-			if (!this.compMap.TryGetValue(t, out result) && !exactType)
+			if (!this.compMap.TryGetValue(t, out result))
 				return this.GetComponents(t).FirstOrDefault();
 			else
 				return result;

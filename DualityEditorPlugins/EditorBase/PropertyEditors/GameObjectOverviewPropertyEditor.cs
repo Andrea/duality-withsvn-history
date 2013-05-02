@@ -88,12 +88,13 @@ namespace EditorBase.PropertyEditors
 				this.gameObjEditor.Setter = this.SetValue;
 				this.AddPropertyEditor(this.gameObjEditor);
 			}
+			Type[] typesInUse = values.GetComponents<Component>().Select(c => c.GetType()).Distinct().ToArray();
 
 			// Remove Component editors that aren't needed anymore
 			var cmpEditorCopy = new Dictionary<Type,PropertyEditor>(this.componentEditors);
 			foreach (var pair in cmpEditorCopy)
 			{
-				if (!values.Any(o => o.GetComponent(pair.Key, true) != null))
+				if (!typesInUse.Contains(pair.Key))
 				{
 					this.RemovePropertyEditor(pair.Value);
 					this.componentEditors.Remove(pair.Key);
@@ -101,7 +102,7 @@ namespace EditorBase.PropertyEditors
 			}
 
 			// Create the ones that are needed now and not added yet
-			foreach (Type t in values.GetComponents<Component>().Select(c => c.GetType()).Distinct())
+			foreach (Type t in typesInUse)
 			{
 				if (!this.componentEditors.ContainsKey(t))
 				{

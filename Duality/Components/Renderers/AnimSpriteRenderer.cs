@@ -71,7 +71,7 @@ namespace Duality.Components.Renderers
 		/// [GET / SET] The index of the first frame to display. Ignored if <see cref="CustomFrameSequence"/> is set.
 		/// </summary>
 		/// <remarks>
-		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Pixmap.Atlas"/> map
 		/// of the <see cref="Duality.Resources.Texture"/> that is used.
 		/// </remarks>
 		[EditorHintRange(0, int.MaxValue)]
@@ -84,7 +84,7 @@ namespace Duality.Components.Renderers
 		/// [GET / SET] The number of continous frames to use for the animation. Ignored if <see cref="CustomFrameSequence"/> is set.
 		/// </summary>
 		/// <remarks>
-		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Pixmap.Atlas"/> map
 		/// of the <see cref="Duality.Resources.Texture"/> that is used.
 		/// </remarks>
 		[EditorHintRange(0, int.MaxValue)]
@@ -124,7 +124,7 @@ namespace Duality.Components.Renderers
 		/// specified by <see cref="AnimFirstFrame"/> and <see cref="AnimFrameCount"/>. Unused if set to null.
 		/// </summary>
 		/// <remarks>
-		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Pixmap.Atlas"/> map
 		/// of the <see cref="Duality.Resources.Texture"/> that is used.
 		/// </remarks>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]

@@ -216,10 +216,11 @@ namespace EditorBase.CamViewLayers
 		}
 		private IEnumerable<RigidBody> QueryVisibleColliders()
 		{
-			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
-			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
-
-			return allColliders.Where(c => this.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
+			var allColliders = Scene.Current.FindComponents<RigidBody>();
+			return allColliders.Where(r => 
+				r.Active && 
+				!CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden && 
+				this.IsCoordInView(r.GameObj.Transform.Pos, r.BoundRadius));
 		}
 		private RigidBody QuerySelectedCollider()
 		{
