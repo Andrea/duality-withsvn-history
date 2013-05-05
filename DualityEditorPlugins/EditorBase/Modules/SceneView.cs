@@ -162,9 +162,9 @@ namespace EditorBase
 				else
 				{
 					Image img = CorePluginRegistry.RequestTypeImage(typeof(GameObject));
-					if (this.obj.PrefabLink != null)
+					if (this.LinkState != PrefabLinkState.None)
 					{
-						img = EditorHelper.GetImageWithOverlay(img, this.obj.PrefabLink.Prefab.IsAvailable ? 
+						img = EditorHelper.GetImageWithOverlay(img, this.LinkState == PrefabLinkState.Active ? 
 							EditorBaseResCache.OverlayLink : 
 							EditorBaseResCache.OverlayLinkBroken);
 					}
@@ -465,7 +465,14 @@ namespace EditorBase
 			if (insertBeforeNode == null) parentNode.Nodes.Add(newNode);
 			else parentNode.Nodes.Insert(parentNode.Nodes.IndexOf(insertBeforeNode), newNode);
 
-			if (newNode is NodeBase) (newNode as NodeBase).UpdateLinkState();
+			NodeBase baseNode = newNode as NodeBase;
+			GameObjectNode objNode = newNode as GameObjectNode;
+			if (baseNode != null)
+			{
+				baseNode.UpdateLinkState();
+				if (objNode != null)
+					objNode.UpdateIcon();
+			}
 		}
 		
 		protected ComponentNode ScanComponent(Component cmp)
