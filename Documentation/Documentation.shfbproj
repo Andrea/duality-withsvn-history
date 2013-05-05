@@ -19,9 +19,8 @@
     <HtmlHelpName>DDoc</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.dll" />
-      <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.xml" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="..\Duality\bin\Release\Duality.dll" />
+<DocumentationSource sourceFile="..\Duality\bin\Release\Duality.xml" /></DocumentationSources>
     <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <HelpTitle>Duality Documentation</HelpTitle>
     <SyntaxFilters>CSharp</SyntaxFilters>
@@ -125,13 +124,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FarseerOpenTK">
-      <HintPath>..\Duality\bin\x86\Release\FarseerOpenTK.dll</HintPath>
+      <HintPath>..\Duality\bin\Release\FarseerOpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>..\Duality\bin\x86\Release\OpenTK.dll</HintPath>
+      <HintPath>..\Duality\bin\Release\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>..\Duality\bin\x86\Release\OpenTK.GLControl.dll</HintPath>
+      <HintPath>..\Duality\bin\Release\OpenTK.GLControl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
