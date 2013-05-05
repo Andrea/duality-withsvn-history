@@ -119,6 +119,13 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        public static System.Drawing.Bitmap ColorWheel {
+            get {
+                object obj = ResourceManager.GetObject("ColorWheel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap CursorArrow {
             get {
                 object obj = ResourceManager.GetObject("CursorArrow", resourceCulture);

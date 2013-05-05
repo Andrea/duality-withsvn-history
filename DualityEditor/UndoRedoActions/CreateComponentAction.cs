@@ -35,7 +35,7 @@ namespace DualityEditor.UndoRedoActions
 			: base(obj
 			.Where(c => c != null && c.GameObj == null)
 			.Distinct(ComponentTypeComparer.Default)
-			.OrderBy(c => c.GetRequiredComponents().Count))
+			.OrderBy(c => c.GetRequiredComponents().Count()))
 		{
 			if (parent == null) throw new ArgumentNullException("parent");
 			this.targetParentObj = parent;

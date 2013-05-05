@@ -125,7 +125,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
-		public static event EventHandler<ComponentEventArgs> ComponentRemoved;
+		public static event EventHandler<ComponentEventArgs> ComponentRemoving;
 
 
 		private static void OnLeaving()
@@ -176,14 +176,14 @@ namespace Duality.Resources
 			}
 			if (ComponentAdded != null) ComponentAdded(current, args);
 		}
-		private static void OnComponentRemoved(ComponentEventArgs args)
+		private static void OnComponentRemoving(ComponentEventArgs args)
 		{
 			if (args.Component.Active)
 			{
 				ICmpInitializable cInit = args.Component as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}
-			if (ComponentRemoved != null) ComponentRemoved(current, args);
+			if (ComponentRemoving != null) ComponentRemoving(current, args);
 		}
 
 
@@ -596,7 +596,7 @@ namespace Duality.Resources
 			this.objectManager.Unregistered		+= this.objectManager_Unregistered;
 			this.objectManager.ParentChanged	+= this.objectManager_ParentChanged;
 			this.objectManager.ComponentAdded	+= this.objectManager_ComponentAdded;
-			this.objectManager.ComponentRemoved += this.objectManager_ComponentRemoved;
+			this.objectManager.ComponentRemoving += this.objectManager_ComponentRemoving;
 		}
 		private void UnregisterManagerEvents()
 		{
@@ -604,7 +604,7 @@ namespace Duality.Resources
 			this.objectManager.Unregistered		-= this.objectManager_Unregistered;
 			this.objectManager.ParentChanged	-= this.objectManager_ParentChanged;
 			this.objectManager.ComponentAdded	-= this.objectManager_ComponentAdded;
-			this.objectManager.ComponentRemoved -= this.objectManager_ComponentRemoved;
+			this.objectManager.ComponentRemoving -= this.objectManager_ComponentRemoving;
 		}
 
 		private static void ResetPhysics()
@@ -640,10 +640,10 @@ namespace Duality.Resources
 			this.AddToManagers(e.Component);
 			if (this.IsCurrent) OnComponentAdded(e);
 		}
-		private void objectManager_ComponentRemoved(object sender, ComponentEventArgs e)
+		private void objectManager_ComponentRemoving(object sender, ComponentEventArgs e)
 		{
 			this.RemoveFromManagers(e.Component);
-			if (this.IsCurrent) OnComponentRemoved(e);
+			if (this.IsCurrent) OnComponentRemoving(e);
 		}
 
 		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)

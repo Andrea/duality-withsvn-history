@@ -41,12 +41,7 @@ namespace Duality
 		/// <summary>
 		/// Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
 		/// </summary>
-		Parallax,
-		/// <summary>
-		/// Like <see cref="Flat"/>, but Z points "downwards" while objects are sorted from "north" to "south" based on
-		/// their Y value.
-		/// </summary>
-		//Isometric
+		Parallax
 	}
 
 	/// <summary>

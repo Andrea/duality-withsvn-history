@@ -21,8 +21,8 @@ namespace EditorBase.PropertyEditors
 {
 	public abstract class ObjectRefPropertyEditor : PropertyEditor
 	{
-		private static readonly IconImage iconShow = new IconImage(EditorBase.PluginRes.EditorBaseRes.IconEye.ToBitmap());
-		private static readonly IconImage iconReset = new IconImage(EditorBase.Properties.Resources.cross);
+		private static readonly IconImage iconShow = new IconImage(PluginRes.EditorBaseResCache.IconEye.ToBitmap());
+		private static readonly IconImage iconReset = new IconImage(PluginRes.EditorBaseResCache.IconAbortCross);
 
 		protected	bool		multiple			= false;
 		protected	bool		dragHover			= false;
@@ -141,13 +141,13 @@ namespace EditorBase.PropertyEditors
 			{
 				if (this.prevSoundInst != null)
 				{
-					e.Graphics.DrawImage(darkBg ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+					e.Graphics.DrawImage(darkBg ? EditorBaseResCache.IconSpeakerWhite : EditorBaseResCache.IconSpeakerBlack, 
 						this.rectPrevSound.X, 
 						this.rectPrevSound.Y);
 				}
 				else
 				{
-					e.Graphics.DrawImageAlpha(darkBg ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+					e.Graphics.DrawImageAlpha(darkBg ? EditorBaseResCache.IconSpeakerWhite : EditorBaseResCache.IconSpeakerBlack, 
 						0.5f,
 						this.rectPrevSound.X, 
 						this.rectPrevSound.Y);

@@ -54,6 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>HelpAdvisorRes.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginRes\HelpAdvisorResCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

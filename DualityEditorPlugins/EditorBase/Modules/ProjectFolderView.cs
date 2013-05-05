@@ -291,7 +291,7 @@ namespace EditorBase
 					result = CorePluginRegistry.RequestTypeImage(type);
 				}
 
-				return result ?? PluginRes.EditorBaseRes.IconResUnknown;
+				return result ?? PluginRes.EditorBaseResCache.IconResUnknown;
 			}
 		}
 		private struct ScheduleSelectEntry
@@ -450,7 +450,7 @@ namespace EditorBase
 				PluginRes.EditorBaseRes.ProjectNameLabel,
 				EditorHelper.CurrentProjectName);
 
-			Node nodeTree = this.ScanDirectory(EditorHelper.DataDirectory);
+			Node nodeTree = this.ScanDirectory(DualityApp.DataDirectory);
 			nodeTree.Nodes.Insert(0, this.ScanDefaultContent());
 
 			this.folderView.BeginUpdate();
@@ -814,7 +814,7 @@ namespace EditorBase
 		}
 		protected string GetInsertActionTargetBasePath(NodeBase baseNode)
 		{
-			string baseTargetPath = (baseNode != null) ? baseNode.NodePath : EditorHelper.DataDirectory;
+			string baseTargetPath = (baseNode != null) ? baseNode.NodePath : DualityApp.DataDirectory;
 			if (!baseTargetPath.Contains(':'))
 			{
 				if (File.Exists(baseTargetPath)) baseTargetPath = Path.GetDirectoryName(baseTargetPath);
@@ -1226,7 +1226,7 @@ namespace EditorBase
 		}
 		private void moveHereToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string dataDirPath = Path.GetFullPath(EditorHelper.DataDirectory);
+			string dataDirPath = Path.GetFullPath(DualityApp.DataDirectory);
 			foreach (string p in this.tempFileDropList)
 			{
 				string srcPath = Path.GetFullPath(p);
@@ -1449,7 +1449,7 @@ namespace EditorBase
 
 		private void toolStripButtonWorkDir_Click(object sender, EventArgs e)
 		{
-			string filePath = Path.GetFullPath(EditorHelper.DataDirectory);
+			string filePath = Path.GetFullPath(DualityApp.DataDirectory);
 			string argument = filePath;
 			System.Diagnostics.Process.Start("explorer.exe", argument);
 		}

@@ -259,12 +259,6 @@
   <data name="IconGameObj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>iconGameObj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="IconGameObjLink" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>iconGameObjLink.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="IconGameObjLinkBroken" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>iconGameObjLinkBroken.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="IconLogView" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>logview.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -555,5 +549,38 @@
   </data>
   <data name="UndoRedo_ReparentRigidBodyJointMulti" xml:space="preserve">
     <value>Reparent {0} Joints</value>
+  </data>
+  <data name="OverlayLink" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>overlayLink.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OverlayLinkBroken" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>overlayLinkBroken.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconAbortCross" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconEyeCross" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>eye_cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>lock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogCore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_core.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogEditor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_editor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogError" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogGame" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_game.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_message.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconLogWarning" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>log_warning.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

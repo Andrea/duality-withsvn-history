@@ -155,33 +155,31 @@ namespace EditorBase
 			base.LoadPlugin();
 
 			// Register core resource lookups
-			CorePluginRegistry.RegisterTypeImage(typeof(DrawTechnique),			EditorBaseRes.IconResDrawTechnique);
-			CorePluginRegistry.RegisterTypeImage(typeof(FragmentShader),		EditorBaseRes.IconResFragmentShader);
-			CorePluginRegistry.RegisterTypeImage(typeof(Material),				EditorBaseRes.IconResMaterial);
-			CorePluginRegistry.RegisterTypeImage(typeof(Pixmap),				EditorBaseRes.IconResPixmap);
-			CorePluginRegistry.RegisterTypeImage(typeof(Prefab),				EditorBaseRes.IconResPrefabFull, CorePluginRegistry.ImageContext_Icon + "_Full");
-			CorePluginRegistry.RegisterTypeImage(typeof(Prefab),				EditorBaseRes.IconResPrefabEmpty);
-			CorePluginRegistry.RegisterTypeImage(typeof(RenderTarget),			EditorBaseRes.IconResRenderTarget);
-			CorePluginRegistry.RegisterTypeImage(typeof(ShaderProgram),			EditorBaseRes.IconResShaderProgram);
-			CorePluginRegistry.RegisterTypeImage(typeof(Texture),				EditorBaseRes.IconResTexture);
-			CorePluginRegistry.RegisterTypeImage(typeof(VertexShader),			EditorBaseRes.IconResVertexShader);
-			CorePluginRegistry.RegisterTypeImage(typeof(Scene),					EditorBaseRes.IconResScene);
-			CorePluginRegistry.RegisterTypeImage(typeof(AudioData),				EditorBaseRes.IconResAudioData);
-			CorePluginRegistry.RegisterTypeImage(typeof(Sound),					EditorBaseRes.IconResSound);
-			CorePluginRegistry.RegisterTypeImage(typeof(Font),					EditorBaseRes.IconResFont);
+			CorePluginRegistry.RegisterTypeImage(typeof(DrawTechnique),			EditorBaseResCache.IconResDrawTechnique);
+			CorePluginRegistry.RegisterTypeImage(typeof(FragmentShader),		EditorBaseResCache.IconResFragmentShader);
+			CorePluginRegistry.RegisterTypeImage(typeof(Material),				EditorBaseResCache.IconResMaterial);
+			CorePluginRegistry.RegisterTypeImage(typeof(Pixmap),				EditorBaseResCache.IconResPixmap);
+			CorePluginRegistry.RegisterTypeImage(typeof(Prefab),				EditorBaseResCache.IconResPrefabFull, CorePluginRegistry.ImageContext_Icon + "_Full");
+			CorePluginRegistry.RegisterTypeImage(typeof(Prefab),				EditorBaseResCache.IconResPrefabEmpty);
+			CorePluginRegistry.RegisterTypeImage(typeof(RenderTarget),			EditorBaseResCache.IconResRenderTarget);
+			CorePluginRegistry.RegisterTypeImage(typeof(ShaderProgram),			EditorBaseResCache.IconResShaderProgram);
+			CorePluginRegistry.RegisterTypeImage(typeof(Texture),				EditorBaseResCache.IconResTexture);
+			CorePluginRegistry.RegisterTypeImage(typeof(VertexShader),			EditorBaseResCache.IconResVertexShader);
+			CorePluginRegistry.RegisterTypeImage(typeof(Scene),					EditorBaseResCache.IconResScene);
+			CorePluginRegistry.RegisterTypeImage(typeof(AudioData),				EditorBaseResCache.IconResAudioData);
+			CorePluginRegistry.RegisterTypeImage(typeof(Sound),					EditorBaseResCache.IconResSound);
+			CorePluginRegistry.RegisterTypeImage(typeof(Font),					EditorBaseResCache.IconResFont);
 
-			CorePluginRegistry.RegisterTypeImage(typeof(GameObject),			EditorBaseRes.IconGameObj);
-			CorePluginRegistry.RegisterTypeImage(typeof(GameObject),			EditorBaseRes.IconGameObjLink, CorePluginRegistry.ImageContext_Icon + "_Link");
-			CorePluginRegistry.RegisterTypeImage(typeof(GameObject),			EditorBaseRes.IconGameObjLinkBroken, CorePluginRegistry.ImageContext_Icon + "_Link_Broken");
-			CorePluginRegistry.RegisterTypeImage(typeof(Component),				EditorBaseRes.IconCmpUnknown);
-			CorePluginRegistry.RegisterTypeImage(typeof(SpriteRenderer),		EditorBaseRes.IconCmpSpriteRenderer);
-			CorePluginRegistry.RegisterTypeImage(typeof(AnimSpriteRenderer),	EditorBaseRes.IconCmpSpriteRenderer);
-			CorePluginRegistry.RegisterTypeImage(typeof(TextRenderer),			EditorBaseRes.IconResFont);
-			CorePluginRegistry.RegisterTypeImage(typeof(Transform),				EditorBaseRes.IconCmpTransform);
-			CorePluginRegistry.RegisterTypeImage(typeof(Camera),				EditorBaseRes.IconCmpCamera);
-			CorePluginRegistry.RegisterTypeImage(typeof(SoundEmitter),			EditorBaseRes.IconResSound);
-			CorePluginRegistry.RegisterTypeImage(typeof(SoundListener),			EditorBaseRes.IconCmpSoundListener);
-			CorePluginRegistry.RegisterTypeImage(typeof(RigidBody),				EditorBaseRes.IconCmpRectCollider);
+			CorePluginRegistry.RegisterTypeImage(typeof(GameObject),			EditorBaseResCache.IconGameObj);
+			CorePluginRegistry.RegisterTypeImage(typeof(Component),				EditorBaseResCache.IconCmpUnknown);
+			CorePluginRegistry.RegisterTypeImage(typeof(SpriteRenderer),		EditorBaseResCache.IconCmpSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(AnimSpriteRenderer),	EditorBaseResCache.IconCmpSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(TextRenderer),			EditorBaseResCache.IconResFont);
+			CorePluginRegistry.RegisterTypeImage(typeof(Transform),				EditorBaseResCache.IconCmpTransform);
+			CorePluginRegistry.RegisterTypeImage(typeof(Camera),				EditorBaseResCache.IconCmpCamera);
+			CorePluginRegistry.RegisterTypeImage(typeof(SoundEmitter),			EditorBaseResCache.IconResSound);
+			CorePluginRegistry.RegisterTypeImage(typeof(SoundListener),			EditorBaseResCache.IconCmpSoundListener);
+			CorePluginRegistry.RegisterTypeImage(typeof(RigidBody),				EditorBaseResCache.IconCmpRectCollider);
 
 			CorePluginRegistry.RegisterTypeCategory(typeof(Transform),			"");
 			CorePluginRegistry.RegisterTypeCategory(typeof(SpriteRenderer),		GeneralRes.Category_Graphics);
@@ -266,11 +264,11 @@ namespace EditorBase
 			this.menuItemUserData = main.RequestMenu(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_UserData);
 
 			// Configure menus
-			this.menuItemProjectView.Image = EditorBaseRes.IconProjectView.ToBitmap();
-			this.menuItemSceneView.Image = EditorBaseRes.IconSceneView.ToBitmap();
-			this.menuItemObjView.Image = EditorBaseRes.IconObjView.ToBitmap();
-			this.menuItemCamView.Image = EditorBaseRes.IconEye.ToBitmap();
-			this.menuItemLogView.Image = EditorBaseRes.IconLogView.ToBitmap();
+			this.menuItemProjectView.Image = EditorBaseResCache.IconProjectView.ToBitmap();
+			this.menuItemSceneView.Image = EditorBaseResCache.IconSceneView.ToBitmap();
+			this.menuItemObjView.Image = EditorBaseResCache.IconObjView.ToBitmap();
+			this.menuItemCamView.Image = EditorBaseResCache.IconEye.ToBitmap();
+			this.menuItemLogView.Image = EditorBaseResCache.IconLogView.ToBitmap();
 
 			this.menuItemProjectView.Click += this.menuItemProjectView_Click;
 			this.menuItemSceneView.Click += this.menuItemSceneView_Click;

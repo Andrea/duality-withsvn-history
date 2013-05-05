@@ -54,7 +54,7 @@ namespace HelpAdvisor
 			this.menuItemHelpAdvisor = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Help, HelpAdvisorRes.MenuItemName_Advisor));
 
 			// Configure menus
-			this.menuItemHelpAdvisor.Image = HelpAdvisorRes.IconHelp;
+			this.menuItemHelpAdvisor.Image = HelpAdvisorResCache.IconHelp;
 			this.menuItemHelpAdvisor.Click += new EventHandler(this.menuItemHelpAdvisor_Click);
 		}
 

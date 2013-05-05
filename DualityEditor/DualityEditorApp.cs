@@ -141,14 +141,14 @@ namespace DualityEditor
 			DualityEditorApp.mainForm = mainForm;
 
 			// Create working directories, if not existing yet.
-			if (!Directory.Exists(EditorHelper.DataDirectory))
+			if (!Directory.Exists(DualityApp.DataDirectory))
 			{
-				Directory.CreateDirectory(EditorHelper.DataDirectory);
-				using (FileStream s = File.OpenWrite(Path.Combine(EditorHelper.DataDirectory, "WorkingFolderIcon.ico")))
+				Directory.CreateDirectory(DualityApp.DataDirectory);
+				using (FileStream s = File.OpenWrite(Path.Combine(DualityApp.DataDirectory, "WorkingFolderIcon.ico")))
 				{
-					EditorRes.GeneralRes.IconWorkingFolder.Save(s);
+					EditorRes.GeneralResCache.IconWorkingFolder.Save(s);
 				}
-				using (StreamWriter w = new StreamWriter(Path.Combine(EditorHelper.DataDirectory, "desktop.ini")))
+				using (StreamWriter w = new StreamWriter(Path.Combine(DualityApp.DataDirectory, "desktop.ini")))
 				{
 					w.WriteLine("[.ShellClassInfo]");
 					w.WriteLine("ConfirmFileOp=0");
@@ -158,16 +158,16 @@ namespace DualityEditor
 					w.WriteLine("InfoTip=This is Dualitors working folder");
 				}
 
-				DirectoryInfo dirInfo = new DirectoryInfo(EditorHelper.DataDirectory);
+				DirectoryInfo dirInfo = new DirectoryInfo(DualityApp.DataDirectory);
 				dirInfo.Attributes |= FileAttributes.System;
 
-				FileInfo fileInfoDesktop = new FileInfo(Path.Combine(EditorHelper.DataDirectory, "desktop.ini"));
+				FileInfo fileInfoDesktop = new FileInfo(Path.Combine(DualityApp.DataDirectory, "desktop.ini"));
 				fileInfoDesktop.Attributes |= FileAttributes.Hidden;
 
-				FileInfo fileInfoIcon = new FileInfo(Path.Combine(EditorHelper.DataDirectory, "WorkingFolderIcon.ico"));
+				FileInfo fileInfoIcon = new FileInfo(Path.Combine(DualityApp.DataDirectory, "WorkingFolderIcon.ico"));
 				fileInfoIcon.Attributes |= FileAttributes.Hidden;
 			}
-			if (!Directory.Exists(EditorHelper.PluginDirectory)) Directory.CreateDirectory(EditorHelper.PluginDirectory);
+			if (!Directory.Exists(DualityApp.PluginDirectory)) Directory.CreateDirectory(DualityApp.PluginDirectory);
 			if (!Directory.Exists(EditorHelper.SourceDirectory)) Directory.CreateDirectory(EditorHelper.SourceDirectory);
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
@@ -201,7 +201,7 @@ namespace DualityEditor
 			editorObjects.Registered += editorObjects_Registered;
 			editorObjects.Unregistered += editorObjects_Unregistered;
 			editorObjects.ComponentAdded += editorObjects_ComponentAdded;
-			editorObjects.ComponentRemoved += editorObjects_ComponentRemoved;
+			editorObjects.ComponentRemoving += editorObjects_ComponentRemoved;
 
 			// Initialize secondary editor components
 			CorePluginRegistry.Init();
@@ -569,7 +569,7 @@ namespace DualityEditor
 			}
 			else if (!skipYetUnsaved)
 			{
-				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
+				string basePath = Path.Combine(DualityApp.DataDirectory, "Scene");
 				string path = PathHelper.GetFreePath(basePath, Scene.FileExt);
 				Scene.Current.Save(path);
 				DualityApp.AppData.Version++;
@@ -634,7 +634,7 @@ namespace DualityEditor
 		{
 			if (path.Contains(':')) return;
 			if (!File.Exists(path)) return;
-			if (!PathHelper.IsPathLocatedIn(path, EditorHelper.DataDirectory)) return;
+			if (!PathHelper.IsPathLocatedIn(path, DualityApp.DataDirectory)) return;
 
 			// We don't want to screw anything up by trying to backup stuff, so just catch and log everything.
 			try
@@ -642,7 +642,7 @@ namespace DualityEditor
 				string pathName = Path.GetFileName(path);
 				string pathNameWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(pathName));
 				string pathExt = pathName.Remove(0, pathNameWithoutExt.Length);
-				string fileBackupDir = Path.Combine(EditorHelper.BackupDirectory, PathHelper.MakeFilePathRelative(path, EditorHelper.DataDirectory));
+				string fileBackupDir = Path.Combine(EditorHelper.BackupDirectory, PathHelper.MakeFilePathRelative(path, DualityApp.DataDirectory));
 				string fileBackupName = DateTime.Now.ToString("yyyy-MM-dd T HH-mm", System.Globalization.CultureInfo.InvariantCulture) + pathExt;
 
 				// Copy the file to the backup directory

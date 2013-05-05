@@ -47,13 +47,13 @@ namespace DualityEditor.Forms
 
 			// Create hardcoded templates
 			this.templateEmpty = new ProjectTemplateInfo();
-			this.templateEmpty.Icon = EditorRes.GeneralRes.ImageTemplateEmpty;
+			this.templateEmpty.Icon = EditorRes.GeneralResCache.ImageTemplateEmpty;
 			this.templateEmpty.Name = EditorRes.GeneralRes.Template_Empty_Name;
 			this.templateEmpty.Description = EditorRes.GeneralRes.Template_Empty_Desc;
 			this.templateEmpty.SpecialTag = ProjectTemplateInfo.SpecialInfo.Empty;
 
 			this.templateCurrent = new ProjectTemplateInfo();
-			this.templateCurrent.Icon = EditorRes.GeneralRes.ImageTemplateCurrent;
+			this.templateCurrent.Icon = EditorRes.GeneralResCache.ImageTemplateCurrent;
 			this.templateCurrent.Name = EditorRes.GeneralRes.Template_Current_Name;
 			this.templateCurrent.Description = EditorRes.GeneralRes.Template_Current_Desc;
 			this.templateCurrent.SpecialTag = ProjectTemplateInfo.SpecialInfo.Current;

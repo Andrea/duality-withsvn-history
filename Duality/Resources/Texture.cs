@@ -617,7 +617,7 @@ namespace Duality.Resources
 		}
 
 		/// <summary>
-		/// Does a safe (null-checked, clamped) texture <see cref="Atlas"/> lookup.
+		/// Does a safe (null-checked, clamped) texture <see cref="Duality.Resources.Pixmap.Atlas"/> lookup.
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="uv"></param>
@@ -643,7 +643,7 @@ namespace Duality.Resources
 			}
 		}
 		/// <summary>
-		/// Does a safe (null-checked, clamped) texture <see cref="Atlas"/> lookup.
+		/// Does a safe (null-checked, clamped) texture <see cref="Duality.Resources.Pixmap.Atlas"/> lookup.
 		/// </summary>
 		/// <param name="index"></param>
 		public Rect LookupAtlas(int index)

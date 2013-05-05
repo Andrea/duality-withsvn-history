@@ -22,10 +22,10 @@ namespace DynamicLighting
 		protected override void LoadPlugin()
 		{
 			base.LoadPlugin();
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingTechnique),				DynLightRes.IconResLightingTechnique);
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingSpriteRenderer),		DynLightRes.IconCmpLightingSpriteRenderer);
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingAnimSpriteRenderer),	DynLightRes.IconCmpLightingSpriteRenderer);
-			CorePluginRegistry.RegisterTypeImage(typeof(Light),							DynLightRes.IconLight);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingTechnique),				DynLightResCache.IconResLightingTechnique);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingSpriteRenderer),		DynLightResCache.IconCmpLightingSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingAnimSpriteRenderer),	DynLightResCache.IconCmpLightingSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(Light),							DynLightResCache.IconLight);
 
 			CorePluginRegistry.RegisterTypeCategory(typeof(LightingTechnique),			GeneralRes.Category_Graphics);
 			CorePluginRegistry.RegisterTypeCategory(typeof(LightingSpriteRenderer),		GeneralRes.Category_Graphics);

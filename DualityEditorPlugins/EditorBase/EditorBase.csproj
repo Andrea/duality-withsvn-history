@@ -83,6 +83,7 @@
     <Compile Include="Modules\LogEntryList.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PluginRes\EditorBaseResCache.cs" />
     <Compile Include="PreviewGenerators.cs" />
     <Compile Include="Modules\LogView.cs">
       <SubType>Form</SubType>
@@ -207,6 +208,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="PluginRes\overlayLinkBroken.png" />
+    <None Include="PluginRes\overlayLink.png" />
     <None Include="PluginRes\bell.png" />
     <None Include="PluginRes\DropdownSettingsBlack.png" />
     <None Include="PluginRes\shape_perspective.png" />
@@ -247,8 +250,6 @@
     <None Include="PluginRes\iconCmpSpriteRenderer.png" />
     <None Include="PluginRes\iconCmpTransform.png" />
     <None Include="PluginRes\iconCmpUnknown.png" />
-    <None Include="PluginRes\iconGameObjLink.png" />
-    <None Include="PluginRes\iconGameObjLinkBroken.png" />
     <None Include="PluginRes\iconResAudioData.png" />
     <None Include="PluginRes\iconResSound.png" />
     <None Include="PluginRes\iconCmpSoundListener.png" />
@@ -269,14 +270,12 @@
     <None Include="PluginRes\iconCmpEdgeCollider.png" />
     <None Include="PluginRes\iconCmpLoopCollider.png" />
     <None Include="PluginRes\eye_cross.png" />
-    <None Include="PluginRes\iconGameObjInactive.png" />
-    <None Include="PluginRes\iconGameObjLinkBrokenInactive.png" />
-    <None Include="PluginRes\iconGameObjLinkInactive.png" />
     <None Include="PluginRes\magifier_zoom_out.png" />
     <None Include="PluginRes\magnifier_one.png" />
     <None Include="PluginRes\magnifier_zoom_in.png" />
     <None Include="PluginRes\IconSpeakerBlack.png" />
     <None Include="PluginRes\IconSpeakerWhite.png" />
+    <None Include="PluginRes\logview.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

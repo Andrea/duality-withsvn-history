@@ -361,7 +361,7 @@ namespace Duality
 		/// <summary>
 		/// Clears the ReflectionHelpers Type cache.
 		/// </summary>
-		public static void ClearTypeCache()
+		internal static void ClearTypeCache()
 		{
 			serializeTypeCache.Clear();
 			typeResolveCache.Clear();

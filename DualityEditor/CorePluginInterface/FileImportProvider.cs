@@ -144,7 +144,7 @@ namespace DualityEditor.CorePluginInterface
 		}
 		public static string GenerateSourceFilePath(Resource r, string srcFileExt)
 		{
-			string filePath = PathHelper.MakeFilePathRelative(r.Path, EditorHelper.DataDirectory);
+			string filePath = PathHelper.MakeFilePathRelative(r.Path, DualityApp.DataDirectory);
 			string fileDir = Path.GetDirectoryName(filePath);
 			if (filePath.Contains(".."))
 			{
@@ -156,10 +156,10 @@ namespace DualityEditor.CorePluginInterface
 
 		private static void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)
 		{
-			srcFilePath = PathHelper.MakeFilePathRelative(filePath, EditorHelper.DataDirectory);
+			srcFilePath = PathHelper.MakeFilePathRelative(filePath, DualityApp.DataDirectory);
 			if (srcFilePath.Contains("..")) srcFilePath = Path.GetFileName(srcFilePath);
 
-			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
+			targetDir = Path.GetDirectoryName(Path.Combine(DualityApp.DataDirectory, srcFilePath));
 			targetName = Path.GetFileNameWithoutExtension(filePath);
 
 			srcFilePath = PathHelper.GetFreePath(

@@ -195,7 +195,8 @@ namespace DynamicLighting
 					nullDeviceInfo = info;
 				}
 				info.FrameId = Time.FrameCount;
-				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>(true).ToList();
+				
+				info.PriorizedLights = Scene.Current.FindComponents<Light>().Where(l => l.Active).ToList();
 			}
 			else
 			{
@@ -207,7 +208,7 @@ namespace DynamicLighting
 					deviceInfo[device] = info;
 				}
 				info.FrameId = Time.FrameCount;
-				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>(true).Where(l => l.IsVisibleTo(device)).ToList();
+				info.PriorizedLights = Scene.Current.FindComponents<Light>().Where(l => l.Active).Where(l => l.IsVisibleTo(device)).ToList();
 				info.PriorizedLights.StableSort((Light a, Light b) => a.CalcPriority(device) - b.CalcPriority(device));
 			}
 

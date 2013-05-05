@@ -292,7 +292,7 @@ namespace EditorBase.CamViewStates
 			Scene.GameObjectRegistered += this.Scene_Changed;
 			Scene.GameObjectUnregistered += this.Scene_Changed;
 			Scene.ComponentAdded += this.Scene_Changed;
-			Scene.ComponentRemoved += this.Scene_Changed;
+			Scene.ComponentRemoving += this.Scene_Changed;
 
 			if (Scene.Current != null) this.Scene_Changed(this, EventArgs.Empty);
 			
@@ -327,7 +327,7 @@ namespace EditorBase.CamViewStates
 			Scene.GameObjectRegistered -= this.Scene_Changed;
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
 			Scene.ComponentAdded -= this.Scene_Changed;
-			Scene.ComponentRemoved -= this.Scene_Changed;
+			Scene.ComponentRemoving -= this.Scene_Changed;
 
 			this.SaveActiveLayers();
 

@@ -55,6 +55,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ResourceHackerRes.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginRes\ResourceHackerResCache.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

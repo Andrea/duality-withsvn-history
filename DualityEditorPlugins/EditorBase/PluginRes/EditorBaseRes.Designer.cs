@@ -491,6 +491,13 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap IconAbortCross {
+            get {
+                object obj = ResourceManager.GetObject("IconAbortCross", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap IconCmpCamera {
             get {
                 object obj = ResourceManager.GetObject("IconCmpCamera", resourceCulture);
@@ -568,6 +575,13 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap IconEyeCross {
+            get {
+                object obj = ResourceManager.GetObject("IconEyeCross", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap IconGameObj {
             get {
                 object obj = ResourceManager.GetObject("IconGameObj", resourceCulture);
@@ -575,16 +589,44 @@ namespace EditorBase.PluginRes {
             }
         }
         
-        public static System.Drawing.Bitmap IconGameObjLink {
+        public static System.Drawing.Bitmap IconLock {
             get {
-                object obj = ResourceManager.GetObject("IconGameObjLink", resourceCulture);
+                object obj = ResourceManager.GetObject("IconLock", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        public static System.Drawing.Bitmap IconGameObjLinkBroken {
+        public static System.Drawing.Bitmap IconLogCore {
             get {
-                object obj = ResourceManager.GetObject("IconGameObjLinkBroken", resourceCulture);
+                object obj = ResourceManager.GetObject("IconLogCore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconLogEditor {
+            get {
+                object obj = ResourceManager.GetObject("IconLogEditor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconLogError {
+            get {
+                object obj = ResourceManager.GetObject("IconLogError", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconLogGame {
+            get {
+                object obj = ResourceManager.GetObject("IconLogGame", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconLogMessage {
+            get {
+                object obj = ResourceManager.GetObject("IconLogMessage", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -593,6 +635,13 @@ namespace EditorBase.PluginRes {
             get {
                 object obj = ResourceManager.GetObject("IconLogView", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconLogWarning {
+            get {
+                object obj = ResourceManager.GetObject("IconLogWarning", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -886,6 +935,20 @@ namespace EditorBase.PluginRes {
         public static string NewFolderName {
             get {
                 return ResourceManager.GetString("NewFolderName", resourceCulture);
+            }
+        }
+        
+        public static System.Drawing.Bitmap OverlayLink {
+            get {
+                object obj = ResourceManager.GetObject("OverlayLink", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap OverlayLinkBroken {
+            get {
+                object obj = ResourceManager.GetObject("OverlayLinkBroken", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

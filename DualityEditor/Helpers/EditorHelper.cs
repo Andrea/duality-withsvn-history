@@ -21,9 +21,7 @@ namespace DualityEditor
 	public static class EditorHelper
 	{
 		public const string LauncherExecFile			= @"DualityLauncher.exe";
-		public const string DataDirectory				= @"Data";
 		public const string BackupDirectory				= @"Backup";
-		public const string PluginDirectory				= @"Plugins";
 		public const string SourceDirectory				= @"Source";
 		public const string SourceMediaDirectory		= SourceDirectory + @"\Media";
 		public const string SourceCodeDirectory			= SourceDirectory + @"\Code";
@@ -44,11 +42,12 @@ namespace DualityEditor
 		{
 			get
 			{
-				string dataFullPath = Path.GetFullPath(EditorHelper.DataDirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+				string dataFullPath = Path.GetFullPath(DualityApp.DataDirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 				string dataDir = Path.GetDirectoryName(dataFullPath);
 				return Path.GetFileName(dataDir);
 			}
 		}
+
 
 		public static bool IsJITDebuggerAvailable()
 		{
@@ -59,12 +58,33 @@ namespace DualityEditor
 				.GetValueNames().Contains("DbgManagedDebugger");
 		}
 
+		public static string GenerateClassNameFromPath(string path)
+		{
+			// Replace chars that aren't allowed as class name
+			char[] pathChars = path.ToCharArray();
+			for (int i = 0; i < pathChars.Length; i++)
+			{
+				if (!char.IsLetterOrDigit(pathChars[i]))
+					pathChars[i] = '_';
+			}
+			// Do not allow beginning digit
+			if (char.IsDigit(pathChars[0]))
+				path = "_" + new string(pathChars);
+			else
+				path = new string(pathChars);
 
+			// Avoid certain ambiguity
+			if (path == "System")		path = "System_";
+			else if (path == "Duality")	path = "Duality_";
+			else if (path == "OpenTK")	path = "OpenTK_";
+
+			return path;
+		}
 		public static string GenerateGameResSrcFile()
 		{
 			string gameRes = EditorRes.GeneralRes.GameResTemplate;
 			string mainClassName;
-			string result = gameRes.Replace("CONTENT", GenerateGameResSrcFile_ScanDir(DataDirectory, 1, out mainClassName));
+			string result = gameRes.Replace("CONTENT", GenerateGameResSrcFile_ScanDir(DualityApp.DataDirectory, 1, out mainClassName));
 			return result;
 		}
 		private static string GenerateGameResSrcFile_ScanFile(string filePath, int indent, out string propName)
@@ -188,30 +208,6 @@ namespace DualityEditor
 
 			return GenerateClassNameFromPath(path);
 		}
-		
-		public static string GenerateClassNameFromPath(string path)
-		{
-			// Replace chars that aren't allowed as class name
-			char[] pathChars = path.ToCharArray();
-			for (int i = 0; i < pathChars.Length; i++)
-			{
-				if (!char.IsLetterOrDigit(pathChars[i]))
-					pathChars[i] = '_';
-			}
-			// Do not allow beginning digit
-			if (char.IsDigit(pathChars[0]))
-				path = "_" + new string(pathChars);
-			else
-				path = new string(pathChars);
-
-			// Avoid certain ambiguity
-			if (path == "System")		path = "System_";
-			else if (path == "Duality")	path = "Duality_";
-			else if (path == "OpenTK")	path = "OpenTK_";
-
-			return path;
-		}
-
 
 		public static string CreateNewProject(string projName, string projFolder, ProjectTemplateInfo template)
 		{
@@ -234,9 +230,9 @@ namespace DualityEditor
 				}
 
 				// Update plugin directory
-				foreach (string dstFile in Directory.GetFiles(Path.Combine(projFolder, EditorHelper.PluginDirectory), "*", SearchOption.AllDirectories))
+				foreach (string dstFile in Directory.GetFiles(Path.Combine(projFolder, DualityApp.PluginDirectory), "*", SearchOption.AllDirectories))
 				{
-					string srcFile = Path.Combine(EditorHelper.PluginDirectory, Path.GetFileName(dstFile));
+					string srcFile = Path.Combine(DualityApp.PluginDirectory, Path.GetFileName(dstFile));
 					if (File.Exists(srcFile)) File.Copy(srcFile, dstFile, true);
 				}
 			}
@@ -254,7 +250,7 @@ namespace DualityEditor
 					if (isDir)
 					{
 						return 
-							fullPath != Path.GetFullPath(EditorHelper.DataDirectory) &&
+							fullPath != Path.GetFullPath(DualityApp.DataDirectory) &&
 							fullPath != Path.GetFullPath(EditorHelper.SourceDirectory);
 					}
 					else
@@ -270,7 +266,7 @@ namespace DualityEditor
 			Environment.CurrentDirectory = projFolder;
 
 			// Initialize content
-			if (Directory.Exists(EditorHelper.DataDirectory))
+			if (Directory.Exists(DualityApp.DataDirectory))
 			{
 				// Read content source code data (needed to rename classes / namespaces)
 				string oldRootNamespaceNameCore;
@@ -278,7 +274,7 @@ namespace DualityEditor
 				DualityEditorApp.ReadPluginSourceCodeContentData(out oldRootNamespaceNameCore, out newRootNamespaceNameCore);
 
 				// Rename classes / namespaces
-				List<string> resFiles = Resource.GetResourceFiles(EditorHelper.DataDirectory);
+				List<string> resFiles = Resource.GetResourceFiles(DualityApp.DataDirectory);
 				foreach (string resFile in resFiles)
 				{
 					MetaFormatHelper.FilePerformAction(resFile, d => d.ReplaceTypeStrings(oldRootNamespaceNameCore, newRootNamespaceNameCore), false);
@@ -331,28 +327,15 @@ namespace DualityEditor
 			return Path.Combine(projFolder, "DualityEditor.exe");
 		}
 
-
-
-		private const int GW_HWNDNEXT = 2; // The next window is below the specified window
-		private const int GW_HWNDPREV = 3; // The previous window is above
-
-		[DllImport("user32.dll")]
-		private static extern IntPtr GetTopWindow(IntPtr hWnd);
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool IsWindowVisible(IntPtr hWnd);
-		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetWindow", SetLastError = true)]
-		private static extern IntPtr GetNextWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] int wFlag);
-
 		public static List<Form> GetZSortedAppWindows()
 		{
 			List<Form> result = new List<Form>();
 
-			IntPtr hwnd = GetTopWindow((IntPtr)null);
+			IntPtr hwnd = NativeMethods.GetTopWindow((IntPtr)null);
 			while (hwnd != IntPtr.Zero)
 			{
 				// Get next window under the current handler
-				hwnd = GetNextWindow(hwnd, GW_HWNDNEXT);
+				hwnd = NativeMethods.GetNextWindow(hwnd, NativeMethods.GW_HWNDNEXT);
 
 				try
 				{
@@ -368,6 +351,48 @@ namespace DualityEditor
 			}
 
 			return result;
+		}
+
+		private class ImageOverlaySet
+		{
+			private Image baseImage;
+			private Dictionary<Image,Image> overlayDict;
+
+			public Image Base
+			{
+				get { return this.baseImage; }
+			}
+
+			public ImageOverlaySet(Image baseImage)
+			{
+				this.baseImage = baseImage;
+				this.overlayDict = new Dictionary<Image,Image>();;
+			}
+			public Image GetOverlay(Image overlayImage)
+			{
+				Image baseWithOverlay;
+				if (!this.overlayDict.TryGetValue(overlayImage, out baseWithOverlay))
+				{
+					baseWithOverlay = baseImage.Clone() as Image;
+					using (Graphics g = Graphics.FromImage(baseWithOverlay))
+					{
+						g.DrawImageUnscaled(overlayImage, 0, 0);
+					}
+					this.overlayDict[overlayImage] = baseWithOverlay;
+				}
+				return baseWithOverlay;
+			}
+		}
+		private static Dictionary<Image,ImageOverlaySet> overlayCache = new Dictionary<Image,ImageOverlaySet>();
+		public static Image GetImageWithOverlay(Image baseImage, Image overlayImage)
+		{
+			ImageOverlaySet overlaySet;
+			if (!overlayCache.TryGetValue(baseImage, out overlaySet))
+			{
+				overlaySet = new ImageOverlaySet(baseImage);
+				overlayCache[baseImage] = overlaySet;
+			}
+			return overlaySet.GetOverlay(overlayImage);
 		}
 	}
 

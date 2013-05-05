@@ -52,13 +52,13 @@ namespace ResourceHacker
 		{
 			base.LoadPlugin();
 			
-			CorePluginRegistry.RegisterTypeImage(typeof(DataNode),				PluginRes.ResourceHackerRes.IconPrimitive);
-			CorePluginRegistry.RegisterTypeImage(typeof(ArrayNode),				PluginRes.ResourceHackerRes.IconArray);
-			CorePluginRegistry.RegisterTypeImage(typeof(StructNode),			PluginRes.ResourceHackerRes.IconObject);
-			CorePluginRegistry.RegisterTypeImage(typeof(ObjectRefNode),			PluginRes.ResourceHackerRes.IconObjectRef);
-			CorePluginRegistry.RegisterTypeImage(typeof(TypeDataLayoutNode),	PluginRes.ResourceHackerRes.IconClass);
-			CorePluginRegistry.RegisterTypeImage(typeof(MemberInfoNode),		PluginRes.ResourceHackerRes.IconMethod);
-			CorePluginRegistry.RegisterTypeImage(typeof(DelegateNode),			PluginRes.ResourceHackerRes.IconDelegate);
+			CorePluginRegistry.RegisterTypeImage(typeof(DataNode),				PluginRes.ResourceHackerResCache.IconPrimitive);
+			CorePluginRegistry.RegisterTypeImage(typeof(ArrayNode),				PluginRes.ResourceHackerResCache.IconArray);
+			CorePluginRegistry.RegisterTypeImage(typeof(StructNode),			PluginRes.ResourceHackerResCache.IconObject);
+			CorePluginRegistry.RegisterTypeImage(typeof(ObjectRefNode),			PluginRes.ResourceHackerResCache.IconObjectRef);
+			CorePluginRegistry.RegisterTypeImage(typeof(TypeDataLayoutNode),	PluginRes.ResourceHackerResCache.IconClass);
+			CorePluginRegistry.RegisterTypeImage(typeof(MemberInfoNode),		PluginRes.ResourceHackerResCache.IconMethod);
+			CorePluginRegistry.RegisterTypeImage(typeof(DelegateNode),			PluginRes.ResourceHackerResCache.IconDelegate);
 
 			// Register PropertyEditor provider
 			CorePluginRegistry.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
@@ -71,7 +71,7 @@ namespace ResourceHacker
 			this.menuItemResHacker = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Tools, ResourceHackerRes.MenuItemName_ResourceHacker));
 
 			// Configure menus
-			this.menuItemResHacker.Image = ResourceHackerRes.IconResourceHacker;
+			this.menuItemResHacker.Image = ResourceHackerResCache.IconResourceHacker;
 			this.menuItemResHacker.Click += new EventHandler(this.menuItemResHacker_Click);
 		}
 

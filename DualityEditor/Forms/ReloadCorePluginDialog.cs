@@ -157,7 +157,7 @@ namespace DualityEditor.Forms
 			//this.owner.MainContextControl.Context.MakeCurrent(null);
 
 			this.progressTimer.Start();
-			this.owner.SetTaskbarOverlayIcon(GeneralRes.IconCog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
+			this.owner.SetTaskbarOverlayIcon(GeneralResCache.IconCog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
 
 			this.workerInterface = new WorkerInterface();
 			this.workerInterface.MainForm = this.owner;
@@ -278,7 +278,7 @@ namespace DualityEditor.Forms
 				// No full restart scheduled? Well, check if it should be!
 				if (!fullRestart)
 				{
-					fullRestart = workInterface.ReloadSched.Any(asmFile => asmFile.EndsWith(".editor.dll") || !DualityApp.IsLeafPlugin(asmFile));
+					fullRestart = workInterface.ReloadSched.Any(asmFile => asmFile.EndsWith(".editor.dll", StringComparison.InvariantCultureIgnoreCase) || !DualityApp.IsLeafPlugin(asmFile));
 				}
 
 				if (fullRestart)

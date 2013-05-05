@@ -45,6 +45,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DynLightRes.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginRes\DynLightResCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

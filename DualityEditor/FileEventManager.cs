@@ -55,7 +55,7 @@ namespace DualityEditor
 			pluginWatcher.Filter = "*.dll";
 			pluginWatcher.IncludeSubdirectories = true;
 			pluginWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
-			pluginWatcher.Path = EditorHelper.PluginDirectory;
+			pluginWatcher.Path = DualityApp.PluginDirectory;
 			pluginWatcher.Changed += corePluginWatcher_Changed;
 			pluginWatcher.Created += corePluginWatcher_Changed;
 			pluginWatcher.EnableRaisingEvents = true;
@@ -64,7 +64,7 @@ namespace DualityEditor
 			dataDirWatcher.SynchronizingObject = DualityEditorApp.MainForm;
 			dataDirWatcher.EnableRaisingEvents = false;
 			dataDirWatcher.IncludeSubdirectories = true;
-			dataDirWatcher.Path = EditorHelper.DataDirectory;
+			dataDirWatcher.Path = DualityApp.DataDirectory;
 			dataDirWatcher.Created += fileSystemWatcher_ForwardData;
 			dataDirWatcher.Changed += fileSystemWatcher_ForwardData;
 			dataDirWatcher.Deleted += fileSystemWatcher_ForwardData;
@@ -430,6 +430,11 @@ namespace DualityEditor
 		}
 		private static void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
+			// Ignore other class libraries that clearly aren't plugins
+			if (!e.FullPath.EndsWith(".core.dll", StringComparison.InvariantCultureIgnoreCase) &&
+				!e.FullPath.EndsWith(".editor.dll", StringComparison.InvariantCultureIgnoreCase))
+				return;
+
 			if (PluginChanged != null)
 				PluginChanged(sender, e);
 		}

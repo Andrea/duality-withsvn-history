@@ -119,13 +119,13 @@ namespace EditorBase.PropertyEditors
 
 			if (this.prevSoundInst != null)
 			{
-				e.Graphics.DrawImage(this.prevImageLum > 0.5f ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+				e.Graphics.DrawImage(this.prevImageLum > 0.5f ? EditorBaseResCache.IconSpeakerWhite : EditorBaseResCache.IconSpeakerBlack, 
 					this.rectPrevSound.X, 
 					this.rectPrevSound.Y);
 			}
 			else
 			{
-				e.Graphics.DrawImageAlpha(this.prevImageLum > 0.5f ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+				e.Graphics.DrawImageAlpha(this.prevImageLum > 0.5f ? EditorBaseResCache.IconSpeakerWhite : EditorBaseResCache.IconSpeakerBlack, 
 					0.5f,
 					this.rectPrevSound.X, 
 					this.rectPrevSound.Y);

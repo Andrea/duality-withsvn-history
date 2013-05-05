@@ -221,7 +221,7 @@ namespace ResourceHacker
 			this.treeViewColumnValue.DrawColHeaderBg += this.treeViewColumn_DrawColHeaderBg;
 			this.propertyGrid.EditingFinished += this.propertyGrid_EditingFinished;
 
-			this.openFileDialog.InitialDirectory = EditorHelper.DataDirectory;
+			this.openFileDialog.InitialDirectory = DualityApp.DataDirectory;
 			this.openFileDialog.Filter = "Duality Resource|*" + Resource.FileExt;
 			this.saveFileDialog.InitialDirectory = this.openFileDialog.InitialDirectory;
 			this.saveFileDialog.Filter = this.openFileDialog.Filter;
@@ -363,12 +363,12 @@ namespace ResourceHacker
 
 		private void actionOpen_Click(object sender, EventArgs e)
 		{
-			this.openFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
+			this.openFileDialog.InitialDirectory = Path.GetFullPath(DualityApp.DataDirectory);
 			this.openFileDialog.ShowDialog(this);
 		}
 		private void actionSave_Click(object sender, EventArgs e)
 		{
-			this.saveFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
+			this.saveFileDialog.InitialDirectory = Path.GetFullPath(DualityApp.DataDirectory);
 			this.saveFileDialog.ShowDialog(this);
 		}
 		private void openFileDialog_FileOk(object sender, CancelEventArgs e)
@@ -455,7 +455,7 @@ namespace ResourceHacker
 		{
 			FolderBrowserDialog folderDialog = new FolderBrowserDialog();
 			folderDialog.ShowNewFolderButton = false;
-			folderDialog.SelectedPath = Path.GetFullPath(EditorHelper.DataDirectory);
+			folderDialog.SelectedPath = Path.GetFullPath(DualityApp.DataDirectory);
 			folderDialog.Description = "Select a folder to process..";
 			if (folderDialog.ShowDialog(this) == DialogResult.OK)
 			{

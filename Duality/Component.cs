@@ -475,7 +475,7 @@ namespace Duality
 		/// Returns all Component Types this Component requires.
 		/// </summary>
 		/// <returns>An array of required Component Types.</returns>
-		public List<Type> GetRequiredComponents()
+		public IEnumerable<Type> GetRequiredComponents()
 		{
 			return GetRequiredComponents(this.GetType());
 		}
@@ -486,6 +486,42 @@ namespace Duality
 				return this.GetType().Name;
 			else
 				return string.Format("{0} in \"{1}\"", this.GetType().Name, this.gameobj.FullName);
+		}
+
+
+		private static Dictionary<Type,TypeData> typeCache = new Dictionary<Type,TypeData>();
+		private class TypeData
+		{
+			public Type Component;
+			public List<Type> Requirements;
+			public List<Type> RequiredBy;
+
+			public TypeData(Type type)
+			{
+				this.Component = type;
+
+				this.RequiredBy = new List<Type>();
+				{
+					foreach (Type cmp in DualityApp.GetAvailDualityTypes(typeof(Component)))
+					{
+						if (RequiresComponent(cmp, type))
+							this.RequiredBy.Add(cmp);
+					}
+				}
+
+				this.Requirements = new List<Type>();
+				{
+					IEnumerable<RequiredComponentAttribute> attribs = 
+						type.GetCustomAttributes(typeof(RequiredComponentAttribute), true).
+						Cast<RequiredComponentAttribute>();
+					foreach (RequiredComponentAttribute a in attribs)
+					{
+						Type reqType = a.RequiredComponentType;
+						this.Requirements.AddRange(GetRequiredComponents(reqType).Where(t => !this.Requirements.Contains(t)));
+						this.Requirements.Add(reqType);
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -501,7 +537,7 @@ namespace Duality
 				Cast<RequiredComponentAttribute>().
 				ToArray();
 
-			return attribs.Any(a => a.RequiredComponentType.IsAssignableFrom(cmpType));
+			return attribs.Any(a => a.RequiredComponentType.IsAssignableFrom(requiredType) || RequiresComponent(a.RequiredComponentType, requiredType));
 		}
 		/// <summary>
 		/// Returns all required Component Types of a specified Component Type.
@@ -509,24 +545,38 @@ namespace Duality
 		/// <param name="cmpType">The Component Type that might require other Component Types.</param>
 		/// <param name="recursive">If true, also indirect requirements are returned.</param>
 		/// <returns>An array of Component Types to require.</returns>
-		public static List<Type> GetRequiredComponents(Type cmpType)
+		public static IEnumerable<Type> GetRequiredComponents(Type cmpType)
 		{
-			RequiredComponentAttribute[] attribs = 
-				cmpType.GetCustomAttributes(typeof(RequiredComponentAttribute), true).
-				Cast<RequiredComponentAttribute>().
-				ToArray();
-
-			List<Type> result = null;
-			foreach (RequiredComponentAttribute a in attribs)
+			TypeData data;
+			if (!typeCache.TryGetValue(cmpType, out data))
 			{
-				Type reqType = a.RequiredComponentType;
-				if (result == null)
-					result = GetRequiredComponents(reqType);
-				else
-					result.AddRange(GetRequiredComponents(reqType).Where(t => !result.Contains(t)));
-				result.Add(reqType);
+				data = new TypeData(cmpType);
+				typeCache[cmpType] = data;
 			}
-			return result ?? new List<Type>();
+			return data.Requirements;
+		}
+		/// <summary>
+		/// Returns the number of Component Types that require the specified Component Type.
+		/// This can be used as a measure of relative Component significance.
+		/// </summary>
+		/// <param name="cmpType"></param>
+		/// <returns></returns>
+		public static IEnumerable<Type> GetRequiringComponents(Type requiredType)
+		{
+			TypeData data;
+			if (!typeCache.TryGetValue(requiredType, out data))
+			{
+				data = new TypeData(requiredType);
+				typeCache[requiredType] = data;
+			}
+			return data.RequiredBy;
+		}
+		/// <summary>
+		/// Clears the ReflectionHelpers Type cache.
+		/// </summary>
+		internal static void ClearTypeCache()
+		{
+			typeCache.Clear();
 		}
 	}
 

@@ -66,7 +66,7 @@ namespace EditorBase.PropertyEditors
 			base.OnUpdateFromObjects(values);
 
 			this.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
-			this.ButtonIcon = PluginRes.EditorBaseRes.DropdownSettingsBlack;
+			this.ButtonIcon = PluginRes.EditorBaseResCache.DropdownSettingsBlack;
 			this.PropertyName = this.EditedType.GetTypeCSCodeName(true);
 			this.HeaderValueText = null;
 			if (!values.Any() || values.All(o => o == null))
@@ -154,7 +154,7 @@ namespace EditorBase.PropertyEditors
 
 			// Default items
 			ToolStripItem itemReset = contextMenu.Items.Add(PluginRes.EditorBaseRes.MenuItemName_ResetComponent, null, this.contextMenu_ResetComponent);
-			ToolStripItem itemRemove = contextMenu.Items.Add(PluginRes.EditorBaseRes.MenuItemName_RemoveComponent, Properties.Resources.cross, this.contextMenu_RemoveComponent);
+			ToolStripItem itemRemove = contextMenu.Items.Add(PluginRes.EditorBaseRes.MenuItemName_RemoveComponent, PluginRes.EditorBaseResCache.IconAbortCross, this.contextMenu_RemoveComponent);
 			itemRemove.Enabled = canRemove;
 			if (!canRemove) 
 			{

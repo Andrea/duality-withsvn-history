@@ -417,7 +417,7 @@ namespace Duality
 		/// <returns></returns>
 		public static List<string> GetResourceFiles(string folderPath = null)
 		{
-			if (string.IsNullOrEmpty(folderPath)) folderPath = "Data";
+			if (string.IsNullOrEmpty(folderPath)) folderPath = DualityApp.DataDirectory;
 			List<string> result = new List<string>();
 			foreach (string file in Directory.GetFiles(folderPath, "*" + Resource.FileExt, SearchOption.AllDirectories))
 			{

@@ -17,6 +17,7 @@ using DualityEditor.CorePluginInterface;
 using DualityEditor.Forms;
 
 using EditorBase.UndoRedoActions;
+using EditorBase.PluginRes;
 
 using OpenTK;
 
@@ -24,10 +25,10 @@ namespace EditorBase.CamViewStates
 {
 	public partial class RigidBodyEditorCamViewState : CamViewState
 	{
-		public static readonly Cursor ArrowCreateCircle		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateCircle, 0, 0);
-		public static readonly Cursor ArrowCreatePolygon	= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreatePolygon, 0, 0);
-		public static readonly Cursor ArrowCreateEdge		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateEdge, 0, 0);
-		public static readonly Cursor ArrowCreateLoop		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateLoop, 0, 0);
+		public static readonly Cursor ArrowCreateCircle		= CursorHelper.CreateCursor(EditorBaseResCache.CursorArrowCreateCircle, 0, 0);
+		public static readonly Cursor ArrowCreatePolygon	= CursorHelper.CreateCursor(EditorBaseResCache.CursorArrowCreatePolygon, 0, 0);
+		public static readonly Cursor ArrowCreateEdge		= CursorHelper.CreateCursor(EditorBaseResCache.CursorArrowCreateEdge, 0, 0);
+		public static readonly Cursor ArrowCreateLoop		= CursorHelper.CreateCursor(EditorBaseResCache.CursorArrowCreateLoop, 0, 0);
 
 		private enum CursorState
 		{
@@ -73,22 +74,22 @@ namespace EditorBase.CamViewStates
 			this.toolstrip.Name = "toolstrip";
 			this.toolstrip.Text = "Collider Editor Tools";
 
-			this.toolCreateCircle = new ToolStripButton("Create Circle Shape (C)", EditorBase.PluginRes.EditorBaseRes.IconCmpCircleCollider, this.toolCreateCircle_Clicked);
+			this.toolCreateCircle = new ToolStripButton("Create Circle Shape (C)", PluginRes.EditorBaseResCache.IconCmpCircleCollider, this.toolCreateCircle_Clicked);
 			this.toolCreateCircle.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreateCircle.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreateCircle);
 
-			this.toolCreatePoly = new ToolStripButton("Create Polygon Shape (P)", EditorBase.PluginRes.EditorBaseRes.IconCmpRectCollider, this.toolCreatePoly_Clicked);
+			this.toolCreatePoly = new ToolStripButton("Create Polygon Shape (P)", PluginRes.EditorBaseResCache.IconCmpRectCollider, this.toolCreatePoly_Clicked);
 			this.toolCreatePoly.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreatePoly.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreatePoly);
 
-		//	this.toolCreateEdge = new ToolStripButton("Create Edge Shape (E)", EditorBase.PluginRes.EditorBaseRes.IconCmpEdgeCollider, this.toolCreateEdge_Clicked);
+		//	this.toolCreateEdge = new ToolStripButton("Create Edge Shape (E)", PluginRes.EditorBaseResCache.IconCmpEdgeCollider, this.toolCreateEdge_Clicked);
 		//	this.toolCreateEdge.DisplayStyle = ToolStripItemDisplayStyle.Image;
 		//	this.toolCreateEdge.AutoToolTip = true;
 		//	this.toolstrip.Items.Add(this.toolCreateEdge);
 
-			this.toolCreateLoop = new ToolStripButton("Create Loop Shape (L)", EditorBase.PluginRes.EditorBaseRes.IconCmpLoopCollider, this.toolCreateLoop_Clicked);
+			this.toolCreateLoop = new ToolStripButton("Create Loop Shape (L)", PluginRes.EditorBaseResCache.IconCmpLoopCollider, this.toolCreateLoop_Clicked);
 			this.toolCreateLoop.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreateLoop.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreateLoop);

@@ -50,18 +50,18 @@ namespace EditorBase
 			{
 				get
 				{
-					if (this.log.Type == LogMessageType.Error) return Properties.Resources.log_error;
-					if (this.log.Type == LogMessageType.Warning) return Properties.Resources.log_warning;
-					return Properties.Resources.log_message;
+					if (this.log.Type == LogMessageType.Error) return PluginRes.EditorBaseResCache.IconLogError;
+					if (this.log.Type == LogMessageType.Warning) return PluginRes.EditorBaseResCache.IconLogWarning;
+					return PluginRes.EditorBaseResCache.IconLogMessage;
 				}
 			}
 			public Image SourceIcon
 			{
 				get
 				{
-					if (this.log.Source == Log.Game) return Properties.Resources.log_game;
-					if (this.log.Source == Log.Editor) return Properties.Resources.log_editor;
-					return Properties.Resources.log_core;
+					if (this.log.Source == Log.Game) return PluginRes.EditorBaseResCache.IconLogGame;
+					if (this.log.Source == Log.Editor) return PluginRes.EditorBaseResCache.IconLogEditor;
+					return PluginRes.EditorBaseResCache.IconLogCore;
 				}
 			}
 

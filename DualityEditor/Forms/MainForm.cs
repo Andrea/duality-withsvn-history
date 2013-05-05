@@ -133,7 +133,7 @@ namespace DualityEditor.Forms
 			ToolStripMenuItem aboutItem =		this.RequestMenu(GeneralRes.MenuName_Help, GeneralRes.MenuItemName_About);
 
 			// ---------- File ----------
-			newProjectItem.Image = EditorRes.GeneralRes.ImageAppCreate;
+			newProjectItem.Image = EditorRes.GeneralResCache.ImageAppCreate;
 			newProjectItem.Click += this.newProjectItem_Click;
 			newProjectItem.Tag = HelpInfo.FromText(newProjectItem.Text, GeneralRes.MenuItemInfo_NewProject);
 
@@ -163,11 +163,11 @@ namespace DualityEditor.Forms
 			// ---------- Edit ----------
 			this.menuEditUndo.ShortcutKeys = Keys.Z | Keys.Control;
 			this.menuEditUndo.Click += this.menuEditUndo_Click;
-			this.menuEditUndo.Image = GeneralRes.arrow_undo;
+			this.menuEditUndo.Image = GeneralResCache.arrow_undo;
 
 			this.menuEditRedo.ShortcutKeys = Keys.Y | Keys.Control;
 			this.menuEditRedo.Click += this.menuEditRedo_Click;
-			this.menuEditRedo.Image = GeneralRes.arrow_redo;
+			this.menuEditRedo.Image = GeneralResCache.arrow_redo;
 
 			// ---------- Run ----------
 			this.menuRunSandboxPlay.Image = this.actionRunSandbox.Image;

@@ -66,6 +66,9 @@ namespace Duality
 
 		public const string CmdArgDebug = "debug";
 		public const string CmdArgEditor = "editor";
+		public const string PluginDirectory = "Plugins";
+		public const string DataDirectory = "Data";
+
 
 		private	static	Thread					mainThread			= null;
 		private	static	bool					initialized			= false;
@@ -105,6 +108,10 @@ namespace Duality
 		/// It is also called in an editor environment.
 		/// </summary>
 		public static event EventHandler Terminating		= null;
+		/// <summary>
+		/// Called when Duality needs to discard plugin data such as cached Types and values.
+		/// </summary>
+		public static event EventHandler DiscardPluginData	= null;
 		/// <summary>
 		/// Fired whenever a core plugin has been initialized. This is the case after loading or reloading one.
 		/// </summary>
@@ -529,7 +536,7 @@ namespace Duality
 			LoadMetaData();
 
 			ContentProvider.ClearContent();
-			string[] resFiles = Directory.GetFiles("Data", "*" + Resource.FileExt, SearchOption.AllDirectories);
+			string[] resFiles = Directory.GetFiles(DataDirectory, "*" + Resource.FileExt, SearchOption.AllDirectories);
 			foreach (string file in resFiles)
 			{
 				var cr = ContentProvider.RequestContent(file);
@@ -750,9 +757,7 @@ namespace Duality
 		}
 		private static void UnloadPlugins()
 		{
-			ContentProvider.ClearContent();
-			ReflectionHelper.ClearTypeCache();
-			availTypeDict.Clear();
+			OnDiscardPluginData();
 			foreach (CorePlugin plugin in plugins.Values)
 			{
 				disposedPlugins.Add(plugin.PluginAssembly);
@@ -762,6 +767,11 @@ namespace Duality
 		}
 		internal static void ReloadPlugin(string pluginFileName)
 		{
+			if (!pluginFileName.EndsWith(".core.dll", StringComparison.InvariantCultureIgnoreCase))
+			{
+				Log.Core.Write("Skipping non-core plugin '{0}'...", pluginFileName);
+				return;
+			}
 			Log.Core.Write("Reloading core plugin '{0}'...", pluginFileName);
 			Log.Core.PushIndent();
 
@@ -782,12 +792,7 @@ namespace Duality
 			plugins[plugin.AssemblyName] = plugin;
 			
 			// Discard plugin-related data
-			availTypeDict.Clear();
-			ReflectionHelper.ClearTypeCache();
-			if (!Scene.Current.IsEmpty)
-				Scene.Current.Dispose();
-			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
-				ContentProvider.UnregisterContent(r.Path);
+			OnDiscardPluginData();
 
 			Log.Core.PopIndent();
 
@@ -886,6 +891,19 @@ namespace Duality
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
 		}
+		private static void OnDiscardPluginData()
+		{
+			if (DiscardPluginData != null)
+				DiscardPluginData(null, EventArgs.Empty);
+
+			availTypeDict.Clear();
+			ReflectionHelper.ClearTypeCache();
+			Component.ClearTypeCache();
+			if (!Scene.Current.IsEmpty)
+				Scene.Current.Dispose();
+			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
+				ContentProvider.UnregisterContent(r.Path);
+		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
 		{
@@ -898,13 +916,36 @@ namespace Duality
 		}
 		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
 		{
-			// If this method gets called, assume we are searching for a dynamically loaded plugin assembly
 			string assemblyNameStub = args.Name.Split(',')[0];
+
+			// First assume we are searching for a dynamically loaded plugin assembly
 			CorePlugin plugin;
 			if (plugins.TryGetValue(assemblyNameStub, out plugin))
+			{
 				return plugin.PluginAssembly;
+			}
+			// Not there? Search for other libraries in the Plugins folder
 			else
+			{
+				foreach (string libFile in Directory.EnumerateFiles(PluginDirectory, "*.dll", SearchOption.AllDirectories))
+				{
+					string libFileName = Path.GetFileNameWithoutExtension(libFile);
+					if (libFileName.Equals(assemblyNameStub, StringComparison.InvariantCultureIgnoreCase))
+					{
+						// Lock the Assembly file. Dynamically reloading Plugins is supported - but not reloading external libraries.
+						try
+						{
+							Assembly library = Assembly.LoadFrom(libFile);
+							return library;
+						}
+						catch (Exception e)
+						{
+							Log.Core.WriteError("Error loading Assembly '{0}' from file '{1}: {2}", assemblyNameStub, libFile, Log.Exception(e));
+						}
+					}
+				}
 				return null;
+			}
 		}
 		private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
 		{

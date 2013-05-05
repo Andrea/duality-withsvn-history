@@ -134,29 +134,29 @@ namespace EditorBase.PreviewGenerators
 
 			Bitmap resultBitmap = textLayer.ToBitmap();
 
-			// Debug Font metrics
-			const bool drawDebugFontMetrics = false;
-			if (drawDebugFontMetrics)
-			{
-			    bool brightFg = font.GlyphColor.GetLuminance() > 0.5f;
-			    Color fgColor = Color.FromArgb(font.GlyphColor.R, font.GlyphColor.G, font.GlyphColor.B);
-			    Color baseLineColor = brightFg ? Color.FromArgb(255, 0, 0) : Color.FromArgb(128, 0, 0);
-			    Color bodyAscentColor = brightFg ? Color.FromArgb(0, 192, 0) : Color.FromArgb(0, 64, 0);
-			    Color ascentColor = brightFg ? Color.FromArgb(64, 64, 255) : Color.FromArgb(0, 0, 128);
-			    Color descentColor = brightFg ? Color.FromArgb(255, 0, 255) : Color.FromArgb(128, 0, 128);
-			    using (Graphics g = Graphics.FromImage(resultBitmap))
-			    {
-			        for (int i = 0; i < metrics.LineCount; i++)
-			        {
-			            Rect lineBounds = metrics.LineBounds[i];
-			            g.DrawRectangle(new Pen(Color.FromArgb(128, fgColor)), lineBounds.X + 5, lineBounds.Y, lineBounds.W, lineBounds.H - 1);
-			            g.DrawLine(new Pen(Color.FromArgb(192, baseLineColor)), 0, lineBounds.Y + font.BaseLine, resultBitmap.Width, lineBounds.Y + font.BaseLine);
-			            g.DrawLine(new Pen(Color.FromArgb(192, bodyAscentColor)), 0, lineBounds.Y + font.BaseLine - font.BodyAscent, resultBitmap.Width, lineBounds.Y + font.BaseLine - font.BodyAscent);
-			            g.DrawLine(new Pen(Color.FromArgb(192, ascentColor)), 0, lineBounds.Y + font.BaseLine - font.Ascent, resultBitmap.Width, lineBounds.Y + font.BaseLine - font.Ascent);
-			            g.DrawLine(new Pen(Color.FromArgb(192, descentColor)), 0, lineBounds.Y + font.BaseLine + font.Descent, resultBitmap.Width, lineBounds.Y + font.BaseLine + font.Descent);
-			        }
-			    }
-			}
+			//// Debug Font metrics
+			//const bool drawDebugFontMetrics = false;
+			//if (drawDebugFontMetrics)
+			//{
+			//    bool brightFg = font.GlyphColor.GetLuminance() > 0.5f;
+			//    Color fgColor = Color.FromArgb(font.GlyphColor.R, font.GlyphColor.G, font.GlyphColor.B);
+			//    Color baseLineColor = brightFg ? Color.FromArgb(255, 0, 0) : Color.FromArgb(128, 0, 0);
+			//    Color bodyAscentColor = brightFg ? Color.FromArgb(0, 192, 0) : Color.FromArgb(0, 64, 0);
+			//    Color ascentColor = brightFg ? Color.FromArgb(64, 64, 255) : Color.FromArgb(0, 0, 128);
+			//    Color descentColor = brightFg ? Color.FromArgb(255, 0, 255) : Color.FromArgb(128, 0, 128);
+			//    using (Graphics g = Graphics.FromImage(resultBitmap))
+			//    {
+			//        for (int i = 0; i < metrics.LineCount; i++)
+			//        {
+			//            Rect lineBounds = metrics.LineBounds[i];
+			//            g.DrawRectangle(new Pen(Color.FromArgb(128, fgColor)), lineBounds.X + 5, lineBounds.Y, lineBounds.W, lineBounds.H - 1);
+			//            g.DrawLine(new Pen(Color.FromArgb(192, baseLineColor)), 0, lineBounds.Y + font.BaseLine, resultBitmap.Width, lineBounds.Y + font.BaseLine);
+			//            g.DrawLine(new Pen(Color.FromArgb(192, bodyAscentColor)), 0, lineBounds.Y + font.BaseLine - font.BodyAscent, resultBitmap.Width, lineBounds.Y + font.BaseLine - font.BodyAscent);
+			//            g.DrawLine(new Pen(Color.FromArgb(192, ascentColor)), 0, lineBounds.Y + font.BaseLine - font.Ascent, resultBitmap.Width, lineBounds.Y + font.BaseLine - font.Ascent);
+			//            g.DrawLine(new Pen(Color.FromArgb(192, descentColor)), 0, lineBounds.Y + font.BaseLine + font.Descent, resultBitmap.Width, lineBounds.Y + font.BaseLine + font.Descent);
+			//        }
+			//    }
+			//}
 
 			query.Result = resultBitmap.Resize(desiredWidth, desiredHeight, Alignment.Left);
 		}

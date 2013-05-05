@@ -14,6 +14,7 @@ using Aga.Controls.Tree;
 
 using Duality;
 using Duality.Resources;
+using Duality.ColorFormat;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -91,7 +92,9 @@ namespace EditorBase
 		}
 		public class GameObjectNode : NodeBase
 		{
-			private	GameObject	obj	= null;
+			private	GameObject	obj				= null;
+			private	bool		customIcon		= false;
+			private	bool		customIconSet	= false;
 
 			protected override int TypeSortIndex
 			{
@@ -101,18 +104,72 @@ namespace EditorBase
 			{
 				get { return this.obj; }
 			}
+			public bool UseCustomIcon
+			{
+				get { return this.customIcon; }
+			}
+			public bool CustomIconSet
+			{
+				get { return this.customIconSet; }
+			}
 
-			public GameObjectNode(GameObject obj) : base(obj.Name)
+			public GameObjectNode(GameObject obj, bool customIcon) : base(obj.Name)
 			{
 				this.obj = obj;
+				this.customIcon = customIcon;
 				this.UpdateIcon();
 			}
-			public void UpdateIcon()
+			public void UpdateIcon(Component ignoreComponent = null)
 			{
-				string context = this.obj.PrefabLink == null ? 
-					CorePluginRegistry.ImageContext_Icon : 
-					CorePluginRegistry.ImageContext_Icon + (this.obj.PrefabLink.Prefab.IsAvailable ? "_Link" : "_Link_Broken");
-				this.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), context);
+				if (this.customIcon)
+				{
+					Type representant = null;
+					List<Type> availCmpTypes = this.obj.GetComponents<Component>().Where(c => c != ignoreComponent).Select(c => c.GetType()).ToList();
+
+					if (representant == null)
+					{
+						// Find the most unique / significant Component
+						int bestScore = int.MinValue;
+						foreach (Type cmpType in availCmpTypes)
+						{
+							if (availCmpTypes.Any(c => Component.RequiresComponent(c, cmpType)))
+								continue;
+							if (CorePluginRegistry.RequestTypeImage(cmpType) == null)
+								continue;
+
+							int score = 
+								100000 * Component.GetRequiredComponents(cmpType).Count() -
+								100 * (cmpType.Name.Length > 0 ? ((int)cmpType.Name[0] - (int)' ') : 0) -
+								1 * (cmpType.Name.Length > 1 ? ((int)cmpType.Name[1] - (int)' ') : 0);
+							if (score > bestScore)
+							{
+								bestScore = score;
+								representant = cmpType;
+							}
+						}
+					}
+
+					this.customIconSet = (representant != null);
+					Image img = CorePluginRegistry.RequestTypeImage(representant ?? typeof(GameObject));
+					if (this.LinkState != PrefabLinkState.None)
+					{
+						img = EditorHelper.GetImageWithOverlay(img, this.LinkState == PrefabLinkState.Active ? 
+							EditorBaseResCache.OverlayLink : 
+							EditorBaseResCache.OverlayLinkBroken);
+					}
+					this.Image = img;
+				}
+				else
+				{
+					Image img = CorePluginRegistry.RequestTypeImage(typeof(GameObject));
+					if (this.obj.PrefabLink != null)
+					{
+						img = EditorHelper.GetImageWithOverlay(img, this.obj.PrefabLink.Prefab.IsAvailable ? 
+							EditorBaseResCache.OverlayLink : 
+							EditorBaseResCache.OverlayLinkBroken);
+					}
+					this.Image = img;
+				}
 			}
 		}
 		public class ComponentNode : NodeBase
@@ -140,7 +197,7 @@ namespace EditorBase
 
 			public static Image GetTypeImage(Type type)
 			{
-				return CorePluginRegistry.RequestTypeImage(type) ?? PluginRes.EditorBaseRes.IconCmpUnknown;
+				return CorePluginRegistry.RequestTypeImage(type) ?? EditorBaseResCache.IconCmpUnknown;
 			}
 		}
 
@@ -157,9 +214,10 @@ namespace EditorBase
 		private	NodeBase	tempDropTarget	= null;
 		private	Dictionary<Node,bool>	tempNodeVisibilityCache	= new Dictionary<Node,bool>();
 		private	string					tempUpperFilter			= null;
-		private bool	tempScheduleSelectionChange	= false;
-		private bool	tempIsInitializingObjects	= false;
-		private bool	tempIsClearingObjects		= false;
+		private bool		tempScheduleSelectionChange	= false;
+		private bool		tempIsInitializingObjects	= false;
+		private bool		tempIsClearingObjects		= false;
+		private	System.Drawing.Imaging.ColorMatrix	inactiveIconMatrix;
 
 		
 		public IEnumerable<NodeBase> SelectedNodes
@@ -197,6 +255,13 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
+			this.inactiveIconMatrix = new System.Drawing.Imaging.ColorMatrix(new[] {
+				new float[] {	0.30f,	0.30f,	0.30f,	0.0f,	0.0f	},
+				new float[] {	0.59f,	0.59f,	0.59f,	0.0f,	0.0f	},
+				new float[] {	0.11f,	0.11f,	0.11f,	0.0f,	0.0f	},
+				new float[] {	0.0f,	0.0f,	0.0f,	1.0f,	0.0f	},
+				new float[] {	0.0f,	0.0f,	0.0f,	0.0f,	1.0f	}});
+
 			this.objectView.DefaultToolTipProvider = this;
 			this.objectModel = new TreeModel();
 			this.objectView.Model = this.objectModel;
@@ -228,7 +293,7 @@ namespace EditorBase
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
 			Scene.GameObjectParentChanged += this.Scene_GameObjectParentChanged;
 			Scene.ComponentAdded += this.Scene_ComponentAdded;
-			Scene.ComponentRemoved += this.Scene_ComponentRemoved;
+			Scene.ComponentRemoving += this.Scene_ComponentRemoving;
 
 			if (Scene.Current != null) this.Scene_Entered(this, null);
 		}
@@ -248,7 +313,7 @@ namespace EditorBase
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
 			Scene.GameObjectParentChanged -= this.Scene_GameObjectParentChanged;
 			Scene.ComponentAdded -= this.Scene_ComponentAdded;
-			Scene.ComponentRemoved -= this.Scene_ComponentRemoved;
+			Scene.ComponentRemoving -= this.Scene_ComponentRemoving;
 		}
 
 		internal void SaveUserData(XmlElement node)
@@ -413,7 +478,7 @@ namespace EditorBase
 		protected GameObjectNode ScanGameObject(GameObject obj, bool scanChildren)
 		{
 			if (obj == null) return null;
-			GameObjectNode thisNode = new GameObjectNode(obj);
+			GameObjectNode thisNode = new GameObjectNode(obj, !this.buttonShowComponents.Checked);
 			foreach (Component c in obj.GetComponents<Component>())
 			{
 				ComponentNode compNode = this.ScanComponent(c);
@@ -1008,12 +1073,7 @@ namespace EditorBase
 			DesignTimeObjectData data = objNode != null ? CorePluginRegistry.RequestDesignTimeData(objNode.Obj) : null;
 			bool lockedOrHidden = data != null ? data.IsLocked || data.IsHidden : false;
 
-			if (lockedOrHidden) e.IconColorMatrix = new System.Drawing.Imaging.ColorMatrix(new[] {
-				new float[] {	0.3f,	0.3f,	0.3f,	0.0f,	0.0f	},
-				new float[] {	0.59f,	0.59f,	0.59f,	0.0f,	0.0f	},
-				new float[] {	0.11f,	0.11f,	0.11f,	0.0f,	0.0f	},
-				new float[] {	0.0f,	0.0f,	0.0f,	1.0f,	0.0f	},
-				new float[] {	0.0f,	0.0f,	0.0f,	0.0f,	1.0f	}});
+			if (lockedOrHidden) e.IconColorMatrix = this.inactiveIconMatrix;
 		}
 		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
@@ -1340,13 +1400,13 @@ namespace EditorBase
 			{
 				this.lockedToolStripMenuItem.Text = PluginRes.EditorBaseRes.SceneView_Item_Hidden;
 				this.lockedToolStripMenuItem.ToolTipText = PluginRes.EditorBaseRes.SceneView_Item_Hidden_Tooltip;
-				this.lockedToolStripMenuItem.Image = EditorBase.Properties.Resources.eye_cross;
+				this.lockedToolStripMenuItem.Image = PluginRes.EditorBaseResCache.IconEyeCross;
 			}
 			else if (locked)
 			{
 				this.lockedToolStripMenuItem.Text = PluginRes.EditorBaseRes.SceneView_Item_Locked;
 				this.lockedToolStripMenuItem.ToolTipText = PluginRes.EditorBaseRes.SceneView_Item_Locked_Tooltip;
-				this.lockedToolStripMenuItem.Image = EditorBase.Properties.Resources.lockIcon;
+				this.lockedToolStripMenuItem.Image = PluginRes.EditorBaseResCache.IconLock;
 			}
 			else
 			{
@@ -1573,15 +1633,27 @@ namespace EditorBase
 		}
 		private void Scene_ComponentAdded(object sender, ComponentEventArgs e)
 		{
-			if (!this.buttonShowComponents.Checked) return;
+			if (!this.buttonShowComponents.Checked)
+			{
+				GameObjectNode objNode = (e.Component != null && e.Component.GameObj != null) ? this.FindNode(e.Component.GameObj) : null;
+				if (objNode != null)
+					objNode.UpdateIcon();
+				return;
+			}
 			ComponentNode newObjNode = this.ScanComponent(e.Component);
 			Node parentNode = e.Component.GameObj != null ? this.FindNode(e.Component.GameObj) : this.objectModel.Root;
 			this.InsertNodeSorted(newObjNode, parentNode);
 			this.RegisterNodeTree(newObjNode);
 		}
-		private void Scene_ComponentRemoved(object sender, ComponentEventArgs e)
+		private void Scene_ComponentRemoving(object sender, ComponentEventArgs e)
 		{
-			if (!this.buttonShowComponents.Checked) return;
+			if (!this.buttonShowComponents.Checked)
+			{
+				GameObjectNode objNode = (e.Component != null && e.Component.GameObj != null) ? this.FindNode(e.Component.GameObj) : null;
+				if (objNode != null)
+					objNode.UpdateIcon(e.Component);
+				return;
+			}
 			ComponentNode oldObjNode = this.FindNode(e.Component);
 			if (oldObjNode == null) return;
 

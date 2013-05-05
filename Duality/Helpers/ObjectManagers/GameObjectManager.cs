@@ -50,7 +50,7 @@ namespace Duality.ObjectManagers
 		/// <summary>
 		/// Fired when a <see cref="Duality.Component"/> is removed from an already registered GameObject.
 		/// </summary>
-		public event EventHandler<ComponentEventArgs> ComponentRemoved;
+		public event EventHandler<ComponentEventArgs> ComponentRemoving;
 		
 		/// <summary>
 		/// Registers a GameObject and all of its children.
@@ -94,13 +94,13 @@ namespace Duality.ObjectManagers
 		{
 			obj.EventParentChanged		+= this.OnParentChanged;
 			obj.EventComponentAdded		+= this.OnComponentAdded;
-			obj.EventComponentRemoving	+= this.OnComponentRemoved;
+			obj.EventComponentRemoving	+= this.OnComponentRemoving;
 		}
 		private void UnregisterEvents(GameObject obj)
 		{
 			obj.EventParentChanged		-= this.OnParentChanged;
 			obj.EventComponentAdded		-= this.OnComponentAdded;
-			obj.EventComponentRemoving	-= this.OnComponentRemoved;
+			obj.EventComponentRemoving	-= this.OnComponentRemoving;
 		}
 
 		private void OnRegistered(GameObject obj)
@@ -125,10 +125,10 @@ namespace Duality.ObjectManagers
 			if (this.ComponentAdded != null)
 				this.ComponentAdded(sender, e);
 		}
-		private void OnComponentRemoved(object sender, ComponentEventArgs e)
+		private void OnComponentRemoving(object sender, ComponentEventArgs e)
 		{
-			if (this.ComponentRemoved != null)
-				this.ComponentRemoved(sender, e);
+			if (this.ComponentRemoving != null)
+				this.ComponentRemoving(sender, e);
 		}
 	}
 }

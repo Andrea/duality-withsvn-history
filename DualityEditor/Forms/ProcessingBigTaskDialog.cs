@@ -99,7 +99,7 @@ namespace DualityEditor.Forms
 		{
 			base.OnShown(e);
 
-			this.owner.SetTaskbarOverlayIcon(GeneralRes.IconCog, this.taskCaption);
+			this.owner.SetTaskbarOverlayIcon(GeneralResCache.IconCog, this.taskCaption);
 
 			this.workerInterface = new WorkerInterface();
 			this.workerInterface.owner = this;
