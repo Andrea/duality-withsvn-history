@@ -29,8 +29,6 @@ namespace EditorBase
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
 			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
-
-			Log.LogData.NewEntry += this.LogData_NewEntry;
 		}
 		protected override void OnShown(EventArgs e)
 		{
@@ -51,7 +49,6 @@ namespace EditorBase
 
 			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
 			Sandbox.Entering -= this.Sandbox_Entering;
-			Log.LogData.NewEntry -= this.LogData_NewEntry;
 		}
 		protected override void OnGotFocus(EventArgs e)
 		{
@@ -186,18 +183,32 @@ namespace EditorBase
 				this.textBoxEntry.Clear();
 			}
 		}
+		private void logEntryList_NewEntry(object sender, LogEntryList.ViewEntryEventArgs e)
+		{
+			DataLogOutput.LogEntry logEntry = e.Entry.LogEntry;
+			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
+			bool pause = logEntry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.State == SandboxState.Playing && !Sandbox.IsChangingState;
+
+			if (isHidden)
+			{
+				if (logEntry.Type == LogMessageType.Warning)
+				{
+					this.unseenWarnings++;
+				}
+				else if (logEntry.Type == LogMessageType.Error)
+				{
+					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
+					this.unseenErrors++;
+				}
+			}
+
+			if (pause) Sandbox.Pause();
+			this.UpdateTabText();
+		}
 
 		private void Sandbox_Entering(object sender, EventArgs e)
 		{
 			if (this.checkAutoClear.Checked) this.actionClear_ButtonClick(sender, e);
-		}
-		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
-		{
-			// Don't use Invoke or InvokeEx. They will block while the BuildManager is active (why?)
-			// and thus lead to a deadlock when something is logged while it is.
-			this.logSchedule.Add(e.Entry);
-			if (!this.timerLogSchedule.Enabled)
-				this.timerLogSchedule.Enabled = true;
 		}
 		private void textBoxEntry_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -210,35 +221,6 @@ namespace EditorBase
 				this.textBoxEntry.DeselectAll();
 				this.textBoxEntry.SelectionStart = 0;
 			}
-		}
-		private void timerLogSchedule_Tick(object sender, EventArgs e)
-		{
-			foreach (DataLogOutput.LogEntry entry in this.logSchedule)
-				this.OnNewEntry(entry);
-			this.logSchedule.Clear();
-			this.timerLogSchedule.Enabled = false;
-		}
-		
-		private void OnNewEntry(DataLogOutput.LogEntry e)
-		{
-			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
-			bool pause = e.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState;
-
-			if (isHidden)
-			{
-				if (e.Type == LogMessageType.Warning)
-				{
-					this.unseenWarnings++;
-				}
-				else if (e.Type == LogMessageType.Error)
-				{
-					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
-					this.unseenErrors++;
-				}
-			}
-
-			if (pause) Sandbox.Pause();
-			this.UpdateTabText();
 		}
 	}
 }
