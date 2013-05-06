@@ -100,21 +100,37 @@ namespace EditorBase
 				return builder.ToString();
 			}
 		}
+		public class ViewEntryEventArgs : EventArgs
+		{
+			private ViewEntry	entry;
+			public ViewEntry Entry
+			{
+				get { return this.entry; }
+			}
+			public ViewEntryEventArgs(ViewEntry entry)
+			{
+				this.entry = entry;
+			}
+		}
 
 
-		private	List<ViewEntry>		entryList		= new List<ViewEntry>();
-		private	MessageFilter		displayFilter	= MessageFilter.All;
-		private	DateTime			displayMinTime	= DateTime.MinValue;
-		private	DataLogOutput		boundOutput		= null;
-		private	Color				baseColor		= SystemColors.Control;
-		private	bool				scrolledToEnd	= true;
-		private	bool				lastSelected	= true;
-		private	ViewEntry			hoveredEntry	= null;
-		private	ViewEntry			selectedEntry	= null;
-		private	ContextMenuStrip	entryMenu		= null;
+		private	List<ViewEntry>		entryList			= new List<ViewEntry>();
+		private	MessageFilter		displayFilter		= MessageFilter.All;
+		private	DateTime			displayMinTime		= DateTime.MinValue;
+		private	DataLogOutput		boundOutput			= null;
+		private	Color				baseColor			= SystemColors.Control;
+		private	bool				scrolledToEnd		= true;
+		private	bool				lastSelected		= true;
+		private	ViewEntry			hoveredEntry		= null;
+		private	ViewEntry			selectedEntry		= null;
+		private	ContextMenuStrip	entryMenu			= null;
+		private Timer				timerLogSchedule	= null;
+		private	List<DataLogOutput.LogEntry> logSchedule = new List<DataLogOutput.LogEntry>();
 
 
 		public event EventHandler SelectionChanged = null;
+		public event EventHandler ContentChanged = null;
+		public event EventHandler<ViewEntryEventArgs> NewEntry = null;
 
 
 		public IEnumerable<ViewEntry> Entries
@@ -202,6 +218,16 @@ namespace EditorBase
 			this.entryMenu = new ContextMenuStrip();
 			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyItem, null, this.entryMenu_CopyItem_Click);
 			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyAllItems, null, this.entryMenu_CopyAllItems_Click);
+
+			this.timerLogSchedule = new Timer();
+			this.timerLogSchedule.Interval = 50;
+			this.timerLogSchedule.Tick += new EventHandler(timerLogSchedule_Tick);
+		}
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (this.timerLogSchedule != null)
+				this.timerLogSchedule.Dispose();
 		}
 
 		public void Clear()
@@ -217,13 +243,23 @@ namespace EditorBase
 		{
 			ViewEntry viewEntry = new ViewEntry(entry);
 			this.entryList.Add(viewEntry);
+
+			if (this.NewEntry != null)
+				this.NewEntry(this, new ViewEntryEventArgs(viewEntry));
+
 			this.OnContentChanged();
 			return viewEntry;
 		}
 		public void AddEntry(IEnumerable<DataLogOutput.LogEntry> entries)
 		{
 			foreach (var entry in entries)
-				this.entryList.Add(new ViewEntry(entry));
+			{
+				ViewEntry viewEntry = new ViewEntry(entry);
+				this.entryList.Add(viewEntry);
+
+				if (this.NewEntry != null)
+					this.NewEntry(this, new ViewEntryEventArgs(viewEntry));
+			}
 			this.OnContentChanged();
 		}
 		public void UpdateFromLog(DataLogOutput dualityLog)
@@ -302,7 +338,13 @@ namespace EditorBase
 			}
 			return null;
 		}
-
+		
+		private void ProcessIncomingEntry(DataLogOutput.LogEntry entry)
+		{
+			bool wasAtEnd = this.IsScrolledToEnd;
+			this.AddEntry(entry);
+			if (wasAtEnd) this.ScrollToEnd();
+		}
 		private void UpdateScrolledToEnd()
 		{
 			this.scrolledToEnd = -this.AutoScrollPosition.Y + this.ClientRectangle.Height >= this.AutoScrollMinSize.Height - 5;
@@ -332,6 +374,9 @@ namespace EditorBase
 			else if (!this.DisplayedEntries.Contains(this.SelectedEntry))
 				this.SelectedEntry = null;
 			this.Invalidate();
+
+			if (this.ContentChanged != null)
+				this.ContentChanged(this, EventArgs.Empty);
 		}
 		private void OnSelectionChanged()
 		{
@@ -339,12 +384,6 @@ namespace EditorBase
 			this.lastSelected = this.SelectedEntry == this.DisplayedEntries.LastOrDefault();
 			if (this.SelectionChanged != null)
 				this.SelectionChanged(this, EventArgs.Empty);
-		}
-		private void OnNewEntry(DataLogOutput.LogEntryEventArgs e)
-		{
-			bool wasAtEnd = this.IsScrolledToEnd;
-			this.AddEntry(e.Entry);
-			if (wasAtEnd) this.ScrollToEnd();
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -416,11 +455,17 @@ namespace EditorBase
 						timeTextRect.Height = textRect.Height;
 					}
 
-					e.Graphics.FillRectangle(evenEntry ? backgroundBrushAlt : backgroundBrush, entryRect);
+					bool highlightBgColor = (this.selectedEntry == entry && this.Focused) || this.hoveredEntry == entry;
+					e.Graphics.FillRectangle((evenEntry && !highlightBgColor) ? backgroundBrushAlt : backgroundBrush, entryRect);
 					if (entry.LogEntry.Type == LogMessageType.Warning)
 						e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(64, 245, 200, 85)), entryRect);
 					else if (entry.LogEntry.Type == LogMessageType.Error)
 						e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(64, 230, 105, 90)), entryRect);
+
+					if (this.selectedEntry == entry && this.Focused)
+						e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, 255, 255, 255)), entryRect);
+					else if (this.hoveredEntry == entry)
+						e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(64, 255, 255, 255)), entryRect);
 
 					e.Graphics.DrawImage(typeIcon, 
 						typeIconRect.X + typeIconRect.Width / 2 - typeIcon.Width / 2,
@@ -452,7 +497,7 @@ namespace EditorBase
 					if (this.selectedEntry == entry && this.Focused)
 					{
 						e.Graphics.DrawRectangle(
-							new Pen(Color.FromArgb(64, this.ForeColor)), 
+							new Pen(Color.FromArgb(32, this.ForeColor)), 
 							entryRect.X + 1,
 							entryRect.Y + 1,
 							entryRect.Width - 3,
@@ -562,10 +607,21 @@ namespace EditorBase
 				this.EnsureVisible(this.SelectedEntry);
 			}
 		}
-
+		
+		private void timerLogSchedule_Tick(object sender, EventArgs e)
+		{
+			foreach (DataLogOutput.LogEntry entry in this.logSchedule)
+				this.ProcessIncomingEntry(entry);
+			this.logSchedule.Clear();
+			this.timerLogSchedule.Enabled = false;
+		}
 		private void boundOutput_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			this.InvokeEx(c => c.OnNewEntry(e));
+			// Don't use Invoke or InvokeEx. They will block while the BuildManager is active (why?)
+			// and thus lead to a deadlock when something is logged while it is.
+			this.logSchedule.Add(e.Entry);
+			if (!this.timerLogSchedule.Enabled)
+				this.timerLogSchedule.Enabled = true;
 		}
 		private void entryMenu_CopyAllItems_Click(object sender, EventArgs e)
 		{

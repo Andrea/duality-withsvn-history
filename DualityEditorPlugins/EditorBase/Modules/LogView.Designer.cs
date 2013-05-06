@@ -47,7 +47,6 @@
 			this.textBoxEntry = new System.Windows.Forms.TextBox();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.logEntryList = new EditorBase.LogEntryList();
-			this.timerLogSchedule = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
@@ -281,12 +280,8 @@
 			this.logEntryList.Size = new System.Drawing.Size(681, 83);
 			this.logEntryList.TabIndex = 2;
 			this.logEntryList.SelectionChanged += new System.EventHandler(this.logEntryList_SelectionChanged);
+			this.logEntryList.NewEntry += new System.EventHandler<EditorBase.LogEntryList.ViewEntryEventArgs>(this.logEntryList_NewEntry);
 			this.logEntryList.Enter += new System.EventHandler(this.logEntryList_Enter);
-			// 
-			// timerLogSchedule
-			// 
-			this.timerLogSchedule.Interval = 50;
-			this.timerLogSchedule.Tick += new System.EventHandler(this.timerLogSchedule_Tick);
 			// 
 			// LogView
 			// 

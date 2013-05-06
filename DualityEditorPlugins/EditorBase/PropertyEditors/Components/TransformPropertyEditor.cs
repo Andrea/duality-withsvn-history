@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System;
 
 using AdamsLair.PropertyGrid;
 using OpenTK;
@@ -142,9 +143,9 @@ namespace EditorBase.PropertyEditors
 		protected IEnumerable<object> PosGetter()
 		{
 			if (this.showRelative)
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.RelativePos : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.RelativePos);
 			else
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.Pos : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.Pos);
 		}
 		protected void PosSetter(IEnumerable<object> values)
 		{
@@ -154,22 +155,42 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				IEnumerator<Vector3> valuesEnum = values.Cast<Vector3>().GetEnumerator();
-				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-				object[] targetValues = new object[targetArray.Length];
-
-				Vector3 curValue = Vector3.Zero;
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				for (int i = 0; i < targetArray.Length; i++)
+				List<Vector3> valuesList = values.Cast<Vector3>().ToList();
+				List<object> valuesListLocal = new List<object>(valuesList.Count);
+				List<Transform> targetList = this.GetValue().OfType<Transform>().ToList();
+				List<Transform> targetListLocal = new List<Transform>(targetList.Count);
+				List<int> removeIndices = new List<int>(targetList.Count);
+				while (targetList.Count > 0)
 				{
-					Transform parent = 
-						targetArray[i] != null && 
-						targetArray[i].GameObj != null && 
-						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
-					targetValues[i] = parent != null ? parent.GetLocalPoint(curValue) : curValue;
-					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+					targetListLocal.Clear();
+					valuesListLocal.Clear();
+					removeIndices.Clear();
+					for (int i = targetList.Count - 1; i >= 0; i--)
+					{
+						Transform t = targetList[i];
+						Transform parent = 
+							t != null && 
+							t.GameObj != null && 
+							t.GameObj.Parent != null ? t.GameObj.Parent.Transform : null;
+
+						if (parent == null || !targetList.Contains(parent))
+						{
+							Vector3 curValue = valuesList[Math.Min(i, valuesList.Count - 1)];
+							
+							targetListLocal.Add(t);
+							valuesListLocal.Add(parent != null ? parent.GetLocalPoint(curValue) : curValue);
+							removeIndices.Add(i);
+						}
+					}
+					for (int i = 0; i < removeIndices.Count; i++)
+					{
+						int removeIndex = removeIndices[i];
+						targetList.RemoveAt(removeIndex);
+						if (removeIndex < valuesList.Count)
+							valuesList.RemoveAt(removeIndex);
+					}
+					this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativePos, targetListLocal, valuesListLocal);
 				}
-				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativePos, this.GetValue(), targetValues);
 			}
 
 			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativePos, values);
@@ -178,16 +199,16 @@ namespace EditorBase.PropertyEditors
 		protected IEnumerable<object> VelGetter()
 		{
 			if (this.showRelative)
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.RelativeVel : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.RelativeVel);
 			else
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.Vel : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.Vel);
 		}
 		protected IEnumerable<object> ScaleGetter()
 		{
 			if (this.showRelative)
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.RelativeScale : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.RelativeScale);
 			else
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.Scale : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)o.Scale);
 		}
 		protected void ScaleSetter(IEnumerable<object> values)
 		{
@@ -197,22 +218,42 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-				object[] targetValues = new object[targetArray.Length];
-
-				float curValue = 1.0f;
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				for (int i = 0; i < targetArray.Length; i++)
+				List<float> valuesList = values.Cast<float>().ToList();
+				List<object> valuesListLocal = new List<object>(valuesList.Count);
+				List<Transform> targetList = this.GetValue().OfType<Transform>().ToList();
+				List<Transform> targetListLocal = new List<Transform>(targetList.Count);
+				List<int> removeIndices = new List<int>(targetList.Count);
+				while (targetList.Count > 0)
 				{
-					Transform parent = 
-						targetArray[i] != null && 
-						targetArray[i].GameObj != null && 
-						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
-					targetValues[i] = parent != null ? curValue / parent.Scale : curValue;
-					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+					targetListLocal.Clear();
+					valuesListLocal.Clear();
+					removeIndices.Clear();
+					for (int i = targetList.Count - 1; i >= 0; i--)
+					{
+						Transform t = targetList[i];
+						Transform parent = 
+							t != null && 
+							t.GameObj != null && 
+							t.GameObj.Parent != null ? t.GameObj.Parent.Transform : null;
+
+						if (parent == null || !targetList.Contains(parent))
+						{
+							float curValue = valuesList[Math.Min(i, valuesList.Count - 1)];
+							
+							targetListLocal.Add(t);
+							valuesListLocal.Add(parent != null ? curValue / parent.Scale : curValue);
+							removeIndices.Add(i);
+						}
+					}
+					for (int i = 0; i < removeIndices.Count; i++)
+					{
+						int removeIndex = removeIndices[i];
+						targetList.RemoveAt(removeIndex);
+						if (removeIndex < valuesList.Count)
+							valuesList.RemoveAt(removeIndex);
+					}
+					this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeScale, targetListLocal, valuesListLocal);
 				}
-				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeScale, this.GetValue(), targetValues);
 			}
 
 			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeScale, values);
@@ -221,9 +262,9 @@ namespace EditorBase.PropertyEditors
 		protected IEnumerable<object> AngleGetter()
 		{
 			if (this.showRelative)
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.RelativeAngle) : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)MathF.RadToDeg(o.RelativeAngle));
 			else
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.Angle) : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)MathF.RadToDeg(o.Angle));
 		}
 		protected void AngleSetter(IEnumerable<object> values)
 		{
@@ -234,22 +275,42 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-				object[] targetValues = new object[targetArray.Length];
-
-				float curValue = 1.0f;
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				for (int i = 0; i < targetArray.Length; i++)
+				List<float> valuesList = values.Cast<float>().ToList();
+				List<object> valuesListLocal = new List<object>(valuesList.Count);
+				List<Transform> targetList = this.GetValue().OfType<Transform>().ToList();
+				List<Transform> targetListLocal = new List<Transform>(targetList.Count);
+				List<int> removeIndices = new List<int>(targetList.Count);
+				while (targetList.Count > 0)
 				{
-					Transform parent = 
-						targetArray[i] != null && 
-						targetArray[i].GameObj != null && 
-						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
-					targetValues[i] = parent != null ? curValue - parent.Angle : curValue;
-					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+					targetListLocal.Clear();
+					valuesListLocal.Clear();
+					removeIndices.Clear();
+					for (int i = targetList.Count - 1; i >= 0; i--)
+					{
+						Transform t = targetList[i];
+						Transform parent = 
+							t != null && 
+							t.GameObj != null && 
+							t.GameObj.Parent != null ? t.GameObj.Parent.Transform : null;
+
+						if (parent == null || !targetList.Contains(parent))
+						{
+							float curValue = valuesList[Math.Min(i, valuesList.Count - 1)];
+							
+							targetListLocal.Add(t);
+							valuesListLocal.Add(parent != null ? curValue - parent.Angle : curValue);
+							removeIndices.Add(i);
+						}
+					}
+					for (int i = 0; i < removeIndices.Count; i++)
+					{
+						int removeIndex = removeIndices[i];
+						targetList.RemoveAt(removeIndex);
+						if (removeIndex < valuesList.Count)
+							valuesList.RemoveAt(removeIndex);
+					}
+					this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeAngle, targetListLocal, valuesListLocal);
 				}
-				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeAngle, this.GetValue(), targetValues);
 			}
 
 			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeAngle, values);
@@ -258,9 +319,9 @@ namespace EditorBase.PropertyEditors
 		protected IEnumerable<object> AngleVelGetter()
 		{
 			if (this.showRelative)
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.RelativeAngleVel) : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)MathF.RadToDeg(o.RelativeAngleVel));
 			else
-				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.AngleVel) : null);
+				return this.GetValue().OfType<Transform>().Select(o => (object)MathF.RadToDeg(o.AngleVel));
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(System.Drawing.Point localPos, ref bool captured)

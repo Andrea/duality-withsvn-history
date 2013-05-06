@@ -127,6 +127,12 @@ namespace DualityEditor.Controls
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
 			this.SetupHueBrightnessGradient();
         }
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (this.pickerDragTimer != null)
+				this.pickerDragTimer.Dispose();
+		}
 		
 		public void SetupGradient(Color tl, Color tr, Color bl, Color br, int accuracy = 256)
 		{
