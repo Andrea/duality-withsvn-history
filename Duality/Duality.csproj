@@ -94,6 +94,7 @@
     <Compile Include="Helpers\DualityMetaData.cs" />
     <Compile Include="Helpers\DualityUserData.cs" />
     <Compile Include="Helpers\ExtMethodsBitmap.cs" />
+    <Compile Include="Helpers\Guard.cs" />
     <Compile Include="Helpers\InitState.cs" />
     <Compile Include="Helpers\ObjectManagers\ObjectManager.cs" />
     <Compile Include="Helpers\PhysicsConvert.cs" />

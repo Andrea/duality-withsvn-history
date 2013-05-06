@@ -1,0 +1,58 @@
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Tooling
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*
+_dotCover*/
+*.dotcover
+!Other/Dependencies/NUnit/NUnit-2.6.2/bin/*
+
+#Visual Studio files
+*.pidb
+*.userprefs
+*.[Oo]bj
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+ipch/
+obj/
+
+
+/packages*
+
+[Dd]ebug*/
+[Rr]elease*/
+Ankh.NoLoad
+
+
+#Project files
+[Bb]uild/
+
+
+# Office Temp Files
+~$*
+
+#Unix temporary files
+*~
+
+/Duality/Duality.xml
+/DualityEditor/DualityEditor.xml
