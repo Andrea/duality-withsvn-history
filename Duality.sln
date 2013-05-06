@@ -30,6 +30,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio", "VisualStudi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DualityDebuggingTest", "VisualStudio\DualityDebuggingTest\DualityDebuggingTest.csproj", "{7FA1C4E4-626E-476A-84A5-DEB9A7D83377}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duality.Tests", "Duality.Tests\Duality.Tests.csproj", "{9A7492CF-9D22-4196-81FE-C6837E89E12C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04B987BB-CD6B-4836-8946-8A1644A088C5}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +119,14 @@ Global
 		{7FA1C4E4-626E-476A-84A5-DEB9A7D83377}.Release|Any CPU.Build.0 = Release|x86
 		{7FA1C4E4-626E-476A-84A5-DEB9A7D83377}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{7FA1C4E4-626E-476A-84A5-DEB9A7D83377}.Release|Mixed Platforms.Build.0 = Release|x86
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9A7492CF-9D22-4196-81FE-C6837E89E12C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
