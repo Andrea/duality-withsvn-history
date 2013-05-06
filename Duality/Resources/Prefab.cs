@@ -442,6 +442,7 @@ namespace Duality.Resources
 			object changeVal = prop.GetValue(target, null);
 
 			// Clone the changelist entry value
+			changeListValueCloneProvider.ClearObjectMap();
 			changeVal = changeListValueCloneProvider.RequestObjectClone(changeVal);
 
 			this.PushChange(target, prop, changeVal);

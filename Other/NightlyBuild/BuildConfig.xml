@@ -10,6 +10,7 @@
   <PackageDir>Package</PackageDir>
   <PackageName>Duality.zip</PackageName>
   <NoDocs>false</NoDocs>
+  <PackageOnly>false</PackageOnly>
   <FileCopyBlackList>
     <string>Backup</string>
     <string>Source</string>

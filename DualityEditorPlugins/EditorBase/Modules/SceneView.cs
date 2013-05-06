@@ -52,6 +52,8 @@ namespace EditorBase
 			}
 
 			private PrefabLinkState linkState = PrefabLinkState.None;
+			private string linkLastPath = null;
+			private bool linkLastExisted = false;
 
 			protected virtual int TypeSortIndex { get { return 0; } }
 			public PrefabLinkState LinkState
@@ -62,7 +64,7 @@ namespace EditorBase
 			public NodeBase(string name) : base(name)
 			{
 			}
-			public bool UpdateLinkState()
+			public bool UpdateLinkState(bool checkFileChanged)
 			{
 				PrefabLinkState lastState = this.linkState;
 
@@ -74,14 +76,21 @@ namespace EditorBase
 				if (cmpNode != null) affectedByPrefabLink = affectedByPrefabLink && prefabLink.AffectsObject(cmpNode.Component);
 				if (objNode != null) affectedByPrefabLink = affectedByPrefabLink && prefabLink.AffectsObject(objNode.Obj);
 
+				string filePath = affectedByPrefabLink ? prefabLink.Prefab.Path : null;
+				bool fileExists = this.linkLastExisted;
+				if (checkFileChanged || this.linkLastPath != filePath)
+					fileExists = File.Exists(filePath);
+
 				// Prefab-linked entities
-				if (affectedByPrefabLink && File.Exists(prefabLink.Prefab.Path)) //prefabLink.Prefab.IsAvailable) // Not sufficient - might be loaded but with a broken path
+				if (affectedByPrefabLink && fileExists) //prefabLink.Prefab.IsAvailable) // Not sufficient - might be loaded but with a broken path
 					this.linkState = PrefabLinkState.Active;
 				else if (cmpNode == null && objNode.Obj.PrefabLink != null)
 					this.linkState = PrefabLinkState.Broken;
 				else
 					this.linkState = PrefabLinkState.None;
 
+				this.linkLastExisted = fileExists;
+				this.linkLastPath = filePath;
 				return this.linkState != lastState;
 			}
 
@@ -469,7 +478,7 @@ namespace EditorBase
 			GameObjectNode objNode = newNode as GameObjectNode;
 			if (baseNode != null)
 			{
-				baseNode.UpdateLinkState();
+				baseNode.UpdateLinkState(false);
 				if (objNode != null)
 					objNode.UpdateIcon();
 			}
@@ -768,12 +777,12 @@ namespace EditorBase
 			}
 		}
 
-		protected void UpdatePrefabLinkStatus()
+		protected void UpdatePrefabLinkStatus(bool checkFileChanged)
 		{
 			bool anyLinkStateChanged = false;
 			foreach (NodeBase node in this.objToNode.Values)
 			{
-				bool result = node.UpdateLinkState();
+				bool result = node.UpdateLinkState(checkFileChanged);
 				anyLinkStateChanged = anyLinkStateChanged || result;
 			}
 
@@ -1601,8 +1610,10 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e is PrefabAppliedEventArgs || (e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && e.HasAnyObject(Scene.Current.AllObjects)))
-				this.UpdatePrefabLinkStatus();
+			if (e is PrefabAppliedEventArgs || 
+				(e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && e.HasAnyObject(Scene.Current.AllObjects)) || 
+				(e.CompleteChange && e.HasObject(Scene.Current)))
+				this.UpdatePrefabLinkStatus(false);
 
 			if (e.HasProperty(ReflectionInfo.Property_GameObject_Name))
 			{
@@ -1615,17 +1626,17 @@ namespace EditorBase
 			if (e.Path == Scene.CurrentPath) this.UpdateSceneLabel();
 
 			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
-			this.UpdatePrefabLinkStatus();
+			this.UpdatePrefabLinkStatus(true);
 		}
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
 			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
-			this.UpdatePrefabLinkStatus();
+			this.UpdatePrefabLinkStatus(true);
 		}
 		private void EditorForm_ResourceDeleted(object sender, ResourceEventArgs e)
 		{
 			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
-			this.UpdatePrefabLinkStatus();
+			this.UpdatePrefabLinkStatus(true);
 		}
 
 		private void Scene_Leaving(object sender, EventArgs e)

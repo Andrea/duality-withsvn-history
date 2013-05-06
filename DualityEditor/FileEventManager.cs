@@ -487,6 +487,7 @@ namespace DualityEditor
 			var availContent = ContentProvider.GetAvailContent<Resource>();
 			var reloadContent = new List<IContentRef>();
 			List<string> resFiles = Resource.GetResourceFiles();
+			List<Resource> modifiedRes = new List<Resource>();
 			foreach (string file in resFiles)
 			{
 				state.StateDesc = file; yield return null;
@@ -501,18 +502,20 @@ namespace DualityEditor
 				var cr = ContentProvider.RequestContent(file);
 				state.Progress += 0.35f / resFiles.Count; yield return null;
 
-				// Perform rename and flag unsaved
+				// Perform rename and flag unsaved / modified
 				fileCounter = async_RenameContentRefs_Perform(cr.Res, renameData);
 				totalCounter += fileCounter;
 				if (fileCounter > 0)
 				{
 					if (!reload)
-						DualityEditorApp.FlagResourceUnsaved(cr.Res);
+						modifiedRes.Add(cr.Res);
 					else
 						reloadContent.Add(cr);
 				}
 				state.Progress += 0.35f / resFiles.Count; yield return null;
 			}
+			if (modifiedRes.Count > 0)
+				DualityEditorApp.NotifyObjPropChanged(null, new ObjectSelection(modifiedRes));
 
 			// Perform Resource unload where scheduled
 			state.StateDesc = "Saving Resources.."; yield return null;

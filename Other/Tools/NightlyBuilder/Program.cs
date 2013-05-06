@@ -69,15 +69,18 @@ namespace NightlyBuilder
 			Console.WriteLine();
 
 			// Do an SVN Revert of the package
-			Console.WriteLine("================================== SVN Revert =================================");
+			if (!config.PackageOnly)
 			{
-				ExecuteCommand(
-					string.Format("svn revert *"),
-					config.PackageDir);
+				Console.WriteLine("================================== SVN Revert =================================");
+				{
+					ExecuteCommand(
+						string.Format("svn revert *"),
+						config.PackageDir);
+				}
+				Console.WriteLine("===============================================================================");
+				Console.WriteLine();
+				Console.WriteLine();
 			}
-			Console.WriteLine("===============================================================================");
-			Console.WriteLine();
-			Console.WriteLine();
 
 			// Build the target Solution
 			Console.WriteLine("================================ Build Solution ===============================");
@@ -181,25 +184,28 @@ namespace NightlyBuilder
 			Console.WriteLine();
 
 			// Do an SVN Commit of the package
-			Console.WriteLine("================================== SVN Commit =================================");
+			if (!config.PackageOnly)
 			{
-				// "svn add --force * --auto-props --parents --depth infinity -q"
+				Console.WriteLine("================================== SVN Commit =================================");
+				{
+					// "svn add --force * --auto-props --parents --depth infinity -q"
 				
-				string commitMessage = string.Format("Updated Binary Package{0}{1}{0}{2}{0}{3}",
-					Environment.NewLine,
-					"--> Core Version:     " + versionCore.FileVersion,
-					"--> Editor Version:   " + versionEditor.FileVersion,
-					"--> Launcher Version: " + versionLauncher.FileVersion);
-				string commitMessageFile = Path.Combine(config.PackageDir, "CommitMsg.txt");
-				File.WriteAllText(commitMessageFile, commitMessage);
-				ExecuteCommand(
-					string.Format("svn commit -F CommitMsg.txt"),
-					config.PackageDir);
-				File.Delete(commitMessageFile);
+					string commitMessage = string.Format("Updated Binary Package{0}{1}",
+						Environment.NewLine,
+						versionCore.FileVersion,
+						versionEditor.FileVersion,
+						versionLauncher.FileVersion);
+					string commitMessageFile = Path.Combine(config.PackageDir, "CommitMsg.txt");
+					File.WriteAllText(commitMessageFile, commitMessage);
+					ExecuteCommand(
+						string.Format("svn commit -F CommitMsg.txt"),
+						config.PackageDir);
+					File.Delete(commitMessageFile);
+				}
+				Console.WriteLine("===============================================================================");
+				Console.WriteLine();
+				Console.WriteLine();
 			}
-			Console.WriteLine("===============================================================================");
-			Console.WriteLine();
-			Console.WriteLine();
 		}
 
 		public static string WildcardToRegex(string pattern)
