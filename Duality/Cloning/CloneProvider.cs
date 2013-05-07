@@ -237,6 +237,14 @@ namespace Duality.Cloning
 					for (int i = 0; i < length; ++i)
 						copy.SetValue(this.RequestObjectClone(baseArray.GetValue(i)), i);
 				}
+				else if (!elemType.IsValueType)
+				{
+					for (int i = 0; i < length; ++i)
+					{
+						object obj = baseArray.GetValue(i);
+						copy.SetValue(this.GetRegisteredObjectClone(obj) ?? obj, i);
+					}
+				}
 				else
 				{
 					baseArray.CopyTo(copy, 0);

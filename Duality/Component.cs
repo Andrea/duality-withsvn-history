@@ -421,7 +421,7 @@ namespace Duality
 		protected virtual void OnCopyTo(Component target, CloneProvider provider)
 		{
 			// Copy "pure" data
-			target.active	= this.active;
+			target.active		= this.active;
 			target.initState	= this.initState;
 
 			// If any derived Component type doesn't override OnCopyTo, use a reflection-driven default behavior.
