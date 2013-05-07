@@ -27,11 +27,11 @@ namespace EditorBase.PropertyEditors
 		}
 		public override string ReferenceName
 		{
-			get { return this.component != null ? this.component.ToString() : null; }
+			get { return this.component != null ? (this.component.GameObj != null ? this.component.GameObj.FullName : this.component.ToString()) : null; }
 		}
 		public override bool ReferenceBroken
 		{
-			get { return this.component != null && this.component.Disposed; }
+			get { return this.component != null && (this.component.Disposed || (this.component.GameObj != null && this.component.GameObj.Disposed)); }
 		}
 
 
