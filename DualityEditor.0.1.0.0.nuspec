@@ -12,7 +12,6 @@
         <language>en-IE</language>
     </metadata>
     <files>
-        <file src="DualityEditor\bin\Release\*.*" />
-        <file src="DualityEditor\bin\Release\Plugins\*.*" />
+        <file src="DualityEditor\bin\Release\*.*" />        
     </files>
 </package>
