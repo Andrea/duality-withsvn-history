@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>DualityEditor</id>
+        <version>0.1.0.0</version>
+        <title>Duality Editor</title>
+        <authors>Andrea Magnorsky</authors>
+        <owners />
+        <projectUrl>https://github.com/andrea/duality</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Contains Editor and default pluggins</description>
+        <language>en-IE</language>
+    </metadata>
+    <files>
+        <file src="DualityEditor\bin\Release\*.*" />
+        <file src="DualityEditor\bin\Release\Plugins\*.*" />
+    </files>
+</package>
