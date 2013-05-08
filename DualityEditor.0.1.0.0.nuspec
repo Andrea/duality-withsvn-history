@@ -3,7 +3,7 @@
     <metadata>
         <id>DualityEditor</id>
         <version>0.1.0.0</version>
-        <title>Duality Editor</title>
+        <title>Duality Editor Complete</title>
         <authors>Andrea Magnorsky</authors>
         <owners />
         <projectUrl>https://github.com/andrea/duality</projectUrl>
@@ -12,6 +12,7 @@
         <language>en-IE</language>
     </metadata>
     <files>
-        <file src="DualityEditor\bin\Release\*.*" />        
+        <file src="DualityEditor\bin\Release\*.dll" />
+        <file src="DualityEditor\bin\Release\*.xml" />
     </files>
 </package>
