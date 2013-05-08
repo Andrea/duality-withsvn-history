@@ -665,7 +665,21 @@ namespace DualityEditor
 				XmlDocument userDoc;
 				const string userFileCore = EditorHelper.SourceCodeProjectCorePluginFile + ".user";
 				const string userFileEditor = EditorHelper.SourceCodeProjectEditorPluginFile + ".user";
+				ZipFile gamePluginZip = null;
 
+				if (!File.Exists(userFileCore))
+				{
+					if (gamePluginZip == null)
+						gamePluginZip = ZipFile.Read(EditorRes.GeneralRes.GamePluginTemplate);
+					foreach (var e in gamePluginZip.Entries)
+					{
+						if (string.Equals(Path.GetFileName(e.FileName), Path.GetFileName(userFileCore), StringComparison.InvariantCultureIgnoreCase))
+						{
+							e.Extract(EditorHelper.SourceCodeDirectory);
+							break;
+						}
+					}
+				}
 				if (File.Exists(userFileCore))
 				{
 					userDoc = new XmlDocument();
@@ -677,6 +691,19 @@ namespace DualityEditor
 					userDoc.Save(userFileCore);
 				}
 				
+				if (!File.Exists(userFileEditor))
+				{
+					if (gamePluginZip == null)
+						gamePluginZip = ZipFile.Read(EditorRes.GeneralRes.GamePluginTemplate);
+					foreach (var e in gamePluginZip.Entries)
+					{
+						if (string.Equals(Path.GetFileName(e.FileName), Path.GetFileName(userFileEditor), StringComparison.InvariantCultureIgnoreCase))
+						{
+							e.Extract(EditorHelper.SourceCodeDirectory);
+							break;
+						}
+					}
+				}
 				if (File.Exists(userFileEditor))
 				{
 					userDoc = new XmlDocument();
@@ -686,6 +713,12 @@ namespace DualityEditor
 					foreach (XmlElement element in userDoc.GetElementsByTagName("StartWorkingDirectory").OfType<XmlElement>())
 						element.InnerText = Path.GetFullPath(".");
 					userDoc.Save(userFileEditor);
+				}
+
+				if (gamePluginZip != null)
+				{
+					gamePluginZip.Dispose();
+					gamePluginZip = null;
 				}
 			}
 
