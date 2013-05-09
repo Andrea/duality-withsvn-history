@@ -33,4 +33,10 @@
         <file src="DualityEditor\bin\Release\Windows7.DesktopIntegration.xml" target="lib\net40\Windows7.DesktopIntegration.xml" />
         <file src="DualityEditor\bin\Release\wrap_oal.dll" target="lib\net40\wrap_oal.dll" />
     </files>
+    <references>     
+        <reference file="Aga.Controls.dll" />
+        <reference file="duality.dll" />
+        <reference file="DualityEditor.exe"/>
+        <reference file="OpenTK.dll"/>
+</references>
 </package>
