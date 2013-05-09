@@ -21,8 +21,7 @@
         <file src="DualityEditor\bin\Release\DualityLauncher.exe" target="lib\net40\DualityLauncher.exe" />
         <file src="DualityEditor\bin\Release\FarseerOpenTK.dll" target="lib\net40\FarseerOpenTK.dll" />
         <file src="DualityEditor\bin\Release\FarseerOpenTK.xml" target="lib\net40\FarseerOpenTK.xml" />
-        <file src="DualityEditor\bin\Release\Ionic.Zip.dll" target="lib\net40\Ionic.Zip.dll" />
-        <file src="DualityEditor\bin\Release\OpenAL32.dll" target="lib\net40\OpenAL32.dll" />
+        <file src="DualityEditor\bin\Release\Ionic.Zip.dll" target="lib\net40\Ionic.Zip.dll" />        
         <file src="DualityEditor\bin\Release\OpenTK.dll" target="lib\net40\OpenTK.dll" />
         <file src="DualityEditor\bin\Release\OpenTK.GLControl.dll" target="lib\net40\OpenTK.GLControl.dll" />
         <file src="DualityEditor\bin\Release\OpenTK.GLControl.xml" target="lib\net40\OpenTK.GLControl.xml" />
