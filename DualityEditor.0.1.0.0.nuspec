@@ -26,5 +26,6 @@
         <file src="DualityEditor\bin\Release\OpenTK.xml" target="lib\net40\OpenTK.xml" />        
         <file src="DualityEditor\bin\Release\WeifenLuo.WinFormsUI.Docking.dll" target="lib\net40\WeifenLuo.WinFormsUI.Docking.dll" />        
         <file src="DualityEditor\bin\Release\WeifenLuo.WinFormsUI.Docking.pdb" target="lib\net40\WeifenLuo.WinFormsUI.Docking.pdb" />  
+        <file src="DualityEditor\bin\Release\Plugins\EditorBase.editor.dll" target="lib\net40\EditorBase.editor.dll" />        
     </files>
 </package>
