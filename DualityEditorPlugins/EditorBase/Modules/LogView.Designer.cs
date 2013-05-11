@@ -327,6 +327,5 @@
 		private System.Windows.Forms.ToolStripButton buttonPauseOnError;
 		private System.Windows.Forms.TextBox textBoxEntry;
 		private System.Windows.Forms.SplitContainer splitContainer;
-		private System.Windows.Forms.Timer timerLogSchedule;
 	}
 }

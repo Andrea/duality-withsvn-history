@@ -317,21 +317,7 @@ namespace Duality.Serialization
 					this.SerializationLog.PushIndent();
 					foreach (var pair in customIO.Data)
 					{
-						FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == pair.Key);
-						if (field == null)
-						{
-							this.SerializationLog.WriteWarning("No match found: {0}", pair.Key);
-						}
-						else if (field.FieldType.IsInstanceOfType(pair.Value))
-						{
-							this.SerializationLog.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
-								Log.Type(field.FieldType), 
-								Log.Type(pair.Value.GetType()));
-						}
-						else
-						{
-							field.SetValue(obj, pair.Value);
-						}
+						this.AssignValueToField(objSerializeType, obj, pair.Key, pair.Value);
 					}
 					this.SerializationLog.PopIndent();
 				}

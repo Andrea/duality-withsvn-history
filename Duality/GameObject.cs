@@ -662,9 +662,9 @@ namespace Duality
 
 		/// <summary>
 		/// Disposes this GameObject as well as all of its child GameObjects and <see cref="Component">Components</see>.
-		/// You usually don't need this - use <see cref="DisposeLater"/> instead.
+		/// You usually don't need this - use <see cref="ExtMethodsIManageableObject.DisposeLater"/> instead.
 		/// </summary>
-		/// <seealso cref="DisposeLater"/>
+		/// <seealso cref="ExtMethodsIManageableObject.DisposeLater"/>
 		public void Dispose()
 		{
 			if (this.initState == InitState.Initialized)
