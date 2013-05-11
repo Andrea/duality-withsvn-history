@@ -364,9 +364,9 @@ namespace Duality
 
 
 		/// <summary>
-		/// Disposes this Component. You usually don't need this - use <see cref="DisposeLater"/> instead.
+		/// Disposes this Component. You usually don't need this - use <see cref="ExtMethodsIManageableObject.DisposeLater"/> instead.
 		/// </summary>
-		/// <seealso cref="DisposeLater"/>
+		/// <seealso cref="ExtMethodsIManageableObject.DisposeLater"/>
 		public void Dispose()
 		{
 			if (this.initState == InitState.Initialized)

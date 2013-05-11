@@ -106,7 +106,7 @@ namespace Duality.Serialization
 				objSurrogate.RealObject = obj;
 				objAsCustom = objSurrogate.SurrogateObject;
 
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.HeaderElement);
 				try { objSurrogate.WriteConstructorData(customIO); }
 				catch (Exception e) { this.LogCustomSerializationError(id, objSerializeType.Type, e); }
 				customIO.Serialize(this);
@@ -114,7 +114,7 @@ namespace Duality.Serialization
 
 			if (objAsCustom != null)
 			{
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.BodyElement);
 				try { objAsCustom.WriteData(customIO); }
 				catch (Exception e) { this.LogCustomSerializationError(id, objSerializeType.Type, e); }
 				customIO.Serialize(this);
@@ -267,7 +267,7 @@ namespace Duality.Serialization
 					// Set fake object reference for surrogate constructor: No self-references allowed here.
 					this.idManager.Inject(null, objId);
 
-					CustomSerialIO customIO = new CustomSerialIO();
+					CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.HeaderElement);
 					customIO.Deserialize(this);
 					try { obj = objSurrogate.ConstructObject(customIO, objType); }
 					catch (Exception e) { this.LogCustomDeserializationError(objId, objType, e); }
@@ -282,7 +282,7 @@ namespace Duality.Serialization
 			// Read custom object data
 			if (custom)
 			{
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.BodyElement);
 				customIO.Deserialize(this);
 
 				ISerializable objAsCustom;

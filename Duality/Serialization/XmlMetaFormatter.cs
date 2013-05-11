@@ -100,7 +100,7 @@ namespace Duality.Serialization
 
 			if (node.SurrogateSerialization)
 			{
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.HeaderElement);
 				DummyNode surrogateConstructor = node.SubNodes.FirstOrDefault() as DummyNode;
 				if (surrogateConstructor != null)
 				{
@@ -120,7 +120,7 @@ namespace Duality.Serialization
 
 			if (node.CustomSerialization || node.SurrogateSerialization)
 			{
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.BodyElement);
 				var enumerator = node.SubNodes.GetEnumerator();
 				while (enumerator.MoveNext())
 				{
@@ -306,7 +306,7 @@ namespace Duality.Serialization
 				// Set fake object reference for surrogate constructor: No self-references allowed here.
 				this.idManager.Inject(null, objId);
 
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.HeaderElement);
 				customIO.Deserialize(this);
 				if (customIO.Data.Any())
 				{
@@ -328,7 +328,7 @@ namespace Duality.Serialization
 			// Read custom object data
 			if (custom)
 			{
-				CustomSerialIO customIO = new CustomSerialIO();
+				CustomSerialIO customIO = new CustomSerialIO(CustomSerialIO.BodyElement);
 				customIO.Deserialize(this);
 				foreach (var pair in customIO.Data)
 				{

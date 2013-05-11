@@ -15,13 +15,23 @@ namespace Duality.Serialization
 		/// </summary>
 		protected class CustomSerialIO : CustomSerialIOBase<XmlFormatterBase>
 		{
+			public const string HeaderElement = "header";
+			public const string BodyElement = "body";
+
+			private string elementName = "customSerialIO";
+
+			public CustomSerialIO(string elementName)
+			{
+				this.elementName = elementName;
+			}
+
 			/// <summary>
 			/// Writes the contained data to the specified serializer.
 			/// </summary>
 			/// <param name="formatter">The serializer to write data to.</param>
 			public override void Serialize(XmlFormatterBase formatter)
 			{
-				formatter.writer.WriteStartElement("customSerialIO");
+				formatter.writer.WriteStartElement(this.elementName);
 				try
 				{
 					foreach (var pair in this.data)

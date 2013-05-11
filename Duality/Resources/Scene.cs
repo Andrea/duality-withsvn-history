@@ -387,7 +387,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Cleanes up disposed Scene objects.
 		/// </summary>
-		internal void RunCleanup()
+		new internal void RunCleanup()
 		{
 			this.objectManager.Flush();
 			this.cameras.FlushDisposedObj();
