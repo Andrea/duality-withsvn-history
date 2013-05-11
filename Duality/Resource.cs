@@ -292,14 +292,6 @@ namespace Duality
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-		/// <summary>
-		/// Schedules this Resource for disposal. It is guaranteed to be executed until the next update cycle starts.
-		/// </summary>
-		/// <seealso cref="Dispose()"/>
-		public void DisposeLater()
-		{
-			DualityApp.DisposeLater(this);
-		}
 		private void Dispose(bool manually)
 		{
 			if (this.initState == InitState.Initialized)

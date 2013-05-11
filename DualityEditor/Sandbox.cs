@@ -24,6 +24,7 @@ namespace DualityEditor
 		private	static int			singleSteps	= 0;
 		private	static int			sceneFreeze	= 0;
 		private	static SandboxState	state		= SandboxState.Inactive;
+		private static bool			askUnsaved	= true;
 
 		public	static	event	EventHandler	Entering		= null;
 		public	static	event	EventHandler	Leave			= null;
@@ -64,8 +65,9 @@ namespace DualityEditor
 			if (state == SandboxState.Playing) return true;
 
 			// If the current Scene is unsaved when entering sandbox mode, ask whether this should be done before
-			if (state == SandboxState.Inactive && Scene.Current.IsRuntimeResource && !Scene.Current.IsEmpty)
+			if (askUnsaved && state == SandboxState.Inactive && Scene.Current.IsRuntimeResource && !Scene.Current.IsEmpty)
 			{
+				askUnsaved = false;
 				DialogResult result = MessageBox.Show(DualityEditorApp.MainForm,
 					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Desc,
 					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Caption,
@@ -211,7 +213,11 @@ namespace DualityEditor
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
 			if (stateChange) return;
-			if (state == SandboxState.Inactive) return;
+			if (state == SandboxState.Inactive)
+			{
+				askUnsaved = true;
+				return;
+			}
 
 			// Force later Scene reload by disposing it
 			string curPath = null;

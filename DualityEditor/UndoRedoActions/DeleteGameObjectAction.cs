@@ -40,11 +40,10 @@ namespace DualityEditor.UndoRedoActions
 				}
 			}
 
+			Scene.Current.UnregisterObj(this.targetObj);
 			foreach (GameObject obj in this.targetObj)
-			{
 				obj.Dispose();
-				Scene.Current.UnregisterObj(obj); 
-			}
+
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override void Undo()

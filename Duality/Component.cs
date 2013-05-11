@@ -380,14 +380,6 @@ namespace Duality
 				this.initState = InitState.Disposed;
 			}
 		}
-		/// <summary>
-		/// Schedules this Component for disposal. It is guaranteed to be executed until the next update cycle starts.
-		/// </summary>
-		/// <seealso cref="Dispose"/>
-		public void DisposeLater()
-		{
-			DualityApp.DisposeLater(this);
-		}
 		
 		/// <summary>
 		/// Creates a deep copy of this Component.

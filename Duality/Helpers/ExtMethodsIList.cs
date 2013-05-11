@@ -11,6 +11,39 @@ namespace Duality
 	public static class ExtMethodsIList
 	{
 		/// <summary>
+		/// Clears a collection of objects from all disposed and null references. 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		public static void FlushDisposedObj<T>(this IList<T> list) where T : IManageableObject
+		{
+			for (int i = list.Count - 1; i >= 0; i--)
+			{
+				if (list[i] == null || list[i].Disposed)
+				{
+					list.RemoveAt(i);
+				}
+			}
+		}
+		/// <summary>
+		/// Clears a collection of objects from all disposed and null references. 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list"></param>
+		public static void FlushDisposedObj<T>(this IList<T> list, out List<T> removedObj) where T : IManageableObject
+		{
+			removedObj = new List<T>();
+			for (int i = list.Count - 1; i >= 0; i--)
+			{
+				if (list[i] == null || list[i].Disposed)
+				{
+					if (list[i] != null) removedObj.Add(list[i]);
+					list.RemoveAt(i);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Performs a stable sort.
 		/// </summary>
 		/// <typeparam name="T">The lists object type.</typeparam>

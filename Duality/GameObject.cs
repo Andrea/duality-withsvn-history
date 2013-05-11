@@ -682,14 +682,6 @@ namespace Duality
 			}
 		}
 		/// <summary>
-		/// Schedules this GameObject for disposal. It is guaranteed to be executed until the next update cycle starts.
-		/// </summary>
-		/// <seealso cref="Dispose"/>
-		public void DisposeLater()
-		{
-			DualityApp.DisposeLater(this);
-		}
-		/// <summary>
 		/// Creates a deep copy of this GameObject.
 		/// </summary>
 		/// <returns>A reference to a newly created deep copy of this GameObject.</returns>

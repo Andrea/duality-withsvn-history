@@ -940,13 +940,17 @@ namespace EditorBase
 								break;
 							}
 						}
-
+						
+						DragDropEffects effect;
 						if (targetInSource)
-							e.Effect = DragDropEffects.None;
-						else if ((e.KeyState & 1) != 0)
-							e.Effect = DragDropEffects.Move & e.AllowedEffect;
+							effect = DragDropEffects.None;
+						else if ((e.KeyState & 2) != 0)		// Right mouse button
+							effect = DragDropEffects.Move | DragDropEffects.Copy;
+						else if ((e.KeyState & 32) != 0)	// Alt key
+							effect = DragDropEffects.Copy;
 						else
-							e.Effect = (DragDropEffects.Move | DragDropEffects.Copy) & e.AllowedEffect;
+							effect = DragDropEffects.Move;
+						e.Effect = effect & e.AllowedEffect;
 					}
 				}
 				// Dragging a single GameObject to Prefab
@@ -980,6 +984,9 @@ namespace EditorBase
 		{
 			this.folderView.BeginUpdate();
 
+			bool effectMove = (e.Effect & DragDropEffects.Move) != DragDropEffects.None;
+			bool effectCopy = (e.Effect & DragDropEffects.Copy) != DragDropEffects.None;
+
 			NodeBase baseTarget = this.DragDropGetTargetBaseNode();
 			ResourceNode targetResNode = baseTarget as ResourceNode;
 			DirectoryNode targetDirNode = baseTarget as DirectoryNode;
@@ -994,9 +1001,11 @@ namespace EditorBase
 					this.tempFileDropList = data.GetFileDropList();
 
 					// Display context menu if both moving and copying are availabled
-					if (e.Effect.HasFlag(DragDropEffects.Move) && e.Effect.HasFlag(DragDropEffects.Copy))
+					if (effectMove && effectCopy)
 						this.contextMenuDragMoveCopy.Show(this, this.PointToClient(new Point(e.X, e.Y)));
-					else
+					else if (effectCopy)
+						this.copyHereToolStripMenuItem_Click(this, null);
+					else if (effectMove)
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
 				// Dropping GameObject to Prefab
@@ -1023,7 +1032,7 @@ namespace EditorBase
 				// See if we can retrieve Resources from data
 				else if (
 					(baseTarget == null || !baseTarget.ReadOnly) &&
-					(e.Effect.HasFlag(DragDropEffects.Copy) || e.Effect.HasFlag(DragDropEffects.Move)) &&
+					(effectCopy || effectMove) &&
 					(convOp.HasFlag(ConvertOperation.Operation.CreateRes) || convOp.HasFlag(ConvertOperation.Operation.CreateObj)))
 				{
 					var resQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<IContentRef>();

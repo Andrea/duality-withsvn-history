@@ -53,8 +53,13 @@ namespace DualityEditor.UndoRedoActions
 
 			for (int i = 0; i < this.targetObj.Length; i++)
 			{
+				GameObject original = this.targetObj[i];
 				GameObject clone = this.resultObj[i];
 				clone.Parent = this.targetParentObj[i];
+
+				// Make sure the absolute transform is copied
+				if (clone.Transform != null && original.Transform != null)
+					clone.Transform.SetTransform(original.Transform);
 
 				// Prevent physics from getting crazy.
 				if (clone.Transform != null && clone.RigidBody != null)

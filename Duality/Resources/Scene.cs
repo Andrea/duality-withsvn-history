@@ -8,7 +8,6 @@ using FarseerPhysics.Dynamics;
 
 using Duality.EditorHints;
 using Duality.Components;
-using Duality.ObjectManagers;
 using Duality.Serialization;
 
 namespace Duality.Resources
@@ -189,9 +188,9 @@ namespace Duality.Resources
 
 		private	Vector2			globalGravity	= Vector2.UnitY * 33.0f;
 		private	GameObject[]	serializeObj	= null;
-		[NonSerialized] private	GameObjectManager		objectManager	= new GameObjectManager();
-		[NonSerialized] private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
-		[NonSerialized] private	RendererManager			rendererManager	= new RendererManager();
+		[NonSerialized] private	GameObjectManager	objectManager	= new GameObjectManager();
+		[NonSerialized] private	List<Camera>		cameras			= new List<Camera>();
+		[NonSerialized] private	List<Component>		renderers		= new List<Component>();
 
 
 		/// <summary>
@@ -232,7 +231,7 @@ namespace Duality.Resources
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<Camera> Cameras
 		{
-			get { return this.cameraManager.AllObjects; }
+			get { return this.cameras.Where(c => !c.Disposed); }
 		}
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="Renderer"/> objects.
@@ -240,7 +239,7 @@ namespace Duality.Resources
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ICmpRenderer> Renderers
 		{
-			get { return this.rendererManager.AllObjects.OfType<ICmpRenderer>(); }
+			get { return this.renderers.Where(c => !c.Disposed).OfType<ICmpRenderer>(); }
 		}
 		/// <summary>
 		/// [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
@@ -295,9 +294,9 @@ namespace Duality.Resources
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't render non-current Scene!");
 
-			Camera[] cams = this.cameraManager.ActiveObjects.ToArray();
+			Camera[] activeCams = this.cameras.Where(c => c.Active).ToArray();
 			// Maybe sort / process list first later on.
-			foreach (Camera c in cams)
+			foreach (Camera c in activeCams)
 				c.Render();
 		}
 		/// <summary>
@@ -361,9 +360,12 @@ namespace Duality.Resources
 				physicsLowFps = !(Time.LastDelta < Time.MsPFMult * 0.9f || physTime < Time.LastDelta * 0.6f);
 
 			Performance.timeUpdateScene.BeginMeasure();
-			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
-			foreach (GameObject obj in activeObj)
-				obj.Update();
+			{
+				// Update all GameObjects
+				GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
+				foreach (GameObject obj in activeObj)
+					obj.Update();
+			}
 			Performance.timeUpdateScene.EndMeasure();
 		}
 		/// <summary>
@@ -374,10 +376,22 @@ namespace Duality.Resources
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
 			Performance.timeUpdateScene.BeginMeasure();
-			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
-			foreach (GameObject obj in activeObj)
-				obj.EditorUpdate();
+			{
+				// Update all GameObjects
+				GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
+				foreach (GameObject obj in activeObj)
+					obj.EditorUpdate();
+			}
 			Performance.timeUpdateScene.EndMeasure();
+		}
+		/// <summary>
+		/// Cleanes up disposed Scene objects.
+		/// </summary>
+		internal void RunCleanup()
+		{
+			this.objectManager.Flush();
+			this.cameras.FlushDisposedObj();
+			this.renderers.FlushDisposedObj();
 		}
 
 		/// <summary>
@@ -469,7 +483,7 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public IEnumerable<ICmpRenderer> QueryVisibleRenderers(IDrawDevice device)
 		{
-			return this.rendererManager.QueryVisible(device);
+			return this.renderers.Where(r => r.Active && (r as ICmpRenderer).IsVisible(device)).OfType<ICmpRenderer>();
 		}
 
 		/// <summary>
@@ -567,28 +581,28 @@ namespace Duality.Resources
 		private void AddToManagers(GameObject obj)
 		{
 			Camera cam = obj.Camera;
-			if (cam != null) this.cameraManager.RegisterObj(cam);
+			if (cam != null) this.cameras.Add(cam);
 
 			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
-				this.rendererManager.RegisterObj(r as Component);
+				this.renderers.Add(r as Component);
 		}
 		private void AddToManagers(Component cmp)
 		{
-			if (cmp is Camera)			this.cameraManager.RegisterObj(cmp as Camera);
-			if (cmp is ICmpRenderer)	this.rendererManager.RegisterObj(cmp);
+			if (cmp is Camera)			this.cameras.Add(cmp as Camera);
+			if (cmp is ICmpRenderer)	this.renderers.Add(cmp);
 		}
 		private void RemoveFromManagers(GameObject obj)
 		{
 			Camera cam = obj.Camera;
-			if (cam != null) this.cameraManager.UnregisterObj(cam);
+			if (cam != null) this.cameras.Remove(cam);
 
 			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
-				this.rendererManager.UnregisterObj(r as Component);
+				this.renderers.Remove(r as Component);
 		}
 		private void RemoveFromManagers(Component cmp)
 		{
-			if (cmp is Camera)			this.cameraManager.UnregisterObj(cmp as Camera);
-			if (cmp is ICmpRenderer)	this.rendererManager.UnregisterObj(cmp);
+			if (cmp is Camera)			this.cameras.Remove(cmp as Camera);
+			if (cmp is ICmpRenderer)	this.renderers.Remove(cmp);
 		}
 		private void RegisterManagerEvents()
 		{
