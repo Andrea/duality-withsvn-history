@@ -573,6 +573,15 @@ namespace Duality.Components
 		/// <summary>
 		/// Updates the Transforms data all at once.
 		/// </summary>
+		/// <param name="other"></param>
+		public void SetTransform(Transform other)
+		{
+			if (other == this) return;
+			this.SetTransform(other.Pos, other.Scale, other.Angle);
+		}
+		/// <summary>
+		/// Updates the Transforms data all at once.
+		/// </summary>
 		/// <param name="pos"></param>
 		/// <param name="vel"></param>
 		/// <param name="scale"></param>
@@ -586,6 +595,15 @@ namespace Duality.Components
 
 			this.changes |= DirtyFlags.All;
 			this.UpdateAbs();
+		}
+		/// <summary>
+		/// Updates the Transforms data all at once.
+		/// </summary>
+		/// <param name="other"></param>
+		public void SetRelativeTransform(Transform other)
+		{
+			if (other == this) return;
+			this.SetRelativeTransform(other.RelativePos, other.RelativeScale, other.RelativeAngle);
 		}
 		
 		/// <summary>

@@ -254,19 +254,18 @@ namespace Duality
 		/// <param name="collection"></param>
 		/// <param name="rnd">The random number generator to use. Defaults to <see cref="MathF.Rnd"/>, if null.</param>
 		/// <returns></returns>
-		public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, Random rnd = null)
+		public static IEnumerable<T> Shuffle<T>(this IList<T> collection, Random rnd = null)
 		{
 			if (!collection.Any()) yield break;
 			if (rnd == null) rnd = MathF.Rnd;
 
-			T[] colArray = collection.ToArray();
-			List<int> indices = Enumerable.Range(0, colArray.Length).ToList();
+			List<int> indices = Enumerable.Range(0, collection.Count).ToList();
 			while (indices.Count > 0)
 			{
 				int temp = rnd.Next(indices.Count);
 				int index = indices[temp];
 				indices.RemoveAt(temp);
-				yield return colArray[index];
+				yield return collection[index];
 			}
 		}
 

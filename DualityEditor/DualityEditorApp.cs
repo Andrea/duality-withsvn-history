@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 using Duality;
 using Duality.Serialization;
 using Duality.Resources;
-using Duality.ObjectManagers;
 
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
@@ -1141,7 +1140,7 @@ namespace DualityEditor
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
-			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
+			if (!Scene.Current.IsEmpty)
 			{
 				if (selectionTempScene == null)
 					selectionTempScene = new Dictionary<Guid,Type>();

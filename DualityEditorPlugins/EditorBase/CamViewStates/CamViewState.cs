@@ -138,6 +138,7 @@ namespace EditorBase.CamViewStates
 		private Camera.Pass		camPassEdScreen		= null;
 		private	bool			engineUserInput		= false;
 		private	bool			actionAllowed		= true;
+		private	bool			actionIsClone		= false;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
 		private Vector3			actionLastLocSpace	= Vector3.Zero;
@@ -915,6 +916,11 @@ namespace EditorBase.CamViewStates
 			this.OnEndAction(this.action);
 			this.action = ObjectAction.None;
 
+			if (this.actionIsClone)
+			{
+				this.actionIsClone = false;
+				UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
+			}
 			UndoRedoManager.Finish();
 		}
 		protected void UpdateAction()
@@ -1248,6 +1254,8 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
+			bool alt = (Control.ModifierKeys & Keys.Alt) != Keys.None;
+
 			this.drawCamGizmoState = CameraAction.None;
 			this.drawSelGizmoState = ObjectAction.None;
 
@@ -1283,6 +1291,12 @@ namespace EditorBase.CamViewStates
 							// To interact with an object that isn't selected yet: Select it.
 							if (!this.allObjSel.Contains(this.mouseoverObject))
 								this.SelectObjects(new [] { this.mouseoverObject });
+						}
+						if (alt)
+						{
+							UndoRedoManager.BeginMacro();
+							this.actionIsClone = true;
+							this.SelectObjects(this.CloneObjects(this.actionObjSel));
 						}
 						this.BeginAction(this.mouseoverAction);
 					}

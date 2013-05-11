@@ -895,9 +895,14 @@ namespace EditorBase
 				NodeBase dropParent = this.DragDropGetTargetNode();
 				if (data.ContainsGameObjectRefs())
 				{
-					DragDropEffects effect = (e.KeyState & 1) != 0 ?
-						e.Effect = DragDropEffects.Move & e.AllowedEffect :
-						e.Effect = (DragDropEffects.Move | DragDropEffects.Copy) & e.AllowedEffect;
+					DragDropEffects effect;
+					if ((e.KeyState & 2) != 0)			// Right mouse button
+						effect = DragDropEffects.Move | DragDropEffects.Copy;
+					else if ((e.KeyState & 32) != 0)	// Alt key
+						effect = DragDropEffects.Copy;
+					else
+						effect = DragDropEffects.Move;
+					effect &= e.AllowedEffect;
 
 					if (dropParent == null)
 						e.Effect = effect;
@@ -924,9 +929,14 @@ namespace EditorBase
 				}
 				else if (data.ContainsComponentRefs())
 				{
-					DragDropEffects effect = (e.KeyState & 1) != 0 ?
-						e.Effect = DragDropEffects.Move & e.AllowedEffect :
-						e.Effect = (DragDropEffects.Move | DragDropEffects.Copy) & e.AllowedEffect;
+					DragDropEffects effect;
+					if ((e.KeyState & 2) != 0)			// Right mouse button
+						effect = DragDropEffects.Move | DragDropEffects.Copy;
+					else if ((e.KeyState & 32) != 0)	// Alt key
+						effect = DragDropEffects.Copy;
+					else
+						effect = DragDropEffects.Move;
+					effect &= e.AllowedEffect;
 
 					if (dropParent is GameObjectNode)
 					{
@@ -961,6 +971,8 @@ namespace EditorBase
 		{
 			this.objectView.BeginUpdate();
 
+			bool effectMove = (e.Effect & DragDropEffects.Move) != DragDropEffects.None;
+			bool effectCopy = (e.Effect & DragDropEffects.Copy) != DragDropEffects.None;
 			DataObject data = e.Data as DataObject;
 			if (data != null)
 			{
@@ -971,9 +983,11 @@ namespace EditorBase
 					this.tempDropData = data.GetGameObjectRefs();
 
 					// Display context menu if both moving and copying are availabled
-					if ((e.Effect & DragDropEffects.Move) != DragDropEffects.None && (e.Effect & DragDropEffects.Copy) != DragDropEffects.None)
+					if (effectMove && effectCopy)
 						this.contextMenuDragMoveCopy.Show(this, this.PointToClient(new Point(e.X, e.Y)));
-					else
+					else if (effectCopy)
+						this.copyHereToolStripMenuItem_Click(this, null);
+					else if (effectMove)
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
 				else if (data.ContainsComponentRefs())
@@ -981,9 +995,11 @@ namespace EditorBase
 					this.tempDropData = data.GetComponentRefs();
 
 					// Display context menu if both moving and copying are availabled
-					if ((e.Effect & DragDropEffects.Move) != DragDropEffects.None && (e.Effect & DragDropEffects.Copy) != DragDropEffects.None)
+					if (effectMove && effectCopy)
 						this.contextMenuDragMoveCopy.Show(this, this.PointToClient(new Point(e.X, e.Y)));
-					else
+					else if (effectCopy)
+						this.copyHereToolStripMenuItem_Click(this, null);
+					else if (effectMove)
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
 				else if (this.tempDropTarget != null && convertOp.CanPerform<Component>())

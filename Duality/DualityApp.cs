@@ -10,7 +10,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Audio.OpenAL;
 
-using Duality.ObjectManagers;
 using Duality.Resources;
 using Duality.Serialization;
 
@@ -475,17 +474,14 @@ namespace Duality
 		{
 			foreach (object o in disposeSchedule)
 			{
-				GameObject g = o as GameObject;
-				if (g != null) { g.Dispose(); continue; }
-				Component c = o as Component;
-				if (c != null) { c.Dispose(); continue; }
-				Resource r = o as Resource;
-				if (r != null) { r.Dispose(); continue; }
+				IManageableObject m = o as IManageableObject;
+				if (m != null) { m.Dispose(); continue; }
 				IDisposable d = o as IDisposable;
 				if (d != null) { d.Dispose(); continue; }
 			}
 			disposeSchedule.Clear();
 			Resource.RunCleanup();
+			Scene.Current.RunCleanup();
 		}
 
 		internal static void EditorUpdate(IEnumerable<GameObject> updateObjects, bool freezeScene, bool forceFixedStep)

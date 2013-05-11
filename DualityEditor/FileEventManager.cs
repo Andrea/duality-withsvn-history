@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 
 using Duality;
 using Duality.Resources;
-using Duality.ObjectManagers;
 
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
