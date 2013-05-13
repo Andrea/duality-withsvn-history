@@ -160,6 +160,7 @@
 			// 
 			// buttonEditor
 			// 
+			this.buttonEditor.Checked = true;
 			this.buttonEditor.CheckOnClick = true;
 			this.buttonEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonEditor.Image = global::EditorBase.Properties.Resources.log_editor;

@@ -100,6 +100,13 @@ namespace EditorBase
 				this.checkAutoClear.Checked = tryParseBool;
 			if (bool.TryParse(node.GetAttribute("pauseOnError"), out tryParseBool))
 				this.buttonPauseOnError.Checked = tryParseBool;
+
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceCore, this.buttonCore.Checked);
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceEditor, this.buttonEditor.Checked);
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceGame, this.buttonGame.Checked);
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeMessage, this.buttonMessages.Checked);
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeWarning, this.buttonWarnings.Checked);
+			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeError, this.buttonErrors.Checked);
 		}
 
 		private void MarkAsRead()
