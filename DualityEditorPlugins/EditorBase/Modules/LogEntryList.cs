@@ -126,6 +126,7 @@ namespace EditorBase
 		private	ContextMenuStrip	entryMenu			= null;
 		private Timer				timerLogSchedule	= null;
 		private	List<DataLogOutput.LogEntry> logSchedule = new List<DataLogOutput.LogEntry>();
+		private System.ComponentModel.IContainer components = null;
 
 
 		public event EventHandler SelectionChanged = null;
@@ -208,6 +209,8 @@ namespace EditorBase
 
 		public LogEntryList()
 		{
+			this.components = new System.ComponentModel.Container();
+
 			this.AutoScroll = true;
 
 			this.SetStyle(ControlStyles.UserPaint, true);
@@ -219,15 +222,17 @@ namespace EditorBase
 			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyItem, null, this.entryMenu_CopyItem_Click);
 			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyAllItems, null, this.entryMenu_CopyAllItems_Click);
 
-			this.timerLogSchedule = new Timer();
+			this.timerLogSchedule = new Timer(this.components);
 			this.timerLogSchedule.Interval = 50;
 			this.timerLogSchedule.Tick += new EventHandler(timerLogSchedule_Tick);
 		}
 		protected override void Dispose(bool disposing)
 		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
 			base.Dispose(disposing);
-			if (this.timerLogSchedule != null)
-				this.timerLogSchedule.Dispose();
 		}
 
 		public void Clear()
@@ -339,10 +344,10 @@ namespace EditorBase
 			return null;
 		}
 		
-		private void ProcessIncomingEntry(DataLogOutput.LogEntry entry)
+		private void ProcessIncomingEntries(IEnumerable<DataLogOutput.LogEntry> entries)
 		{
 			bool wasAtEnd = this.IsScrolledToEnd;
-			this.AddEntry(entry);
+			this.AddEntry(entries);
 			if (wasAtEnd) this.ScrollToEnd();
 		}
 		private void UpdateScrolledToEnd()
@@ -610,18 +615,19 @@ namespace EditorBase
 		
 		private void timerLogSchedule_Tick(object sender, EventArgs e)
 		{
-			foreach (DataLogOutput.LogEntry entry in this.logSchedule)
-				this.ProcessIncomingEntry(entry);
+			this.ProcessIncomingEntries(this.logSchedule);
 			this.logSchedule.Clear();
 			this.timerLogSchedule.Enabled = false;
 		}
 		private void boundOutput_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			// Don't use Invoke or InvokeEx. They will block while the BuildManager is active (why?)
-			// and thus lead to a deadlock when something is logged while it is.
 			this.logSchedule.Add(e.Entry);
 			if (!this.timerLogSchedule.Enabled)
-				this.timerLogSchedule.Enabled = true;
+			{
+				// Don't use a synchronous Invoke. It will block while the BuildManager is active (why?)
+				// and thus lead to a deadlock when something is logged while it is.
+				this.InvokeEx(() => this.timerLogSchedule.Enabled = true, false);
+			}
 		}
 		private void entryMenu_CopyAllItems_Click(object sender, EventArgs e)
 		{

@@ -38,18 +38,29 @@ namespace DualityEditor
 			}
 			yield break;
 		}
-
+		
 		public static U InvokeEx<T,U>(this T control, Func<T, U> func) where T : Control
 		{
 			return control.InvokeRequired ? (U)control.Invoke(func, control) : func(control);
 		}
-		public static void InvokeEx<T>(this T control, Action<T> func) where T : Control
+		public static void InvokeEx<T>(this T control, Action<T> func, bool waitForResult = true) where T : Control
 		{
-			control.InvokeEx(c => { func(c); return c; });
+			if (waitForResult)
+			{
+				control.InvokeEx(c => { func(c); return c; });
+			}
+			else
+			{
+				// Perform an asynchronous invoke, if necessary
+				if (control.InvokeRequired)
+					control.BeginInvoke(func, control);
+				else
+					func(control);
+			}
 		}
-		public static void InvokeEx<T>(this T control, Action action) where T : Control
+		public static void InvokeEx<T>(this T control, Action action, bool waitForResult = true) where T : Control
 		{
-			control.InvokeEx(c => action());
+			control.InvokeEx(c => action(), waitForResult);
 		}
 	}
 	public static class ExtMethodsDockState
