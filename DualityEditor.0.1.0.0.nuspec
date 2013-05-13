@@ -13,6 +13,7 @@
     </metadata>    
     <files>
         <file src="DualityEditor\bin\Release\Aga.Controls.dll" target="lib\net40\Aga.Controls.dll" />        
+        <file src="DualityEditor\bin\Release\CustomPropertyGrid.dll" target="lib\net40\CustomPropertyGrid.dll" />        
         <file src="DualityEditor\bin\Release\Duality.dll" target="lib\net40\Duality.dll" />
         <file src="DualityEditor\bin\Release\Duality.xml" target="lib\net40\Duality.xml" />
         <file src="DualityEditor\bin\Release\DualityEditor.exe" target="lib\net40\DualityEditor.exe" />
