@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
@@ -348,6 +349,15 @@ namespace EditorBase
 			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
 
+		public ReadOnlyCollection<KeyValuePair<string, NodeBase>> PathIdToNode
+		{
+			get
+			{
+				return new ReadOnlyCollection<KeyValuePair<string, NodeBase>>(
+					pathIdToNode.Select(x => new KeyValuePair<string, NodeBase>(x.Key, x.Value)).ToList());
+			}
+		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
@@ -478,7 +488,7 @@ namespace EditorBase
 		protected void UnregisterNodeTree(Node node)
 		{
 			this.UnregisterNode(node);
-			foreach (Node c in node.Nodes) this.RegisterNodeTree(c);
+			foreach (Node c in node.Nodes) this.UnregisterNodeTree(c);
 		}
 		protected void RegisterNode(Node node)
 		{
