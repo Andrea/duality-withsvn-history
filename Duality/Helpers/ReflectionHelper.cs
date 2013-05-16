@@ -17,10 +17,11 @@ namespace Duality
 	/// </summary>
 	public static class ReflectionHelper
 	{
-		private	static	Dictionary<Type,SerializeType>	serializeTypeCache	= new Dictionary<Type,SerializeType>();
-		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
-		private	static	Dictionary<string,MemberInfo>	memberResolveCache	= new Dictionary<string,MemberInfo>();
-		private	static	Dictionary<Type,bool>			deepByValTypeCache	= new Dictionary<Type,bool>();
+		private	static	Dictionary<Type,SerializeType>	serializeTypeCache		= new Dictionary<Type,SerializeType>();
+		private	static	Dictionary<string,Type>			typeResolveCache		= new Dictionary<string,Type>();
+		private	static	Dictionary<string,MemberInfo>	memberResolveCache		= new Dictionary<string,MemberInfo>();
+		private	static	Dictionary<Type,bool>			deepByValTypeCache		= new Dictionary<Type,bool>();
+		private	static	List<SerializeErrorHandler>		serializeHandlerCache	= new List<SerializeErrorHandler>();
 
 		/// <summary>
 		/// Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
@@ -367,6 +368,7 @@ namespace Duality
 			typeResolveCache.Clear();
 			memberResolveCache.Clear();
 			deepByValTypeCache.Clear();
+			serializeHandlerCache.Clear();
 		}
 		/// <summary>
 		/// Resolves a Type based on its <see cref="GetTypeId">type id</see>.
@@ -473,6 +475,43 @@ namespace Duality
 
 			// Should never happen in theory
 			return DataType.Unknown;
+		}
+		/// <summary>
+		/// Attempts to handle a serialization error dynamically by invoking available <see cref="SerializeErrorHandler">SerializeErrorHandlers</see>.
+		/// </summary>
+		/// <param name="error"></param>
+		/// <returns>Returns true, if the error has been handled successfully.</returns>
+		public static bool HandleSerializeError(SerializeError error)
+		{
+			if (error.Handled) return true;
+			if (serializeHandlerCache.Count == 0)
+			{
+				IEnumerable<Type> handlerTypes = DualityApp.GetAvailDualityTypes(typeof(SerializeErrorHandler));
+				foreach (Type handlerType in handlerTypes)
+				{
+					if (handlerType.IsAbstract) continue;
+					try
+					{
+						SerializeErrorHandler handler = (handlerType.CreateInstanceOf() ?? handlerType.CreateInstanceOf(true)) as SerializeErrorHandler;
+						serializeHandlerCache.Add(handler);
+					}
+					catch (Exception) {}
+				}
+				serializeHandlerCache.StableSort((a, b) => b.Priority - a.Priority);
+			}
+			foreach (SerializeErrorHandler handler in serializeHandlerCache)
+			{
+				try
+				{
+					handler.HandleError(error);
+					if (error.Handled) return true;
+				}
+				catch (Exception e)
+				{
+					Log.Core.WriteError("An error occured while trying to perform a serialization fallback: {0}", Log.Exception(e));
+				}
+			}
+			return false;
 		}
 		
 		/// <summary>
@@ -824,6 +863,13 @@ namespace Duality
 						if (baseType != null) break;
 					}
 				}
+				// Failed anyway? Try explicit resolve
+				if (baseType == null)
+				{
+					ResolveTypeError resolveError = new ResolveTypeError(typeNameBase);
+					if (HandleSerializeError(resolveError))
+						baseType = resolveError.ResolvedType;
+				}
 			}
 			
 			// Retrieve generic type params
@@ -875,50 +921,95 @@ namespace Duality
 			}
 
 			Type declaringType = FindType(token[1], asmSearch);
-			if (memberType == MemberTypes.TypeInfo) return declaringType;
 			if (declaringType == null) return null;
 
-			if (memberType == MemberTypes.Field)
-				return declaringType.GetField(token[2], BindAll);
+			if (memberType == MemberTypes.TypeInfo)
+			{
+				return declaringType;
+			}
+			else if (memberType == MemberTypes.Field)
+			{
+				MemberInfo member = declaringType.GetField(token[2], BindAll);
+				if (member != null) return member;
+			}
 			else if (memberType == MemberTypes.Event)
-				return declaringType.GetEvent(token[2], BindAll);
-
-			int memberParamListStartIndex = token[2].IndexOf('(');
-			int memberParamListEndIndex = token[2].IndexOf(')');
-			string memberParamList = memberParamListStartIndex != -1 ? token[2].Substring(memberParamListStartIndex + 1, memberParamListEndIndex - memberParamListStartIndex - 1) : null;
-			string[] memberParams = SplitArgs(memberParamList, '[', ']', ',', 0);
-			string memberName = memberParamListStartIndex != -1 ? token[2].Substring(0, memberParamListStartIndex) : token[2];
-			Type[] memberParamTypes = memberParams.Select(p => FindType(p, asmSearch)).ToArray();
-
-			if (memberType == MemberTypes.Constructor)
 			{
-				ConstructorInfo[] availCtors = declaringType.GetConstructors(memberName == "s" ? BindStaticAll : BindInstanceAll).Where(
-					m => m.GetParameters().Length == memberParams.Length).ToArray();
-				foreach (ConstructorInfo ctor in availCtors)
-				{
-					bool possibleMatch = true;
-					ParameterInfo[] methodParams = ctor.GetParameters();
-					for (int i = 0; i < methodParams.Length; i++)
-					{
-						string methodParamTypeName = methodParams[i].ParameterType.Name;
-						if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
-						{
-							possibleMatch = false;
-							break;
-						}
-					}
-					if (possibleMatch) return ctor;
-				}
+				MemberInfo member = declaringType.GetEvent(token[2], BindAll);
+				if (member != null) return member;
 			}
-			else if (memberType == MemberTypes.Property)
+			else
 			{
-				PropertyInfo[] availProps = declaringType.GetProperties(BindAll).Where(
+				int memberParamListStartIndex = token[2].IndexOf('(');
+				int memberParamListEndIndex = token[2].IndexOf(')');
+				string memberParamList = memberParamListStartIndex != -1 ? token[2].Substring(memberParamListStartIndex + 1, memberParamListEndIndex - memberParamListStartIndex - 1) : null;
+				string[] memberParams = SplitArgs(memberParamList, '[', ']', ',', 0);
+				string memberName = memberParamListStartIndex != -1 ? token[2].Substring(0, memberParamListStartIndex) : token[2];
+				Type[] memberParamTypes = memberParams.Select(p => FindType(p, asmSearch)).ToArray();
+
+				if (memberType == MemberTypes.Constructor)
+				{
+					ConstructorInfo[] availCtors = declaringType.GetConstructors(memberName == "s" ? BindStaticAll : BindInstanceAll).Where(
+						m => m.GetParameters().Length == memberParams.Length).ToArray();
+					foreach (ConstructorInfo ctor in availCtors)
+					{
+						bool possibleMatch = true;
+						ParameterInfo[] methodParams = ctor.GetParameters();
+						for (int i = 0; i < methodParams.Length; i++)
+						{
+							string methodParamTypeName = methodParams[i].ParameterType.Name;
+							if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
+							{
+								possibleMatch = false;
+								break;
+							}
+						}
+						if (possibleMatch) return ctor;
+					}
+				}
+				else if (memberType == MemberTypes.Property)
+				{
+					PropertyInfo[] availProps = declaringType.GetProperties(BindAll).Where(
+						m => m.Name == memberName && 
+						m.GetIndexParameters().Length == memberParams.Length).ToArray();
+					foreach (PropertyInfo prop in availProps)
+					{
+						bool possibleMatch = true;
+						ParameterInfo[] methodParams = prop.GetIndexParameters();
+						for (int i = 0; i < methodParams.Length; i++)
+						{
+							string methodParamTypeName = methodParams[i].ParameterType.Name;
+							if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
+							{
+								possibleMatch = false;
+								break;
+							}
+						}
+						if (possibleMatch) return prop;
+					}
+				}
+
+				int genArgTokenStartIndex = token[2].IndexOf("``", StringComparison.Ordinal);
+				int genArgTokenEndIndex = memberParamListStartIndex != -1 ? memberParamListStartIndex : token[2].Length;
+				string genArgToken = genArgTokenStartIndex != -1 ? token[2].Substring(genArgTokenStartIndex + 2, genArgTokenEndIndex - genArgTokenStartIndex - 2) : "";
+				if (genArgTokenStartIndex != -1) memberName = token[2].Substring(0, genArgTokenStartIndex);			
+
+				int genArgListStartIndex = genArgToken.IndexOf('[');
+				int genArgListEndIndex = genArgToken.LastIndexOf(']');
+				string genArgList = genArgListStartIndex != -1 ? genArgToken.Substring(genArgListStartIndex + 1, genArgListEndIndex - genArgListStartIndex - 1) : null;
+				string[] genArgs = SplitArgs(genArgList, '[', ']', ',', 0);
+				for (int i = 0; i < genArgs.Length; i++) genArgs[i] = genArgs[i].Substring(1, genArgs[i].Length - 2);
+
+				int genArgCount = genArgToken.Length > 0 ? int.Parse(genArgToken.Substring(0, genArgListStartIndex != -1 ? genArgListStartIndex : genArgToken.Length)) : 0;
+
+				// Select the method that fits
+				MethodInfo[] availMethods = declaringType.GetMethods(BindAll).Where(
 					m => m.Name == memberName && 
-					m.GetIndexParameters().Length == memberParams.Length).ToArray();
-				foreach (PropertyInfo prop in availProps)
+					m.GetGenericArguments().Length == genArgCount &&
+					m.GetParameters().Length == memberParams.Length).ToArray();
+				foreach (MethodInfo method in availMethods)
 				{
 					bool possibleMatch = true;
-					ParameterInfo[] methodParams = prop.GetIndexParameters();
+					ParameterInfo[] methodParams = method.GetParameters();
 					for (int i = 0; i < methodParams.Length; i++)
 					{
 						string methodParamTypeName = methodParams[i].ParameterType.Name;
@@ -928,45 +1019,16 @@ namespace Duality
 							break;
 						}
 					}
-					if (possibleMatch) return prop;
+					if (possibleMatch) return method;
 				}
 			}
-
-			int genArgTokenStartIndex = token[2].IndexOf("``", StringComparison.Ordinal);
-			int genArgTokenEndIndex = memberParamListStartIndex != -1 ? memberParamListStartIndex : token[2].Length;
-			string genArgToken = genArgTokenStartIndex != -1 ? token[2].Substring(genArgTokenStartIndex + 2, genArgTokenEndIndex - genArgTokenStartIndex - 2) : "";
-			if (genArgTokenStartIndex != -1) memberName = token[2].Substring(0, genArgTokenStartIndex);			
-
-			int genArgListStartIndex = genArgToken.IndexOf('[');
-			int genArgListEndIndex = genArgToken.LastIndexOf(']');
-			string genArgList = genArgListStartIndex != -1 ? genArgToken.Substring(genArgListStartIndex + 1, genArgListEndIndex - genArgListStartIndex - 1) : null;
-			string[] genArgs = SplitArgs(genArgList, '[', ']', ',', 0);
-			for (int i = 0; i < genArgs.Length; i++) genArgs[i] = genArgs[i].Substring(1, genArgs[i].Length - 2);
-
-			int genArgCount = genArgToken.Length > 0 ? int.Parse(genArgToken.Substring(0, genArgListStartIndex != -1 ? genArgListStartIndex : genArgToken.Length)) : 0;
-
-			// Select the method that fits
-			MethodInfo[] availMethods = declaringType.GetMethods(BindAll).Where(
-				m => m.Name == memberName && 
-				m.GetGenericArguments().Length == genArgCount &&
-				m.GetParameters().Length == memberParams.Length).ToArray();
-			foreach (MethodInfo method in availMethods)
-			{
-				bool possibleMatch = true;
-				ParameterInfo[] methodParams = method.GetParameters();
-				for (int i = 0; i < methodParams.Length; i++)
-				{
-					string methodParamTypeName = methodParams[i].ParameterType.Name;
-					if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
-					{
-						possibleMatch = false;
-						break;
-					}
-				}
-				if (possibleMatch) return method;
-			}
-
-			return null;
+			
+			// Failed? Try explicit resolve
+			ResolveMemberError resolveError = new ResolveMemberError(memberString);
+			if (HandleSerializeError(resolveError))
+				return resolveError.ResolvedMember;
+			else
+				return null;
 		}
 
 		/// <summary>

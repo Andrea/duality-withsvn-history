@@ -204,8 +204,7 @@ namespace Duality.Serialization
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
 			int		arrRank			= arrRankString == null ? 1 : XmlConvert.ToInt32(arrRankString);
 			int		arrLength		= arrLengthString == null ? 0 : XmlConvert.ToInt32(arrLengthString);
-			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
-			if (arrType == null) this.LogCantResolveTypeError(objId, arrTypeString);
+			Type	arrType			= this.ResolveType(arrTypeString, objId);
 
 			Array arrObj;
 			if (arrType == typeof(byte[]))
@@ -246,8 +245,7 @@ namespace Duality.Serialization
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
 			bool	custom			= customString != null && XmlConvert.ToBoolean(customString);
 			bool	surrogate		= surrogateString != null && XmlConvert.ToBoolean(surrogateString);
-			Type	objType			= ReflectionHelper.ResolveType(objTypeString, false);
-			if (objType == null) this.LogCantResolveTypeError(objId, objTypeString);
+			Type	objType			= this.ResolveType(objTypeString, objId);
 
 			SerializeType objSerializeType = null;
 			if (objType != null) objSerializeType = objType.GetSerializeType();
@@ -359,14 +357,12 @@ namespace Duality.Serialization
 				if (dataType == DataType.Type)
 				{
 					string typeString = this.reader.GetAttribute("value");
-					result = ReflectionHelper.ResolveType(typeString, false);
-					if (result == null) this.LogCantResolveTypeError(objId, typeString);
+					result = this.ResolveType(typeString, objId);
 				}
 				else
 				{
 					string memberString = this.reader.GetAttribute("value");
-					result = ReflectionHelper.ResolveMember(memberString, false);
-					if (result == null) this.LogCantResolveMemberError(objId, memberString);
+					result = this.ResolveMember(memberString, objId);
 				}
 			}
 			catch (Exception e)
@@ -395,8 +391,7 @@ namespace Duality.Serialization
 			string	multiString			= this.reader.GetAttribute("multi");
 			uint	objId				= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
 			bool	multi				= objIdString != null && XmlConvert.ToBoolean(multiString);
-			Type	delType				= ReflectionHelper.ResolveType(delegateTypeString, false);
-			if (delType == null) this.LogCantResolveTypeError(objId, delegateTypeString);
+			Type	delType				= this.ResolveType(delegateTypeString, objId);
 
 			// Create the delegate without target and fix it later, so we can register its object id before loading its target object
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
@@ -433,17 +428,9 @@ namespace Duality.Serialization
 			string name			= this.reader.GetAttribute("name");
 			string valueString	= this.reader.GetAttribute("value");
 			long val = valueString == null ? 0 : XmlConvert.ToInt64(valueString);
-			Type enumType = ReflectionHelper.ResolveType(typeName);
+			Type enumType = this.ResolveType(typeName);
 
-			try
-			{
-				object result = Enum.Parse(enumType, name);
-				if (result != null) return (Enum)result;
-			}
-			catch (Exception) {}
-
-			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
-			return (Enum)Enum.ToObject(enumType, val);
+			return (enumType == null) ? null : this.ResolveEnumValue(enumType, name, val);
 		}
 	}
 }

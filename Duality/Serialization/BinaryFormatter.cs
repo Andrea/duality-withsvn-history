@@ -211,8 +211,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRang			= this.reader.ReadInt32();
 			int		arrLength		= this.reader.ReadInt32();
-			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
-			if (arrType == null) this.LogCantResolveTypeError(objId, arrTypeString);
+			Type	arrType			= this.ResolveType(arrTypeString, objId);
 
 			Array arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
 			
@@ -255,8 +254,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			bool	custom			= this.reader.ReadBoolean();
 			bool	surrogate		= this.reader.ReadBoolean();
-			Type	objType			= ReflectionHelper.ResolveType(objTypeString, false);
-			if (objType == null) this.LogCantResolveTypeError(objId, objTypeString);
+			Type	objType			= this.ResolveType(objTypeString, objId);
 
 			SerializeType objSerializeType = null;
 			if (objType != null) objSerializeType = objType.GetSerializeType();
@@ -466,14 +464,12 @@ namespace Duality.Serialization
 					if (dataType == DataType.Type)
 					{
 						string typeString = this.reader.ReadString();
-						result = ReflectionHelper.ResolveType(typeString, false);
-						if (result == null) this.LogCantResolveTypeError(objId, typeString);
+						result = this.ResolveType(typeString, objId);
 					}
 					else
 					{
 						string memberString = this.reader.ReadString();
-						result = ReflectionHelper.ResolveMember(memberString, false);
-						if (result == null) this.LogCantResolveMemberError(objId, memberString);
+						result = this.ResolveMember(memberString, objId);
 					}
 				}
 			}
@@ -501,8 +497,7 @@ namespace Duality.Serialization
 			string		delegateTypeString	= this.reader.ReadString();
 			uint		objId				= this.reader.ReadUInt32();
 			bool		multi				= this.reader.ReadBoolean();
-			Type		delType				= ReflectionHelper.ResolveType(delegateTypeString, false);
-			if (delType == null) this.LogCantResolveTypeError(objId, delegateTypeString);
+			Type		delType				= this.ResolveType(delegateTypeString, objId);
 
 			// Create the delegate without target and fix it later, so we can register its object id before loading its target object
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
@@ -538,17 +533,9 @@ namespace Duality.Serialization
 			string typeName = this.reader.ReadString();
 			string name = this.reader.ReadString();
 			long val = this.reader.ReadInt64();
-			Type enumType = ReflectionHelper.ResolveType(typeName);
+			Type enumType = this.ResolveType(typeName);
 
-			try
-			{
-				object result = Enum.Parse(enumType, name);
-				if (result != null) return (Enum)result;
-			}
-			catch (Exception) {}
-
-			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
-			return (Enum)Enum.ToObject(enumType, val);
+			return (enumType == null) ? null : this.ResolveEnumValue(enumType, name, val);
 		}
 	}
 }

@@ -349,43 +349,6 @@ namespace Duality.Serialization
 			return this.surrogates.FirstOrDefault(s => s.MatchesType(t));
 		}
 
-
-		protected void AssignValueToField(SerializeType objSerializeType, object obj, string fieldName, object fieldValue)
-		{
-			if (obj == null) return;
-			FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == fieldName) : null;
-
-			if (field == null)
-				this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", fieldName, fieldValue);
-			else if (field.IsNotSerialized)
-				this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", fieldName, fieldValue);
-			else if (fieldValue != null && !field.FieldType.IsInstanceOfType(fieldValue))
-			{
-				this.SerializationLog.WriteWarning("Actual Type '{0}' of object value in field '{1}' does not match reflected FieldType '{2}'. Trying to convert...'", 
-					fieldValue != null ? Log.Type(fieldValue.GetType()) : "unknown", 
-					fieldName, 
-					Log.Type(field.FieldType));
-				this.SerializationLog.PushIndent();
-				object castVal;
-				try
-				{
-					castVal = Convert.ChangeType(fieldValue, field.FieldType, System.Globalization.CultureInfo.InvariantCulture);
-					this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
-					field.SetValue(obj, castVal);
-				}
-				catch (Exception)
-				{
-					this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
-				}
-				this.SerializationLog.PopIndent();
-			}
-			else
-			{
-				if (fieldValue == null && field.FieldType.IsValueType) fieldValue = field.FieldType.CreateInstanceOf();
-				field.SetValue(obj, fieldValue);
-			}
-		}
-
 		/// <summary>
 		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
 		/// </summary>
@@ -414,23 +377,147 @@ namespace Duality.Serialization
 				Log.Type(serializeType),
 				Log.Exception(e));
 		}
+		
 		/// <summary>
-		/// Logs an error that occured trying to resolve a <see cref="System.Type"/> by its <see cref="ReflectionHelper.GetTypeId">type string</see>.
+		/// Assigns the specified value to an objects field.
 		/// </summary>
-		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="typeString">The <see cref="ReflectionHelper.GetTypeId">type string</see> that couldn't be resolved.</param>
-		protected void LogCantResolveTypeError(uint objId, string typeString)
+		/// <param name="objSerializeType"></param>
+		/// <param name="obj"></param>
+		/// <param name="fieldName"></param>
+		/// <param name="fieldValue"></param>
+		protected void AssignValueToField(SerializeType objSerializeType, object obj, string fieldName, object fieldValue)
 		{
-			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);
+			if (obj == null) return;
+
+			// Retrieve field
+			FieldInfo field = null;
+			if (objSerializeType != null)
+			{
+				field = objSerializeType.Fields.FirstOrDefault(f => f.Name == fieldName);
+				if (field == null)
+				{
+					field = ReflectionHelper.ResolveMember("F:" + objSerializeType.TypeString + ":" + fieldName, false) as FieldInfo;
+				}
+			}
+
+			if (field == null)
+			{
+				if (!this.HandleAssignValueToField(objSerializeType, obj, fieldName, fieldValue))
+				{
+					this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", fieldName, fieldValue);
+				}
+				return;
+			}
+
+			if (field.IsNotSerialized)
+			{
+				if (!this.HandleAssignValueToField(objSerializeType, obj, fieldName, fieldValue))
+				{
+					this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", fieldName, fieldValue);
+				}
+				return;
+			}
+
+			if (fieldValue != null && !field.FieldType.IsInstanceOfType(fieldValue))
+			{
+				if (!this.HandleAssignValueToField(objSerializeType, obj, fieldName, fieldValue))
+				{
+					this.SerializationLog.WriteWarning("Actual Type '{0}' of object value in field '{1}' does not match reflected FieldType '{2}'. Trying to convert...'", 
+						fieldValue != null ? Log.Type(fieldValue.GetType()) : "unknown", 
+						fieldName, 
+						Log.Type(field.FieldType));
+					this.SerializationLog.PushIndent();
+					object castVal;
+					try
+					{
+						castVal = Convert.ChangeType(fieldValue, field.FieldType, System.Globalization.CultureInfo.InvariantCulture);
+						this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
+						field.SetValue(obj, castVal);
+					}
+					catch (Exception)
+					{
+						this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
+					}
+					this.SerializationLog.PopIndent();
+				}
+				return;
+			}
+
+			if (fieldValue == null && field.FieldType.IsValueType) fieldValue = field.FieldType.CreateInstanceOf();
+			field.SetValue(obj, fieldValue);
 		}
 		/// <summary>
-		/// Logs an error that occured trying to resolve a <see cref="System.Reflection.MemberInfo"/> by its <see cref="ReflectionHelper.GetMemberId">id string</see>.
+		/// Resolves the specified Type.
 		/// </summary>
-		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="memberString">The <see cref="ReflectionHelper.GetMemberId">id string</see> that couldn't be resolved.</param>
-		protected void LogCantResolveMemberError(uint objId, string memberString)
+		/// <param name="typeId"></param>
+		/// <param name="objId"></param>
+		/// <returns></returns>
+		protected Type ResolveType(string typeId, uint objId = uint.MaxValue)
 		{
-			this.log.WriteError("Can't resolve Member '{0}' in object Id {1}. Member not found.", memberString, objId);
+			Type result = ReflectionHelper.ResolveType(typeId, false);
+			if (result == null)
+			{
+				if (objId != uint.MaxValue)
+					this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeId, objId);
+				else
+					this.log.WriteError("Can't resolve Type '{0}'. Type not found.", typeId);
+			}
+			return result;
+		}
+		/// <summary>
+		/// Resolves the specified Member.
+		/// </summary>
+		/// <param name="memberId"></param>
+		/// <param name="objId"></param>
+		/// <returns></returns>
+		protected MemberInfo ResolveMember(string memberId, uint objId = uint.MaxValue)
+		{
+			MemberInfo result = ReflectionHelper.ResolveMember(memberId, false);
+			if (result == null)
+			{
+				if (objId != uint.MaxValue)
+					this.log.WriteError("Can't resolve Member '{0}' in object Id {1}. Member not found.", memberId, objId);
+				else
+					this.log.WriteError("Can't resolve Member '{0}'. Member not found.", memberId);
+			}
+			return result;
+		}
+		/// <summary>
+		/// Resolves the specified Enum value.
+		/// </summary>
+		/// <param name="enumType"></param>
+		/// <param name="enumField"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		protected Enum ResolveEnumValue(Type enumType, string enumField, long value)
+		{
+			try
+			{
+				object result = Enum.Parse(enumType, enumField);
+				if (result != null) return (Enum)result;
+			}
+			catch (Exception) {}
+
+			string memberId = "F:" + enumType.GetTypeId() + ":" + enumField;
+			MemberInfo member = ReflectionHelper.ResolveMember(memberId, false);
+			if (member != null)
+			{
+				try
+				{
+					object result = Enum.Parse(enumType, member.Name);
+					if (result != null) return (Enum)result;
+				}
+				catch (Exception) {}
+			}
+			
+			this.log.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", enumField, Log.Type(enumType), value);
+			return (Enum)Enum.ToObject(enumType, value);
+		}
+
+		private bool HandleAssignValueToField(SerializeType objSerializeType, object obj, string fieldName, object fieldValue)
+		{
+			AssignFieldError error = new AssignFieldError(objSerializeType, obj, fieldName, fieldValue);
+			return ReflectionHelper.HandleSerializeError(error);
 		}
 
 
