@@ -912,33 +912,21 @@ namespace Duality.Components
 		[System.Diagnostics.Conditional("DEBUG")]
 		internal void CheckValidTransform()
 		{
-			MathF.CheckValidValue(ref this.pos.X);
-			MathF.CheckValidValue(ref this.pos.Y);
-			MathF.CheckValidValue(ref this.pos.Z);
-			MathF.CheckValidValue(ref this.vel.X);
-			MathF.CheckValidValue(ref this.vel.Y);
-			MathF.CheckValidValue(ref this.vel.Z);
-			MathF.CheckValidValue(ref this.scale);
-			MathF.CheckValidValue(ref this.angle);
-			MathF.CheckValidValue(ref this.angleVel);
-			MathF.CheckValidValue(ref this.tempVel.X);
-			MathF.CheckValidValue(ref this.tempVel.Y);
-			MathF.CheckValidValue(ref this.tempVel.Z);
-			MathF.CheckValidValue(ref this.tempAngleVel);
+			MathF.CheckValidValue(this.pos);
+			MathF.CheckValidValue(this.vel);
+			MathF.CheckValidValue(this.scale);
+			MathF.CheckValidValue(this.angle);
+			MathF.CheckValidValue(this.angleVel);
+			MathF.CheckValidValue(this.tempVel);
+			MathF.CheckValidValue(this.tempAngleVel);
 
-			MathF.CheckValidValue(ref this.posAbs.X);
-			MathF.CheckValidValue(ref this.posAbs.Y);
-			MathF.CheckValidValue(ref this.posAbs.Z);
-			MathF.CheckValidValue(ref this.velAbs.X);
-			MathF.CheckValidValue(ref this.velAbs.Y);
-			MathF.CheckValidValue(ref this.velAbs.Z);
-			MathF.CheckValidValue(ref this.scaleAbs);
-			MathF.CheckValidValue(ref this.angleAbs);
-			MathF.CheckValidValue(ref this.angleVelAbs);
-			MathF.CheckValidValue(ref this.tempVelAbs.X);
-			MathF.CheckValidValue(ref this.tempVelAbs.Y);
-			MathF.CheckValidValue(ref this.tempVelAbs.Z);
-			MathF.CheckValidValue(ref this.tempAngleVelAbs);
+			MathF.CheckValidValue(this.posAbs);
+			MathF.CheckValidValue(this.velAbs);
+			MathF.CheckValidValue(this.scaleAbs);
+			MathF.CheckValidValue(this.angleAbs);
+			MathF.CheckValidValue(this.angleVelAbs);
+			MathF.CheckValidValue(this.tempVelAbs);
+			MathF.CheckValidValue(this.tempAngleVelAbs);
 		}
 	}
 }

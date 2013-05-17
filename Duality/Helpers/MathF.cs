@@ -1340,30 +1340,40 @@ namespace Duality
 			return result;
 		}
 
-		[System.Diagnostics.Conditional("DEBUG")]
-		internal static void CheckValidValue(ref float value)
+		/// <summary>
+		/// Throws an ArgumentOutOfRangeException, if the specified value is NaN or Infinity.
+		/// </summary>
+		/// <param name="value"></param>
+		public static void CheckValidValue(float value)
 		{
-			if (float.IsNaN(value))
+			if (float.IsNaN(value) || float.IsInfinity(value))
 			{
-				Duality.Log.Core.WriteError("Invalid transform value (NaN)");
-				value = 0.0f;
-			}
-			else if (float.IsInfinity(value))
-			{
-				Duality.Log.Core.WriteError("Invalid transform value (Infinity)");
-				value = 0.0f;
+				throw new ArgumentOutOfRangeException("value", string.Format("Invalid float value detected: {0}", value));
 			}
 		}
-		[System.Diagnostics.Conditional("DEBUG")]
-		internal static void CheckValidValue(float value)
+		/// <summary>
+		/// Throws an ArgumentOutOfRangeException, if the specified value is NaN or Infinity.
+		/// </summary>
+		/// <param name="value"></param>
+		public static void CheckValidValue(Vector2 value)
 		{
-			if (float.IsNaN(value))
+			if (float.IsNaN(value.X) || float.IsInfinity(value.X) ||
+				float.IsNaN(value.Y) || float.IsInfinity(value.Y))
 			{
-				Duality.Log.Core.WriteError("Invalid transform value (NaN)");
+				throw new ArgumentOutOfRangeException("value", string.Format("Invalid float value detected: {0}", value));
 			}
-			else if (float.IsInfinity(value))
+		}
+		/// <summary>
+		/// Throws an ArgumentOutOfRangeException, if the specified value is NaN or Infinity.
+		/// </summary>
+		/// <param name="value"></param>
+		public static void CheckValidValue(Vector3 value)
+		{
+			if (float.IsNaN(value.X) || float.IsInfinity(value.X) ||
+				float.IsNaN(value.Y) || float.IsInfinity(value.Y) ||
+				float.IsNaN(value.Z) || float.IsInfinity(value.Z))
 			{
-				Duality.Log.Core.WriteError("Invalid transform value (Infinity)");
+				throw new ArgumentOutOfRangeException("value", string.Format("Invalid float value detected: {0}", value));
 			}
 		}
 	}
