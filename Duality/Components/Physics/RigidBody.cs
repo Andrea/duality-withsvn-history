@@ -491,6 +491,7 @@ namespace Duality.Components.Physics
 		/// <param name="angularImpulse"></param>
 		public void ApplyLocalImpulse(float angularImpulse)
 		{
+			MathF.CheckValidValue(angularImpulse);
 			if (this.body == null) return;
 			this.body.ApplyAngularImpulse(angularImpulse / Time.SPFMult);
 		}
@@ -522,6 +523,7 @@ namespace Duality.Components.Physics
 		/// <param name="impulse"></param>
 		public void ApplyWorldImpulse(Vector2 impulse)
 		{
+			MathF.CheckValidValue(impulse);
 			if (this.body == null) return;
 			this.body.ApplyLinearImpulse(
 				PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult, 
@@ -534,6 +536,8 @@ namespace Duality.Components.Physics
 		/// <param name="applyAt"></param>
 		public void ApplyWorldImpulse(Vector2 impulse, Vector2 applyAt)
 		{
+			MathF.CheckValidValue(impulse);
+			MathF.CheckValidValue(applyAt);
 			if (this.body == null) return;
 			this.body.ApplyLinearImpulse(
 				PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult, 
@@ -546,6 +550,7 @@ namespace Duality.Components.Physics
 		/// <param name="angularForce"></param>
 		public void ApplyLocalForce(float angularForce)
 		{
+			MathF.CheckValidValue(angularForce);
 			if (this.body == null) return;
 			if (Scene.PhysicsFixedTime) angularForce *= Time.TimeMult;
 			this.body.ApplyTorque(angularForce / Time.SPFMult);
@@ -591,6 +596,8 @@ namespace Duality.Components.Physics
 		/// <param name="applyAt"></param>
 		public void ApplyWorldForce(Vector2 force, Vector2 applyAt)
 		{
+			MathF.CheckValidValue(force);
+			MathF.CheckValidValue(applyAt);
 			if (this.body == null) return;
 			if (Scene.PhysicsFixedTime) force *= Time.TimeMult;
 			this.body.ApplyForce(

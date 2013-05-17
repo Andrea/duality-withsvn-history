@@ -580,8 +580,15 @@ namespace Duality.Components
 			{
 				// Render Scene
 				this.drawDevice.BeginRendering(p.ClearFlags, p.ClearColor, p.ClearDepth);
-				this.CollectDrawcalls();
-				p.NotifyCollectDrawcalls(this.DrawDevice);
+				try
+				{
+					this.CollectDrawcalls();
+					p.NotifyCollectDrawcalls(this.DrawDevice);
+				}
+				catch (Exception e)
+				{
+					Log.Core.WriteError("There was an error while {0} was collecting drawcalls: {1}", this.ToString(), Log.Exception(e));
+				}
 				this.drawDevice.EndRendering();
 			}
 			else

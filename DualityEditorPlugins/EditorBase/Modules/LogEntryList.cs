@@ -257,7 +257,7 @@ namespace EditorBase
 		}
 		public void AddEntry(IEnumerable<DataLogOutput.LogEntry> entries)
 		{
-			foreach (var entry in entries)
+			foreach (var entry in entries.ToArray())
 			{
 				ViewEntry viewEntry = new ViewEntry(entry);
 				this.entryList.Add(viewEntry);
