@@ -84,6 +84,7 @@ namespace EditorBase.CamViewLayers
 
 			canvas.CurrentState.TextFont = Font.GenericMonospace10;
 			canvas.CurrentState.TextInvariantScale = true;
+			canvas.CurrentState.ZOffset = -1;
 			Font textFont = canvas.CurrentState.TextFont.Res;
 
 			// Draw Shape layer
@@ -122,13 +123,13 @@ namespace EditorBase.CamViewLayers
 						canvas.FillCircle(
 							colliderPos.X + circlePos.X,
 							colliderPos.Y + circlePos.Y,
-							colliderPos.Z - 0.01f, 
+							colliderPos.Z, 
 							circle.Radius * colliderScale);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawCircle(
 							colliderPos.X + circlePos.X,
 							colliderPos.Y + circlePos.Y,
-							colliderPos.Z - 0.01f, 
+							colliderPos.Z, 
 							circle.Radius * colliderScale);
 
 						center = circlePos;
@@ -148,9 +149,9 @@ namespace EditorBase.CamViewLayers
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * shapeAlpha)));
-						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
+						canvas.FillConvexPolygon(polyVert, colliderPos.Z);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawPolygon(polyVert, colliderPos.Z - 0.01f);
+						canvas.DrawPolygon(polyVert, colliderPos.Z);
 					}
 					else if (loop != null)
 					{
@@ -167,7 +168,7 @@ namespace EditorBase.CamViewLayers
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawPolygon(loopVert, colliderPos.Z - 0.01f);
+						canvas.DrawPolygon(loopVert, colliderPos.Z);
 					}
 					
 					// Draw shape index
@@ -179,7 +180,7 @@ namespace EditorBase.CamViewLayers
 						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
 							colliderPos.X + center.X, 
 							colliderPos.Y + center.Y,
-							colliderPos.Z - 0.01f);
+							colliderPos.Z);
 						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
 
@@ -195,7 +196,7 @@ namespace EditorBase.CamViewLayers
 					canvas.DrawCross(
 						colliderPos.X + localMassCenter.X, 
 						colliderPos.Y + localMassCenter.Y, 
-						colliderPos.Z - 0.01f, 
+						colliderPos.Z, 
 						5.0f);
 				}
 			}

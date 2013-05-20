@@ -566,7 +566,8 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public T FindComponent<T>(bool activeOnly = true) where T : class
 		{
-			return (activeOnly ? this.ActiveObjects : this.AllObjects).GetComponents<T>().FirstOrDefault();
+			var cmp = (activeOnly ? this.ActiveObjects : this.AllObjects).GetComponents<T>();
+			return (activeOnly ? cmp.Where(c => (c as Component).Active) : cmp).FirstOrDefault();
 		}
 		/// <summary>
 		/// Finds a single Component of the specified type in this Scene.
@@ -575,7 +576,8 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public Component FindComponent(Type type, bool activeOnly = true)
 		{
-			return (activeOnly ? this.ActiveObjects : this.AllObjects).SelectMany(g => g.GetComponents(type)).FirstOrDefault();
+			var cmp = (activeOnly ? this.ActiveObjects : this.AllObjects).SelectMany(g => g.GetComponents(type));
+			return (activeOnly ? cmp.Where(c => (c as Component).Active) : cmp).FirstOrDefault();
 		}
 
 		private void AddToManagers(GameObject obj)

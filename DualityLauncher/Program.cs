@@ -67,16 +67,6 @@ namespace DualityLauncher
 			DualityApp.Render();
 			this.SwapBuffers();
 		}
-		protected override void OnMouseEnter(EventArgs e)
-		{
-			base.OnMouseEnter(e);
-			if (!System.Diagnostics.Debugger.IsAttached) Cursor.Hide();
-		}
-		protected override void OnMouseLeave(EventArgs e)
-		{
-			base.OnMouseLeave(e);
-			if (!System.Diagnostics.Debugger.IsAttached) Cursor.Show();
-		}
 
 		private void SetMouseDeviceX(int x)
 		{
@@ -139,6 +129,7 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
+				launcherWindow.CursorVisible = System.Diagnostics.Debugger.IsAttached;
 				launcherWindow.VSync = debugging ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
 				launcherWindow.Run();
 			}

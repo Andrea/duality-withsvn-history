@@ -1100,13 +1100,34 @@ namespace Duality.Components.Physics
 		/// </summary>
 		/// <param name="worldCoordA">The starting point.</param>
 		/// <param name="worldCoordB">The desired end point.</param>
-		/// <param name="callback"></param>
-		public static void Raycast(Vector2 worldCoordA, Vector2 worldCoordB, RayCastCallback callback)
+		/// <param name="callback">
+		/// The callback that is invoked for each hit on the raycast. Note that the order in which each hit occurs isn't deterministic
+		/// and may appear random. Return -1 to ignore the curret shape, 0 to terminate the raycast, data.Fraction to clip the ray for current hit, or 1 to continue.
+		/// </param>
+		/// <returns>Returns a list of all occured hits, ordered by their Fraction value.</returns>
+		public static List<RayCastData> RayCast(Vector2 worldCoordA, Vector2 worldCoordB, RayCastCallback callback = null)
 		{
+			if (callback == null) callback = Raycast_DefaultCallback;
+			Vector2 fsWorldCoordA = PhysicsConvert.ToPhysicalUnit(worldCoordA);
+			Vector2 fsWorldCoordB = PhysicsConvert.ToPhysicalUnit(worldCoordB);
+			List<RayCastData> hitData = new List<RayCastData>();
 			Scene.PhysicsWorld.RayCast(delegate(Fixture fixture, Vector2 pos, Vector2 normal, float fraction)
 			{
-				return callback(fixture.UserData as ShapeInfo, pos, normal, fraction);
-			}, worldCoordA, worldCoordB);
+				RayCastData data = new RayCastData(
+					fixture.UserData as ShapeInfo, 
+					PhysicsConvert.ToDualityUnit(pos), 
+					normal, 
+					fraction);
+				float result = callback(data);
+				if (result >= 0.0f) hitData.Add(data);
+				return result;
+			}, fsWorldCoordA, fsWorldCoordB);
+			hitData.StableSort((d1, d2) => (int)(1000000.0f * (d1.Fraction - d2.Fraction)));
+			return hitData;
+		}
+		private static float Raycast_DefaultCallback(RayCastData data)
+		{
+			return 1.0f;
 		}
 		/// <summary>
 		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
@@ -1212,11 +1233,74 @@ namespace Duality.Components.Physics
 		/// </summary>
 		Dynamic
 	}
+
 	/// <summary>
-	/// Called for each shape found in the query. You control how the ray cast proceeds by returning a float:
-	/// <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
+	/// Called for each shape found in the query. You control how the ray cast proceeds by returning a float.
 	/// </summary>
-	public delegate float RayCastCallback(ShapeInfo shape, Vector2 point, Vector2 normal, float fraction);
+	/// <returns>-1 to ignore the curret shape, 0 to terminate the raycast, data.Fraction to clip the ray for current hit, or 1 to continue.</returns>
+	public delegate float RayCastCallback(RayCastData data);
+
+	/// <summary>
+	///  Provides data about a <see cref="RigidBody.RayCast"/>.
+	/// </summary>
+	public class RayCastData
+	{
+		private ShapeInfo	shape;
+		private Vector2		pos;
+		private Vector2		normal;
+		private float		fraction;
+
+		/// <summary>
+		/// [GET] The shape that was hit.
+		/// </summary>
+		public ShapeInfo Shape
+		{
+			get { return this.shape; }
+		}
+		/// <summary>
+		/// [GET] The RigidBody that was hit.
+		/// </summary>
+		public RigidBody Body
+		{
+			get { return shape != null ? shape.Parent : null; }
+		}
+		/// <summary>
+		/// [GET] The GameObject that was hit.
+		/// </summary>
+		public GameObject GameObj
+		{
+			get { return shape != null && shape.Parent != null ? shape.Parent.GameObj : null; }
+		}
+		/// <summary>
+		/// [GET] The world position at which the shape was hit.
+		/// </summary>
+		public Vector2 Pos
+		{
+			get { return this.pos; }
+		}
+		/// <summary>
+		/// [GET] The normal of the ray / shape collision.
+		/// </summary>
+		public Vector2 Normal
+		{
+			get { return this.normal; }
+		}
+		/// <summary>
+		/// [GET] The fraction (0.0f - 1.0f) of the ray at which the hit occured.
+		/// </summary>
+		public float Fraction
+		{
+			get { return this.fraction; }
+		}
+
+		public RayCastData(ShapeInfo shape, Vector2 pos, Vector2 normal, float fraction)
+		{
+			this.shape = shape;
+			this.pos = pos;
+			this.normal = normal;
+			this.fraction = fraction;
+		}
+	}
 
 	public class RigidBodyCollisionEventArgs : CollisionEventArgs
 	{

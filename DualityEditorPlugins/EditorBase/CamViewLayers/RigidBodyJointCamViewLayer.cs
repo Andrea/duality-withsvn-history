@@ -65,6 +65,7 @@ namespace EditorBase.CamViewLayers
 		{
 			base.OnCollectDrawcalls(canvas);
 			canvas.CurrentState.TextInvariantScale = true;
+			canvas.CurrentState.ZOffset = -1;
 
 			RigidBody selectedBody = this.QuerySelectedCollider();
 
@@ -359,7 +360,7 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawText(text, 
 				bodyPos.X + pos.X, 
 				bodyPos.Y + pos.Y, 
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.CurrentState.TransformAngle = 0.0f;
 			canvas.CurrentState.TransformHandle = Vector2.Zero;
 		}
@@ -375,7 +376,7 @@ namespace EditorBase.CamViewLayers
 			canvas.FillCircle(
 				colliderPos.X + anchorToWorld.X,
 				colliderPos.Y + anchorToWorld.Y,
-				colliderPos.Z - 0.01f,
+				colliderPos.Z,
 				markerCircleRad);
 		}
 		private void DrawLocalFrictionMarker(Canvas canvas, RigidBody body, Vector2 anchor)
@@ -390,17 +391,17 @@ namespace EditorBase.CamViewLayers
 			canvas.FillCircle(
 				colliderPos.X + anchorToWorld.X,
 				colliderPos.Y + anchorToWorld.Y,
-				colliderPos.Z - 0.01f,
+				colliderPos.Z,
 				markerCircleRad * 0.5f);
 			canvas.DrawCircle(
 				colliderPos.X + anchorToWorld.X,
 				colliderPos.Y + anchorToWorld.Y,
-				colliderPos.Z - 0.01f,
+				colliderPos.Z,
 				markerCircleRad);
 			canvas.DrawCircle(
 				colliderPos.X + anchorToWorld.X,
 				colliderPos.Y + anchorToWorld.Y,
-				colliderPos.Z - 0.01f,
+				colliderPos.Z,
 				markerCircleRad * 1.5f);
 		}
 		private void DrawLocalAngleConstraint(Canvas canvas, RigidBody body, Vector2 anchor, float targetAngle, float currentAngle, float radius)
@@ -429,14 +430,14 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					bodyPos.X + anchorToWorld.X,
 					bodyPos.Y + anchorToWorld.Y,
-					bodyPos.Z - 0.01f, 
+					bodyPos.Z, 
 					bodyPos.X + anchorToWorld.X + errorVec.X,
 					bodyPos.Y + anchorToWorld.Y + errorVec.Y,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 				canvas.DrawCircleSegment(
 					bodyPos.X + anchorToWorld.X,
 					bodyPos.Y + anchorToWorld.Y,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					radius,
 					circleBegin,
 					circleEnd);
@@ -450,10 +451,10 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f, 
+				bodyPos.Z, 
 				bodyPos.X + anchorToWorld.X + angleVec.X,
 				bodyPos.Y + anchorToWorld.Y + angleVec.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			this.DrawLocalText(canvas, body,
 				string.Format("{0:F0}°", MathF.RadToDeg(MathF.NormalizeAngle(targetAngle))),
 				anchorToWorld + angleVec,
@@ -489,14 +490,14 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					bodyPos.X + anchorToWorld.X,
 					bodyPos.Y + anchorToWorld.Y,
-					bodyPos.Z - 0.01f, 
+					bodyPos.Z, 
 					bodyPos.X + anchorToWorld.X + errorVec.X,
 					bodyPos.Y + anchorToWorld.Y + errorVec.Y,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 				canvas.DrawCircleSegment(
 					bodyPos.X + anchorToWorld.X,
 					bodyPos.Y + anchorToWorld.Y,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					radius,
 					circleBegin,
 					circleEnd);
@@ -510,24 +511,24 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				radius,
 				minAngle,
 				maxAngle);
 			canvas.DrawLine(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f, 
+				bodyPos.Z, 
 				bodyPos.X + anchorToWorld.X + angleVecMin.X,
 				bodyPos.Y + anchorToWorld.Y + angleVecMin.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f, 
+				bodyPos.Z, 
 				bodyPos.X + anchorToWorld.X + angleVecMax.X,
 				bodyPos.Y + anchorToWorld.Y + angleVecMax.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			this.DrawLocalText(canvas, body,
 				string.Format("{0:F0}°", MathF.RadToDeg(minAngle)),
 				anchorToWorld + angleVecMin,
@@ -555,38 +556,38 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				radius - 2,
 				MathF.Sign(speed) >= 0 ? baseAngle : maxTorqueAngle,
 				MathF.Sign(speed) >= 0 ? maxTorqueAngle : baseAngle);
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				radius + 2,
 				MathF.Sign(speed) >= 0 ? baseAngle : maxTorqueAngle,
 				MathF.Sign(speed) >= 0 ? maxTorqueAngle : baseAngle);
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				radius,
 				MathF.Sign(speed) >= 0 ? baseAngle : speedAngle,
 				MathF.Sign(speed) >= 0 ? speedAngle : baseAngle);
 			canvas.DrawLine(
 				bodyPos.X + arrowBase.X,
 				bodyPos.Y + arrowBase.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				bodyPos.X + arrowBase.X + arrorA.X,
 				bodyPos.Y + arrowBase.Y + arrorA.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				bodyPos.X + arrowBase.X,
 				bodyPos.Y + arrowBase.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				bodyPos.X + arrowBase.X + arrorB.X,
 				bodyPos.Y + arrowBase.Y + arrorB.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 		}
 		private void DrawLocalPosConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
 		{
@@ -607,10 +608,10 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					colliderPosA.X + anchorAToWorld.X,
 					colliderPosA.Y + anchorAToWorld.Y,
-					colliderPosA.Z - 0.01f,
+					colliderPosA.Z,
 					colliderPosB.X + anchorBToWorld.X,
 					colliderPosB.Y + anchorBToWorld.Y,
-					colliderPosB.Z - 0.01f);
+					colliderPosB.Z);
 				this.DrawLocalText(canvas, bodyA, 
 					string.Format("{0:F1}", errorVec.Length), 
 					anchorAToWorld + errorVec * 0.5f, 
@@ -622,17 +623,17 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				colliderPosA.X,
 				colliderPosA.Y,
-				colliderPosA.Z - 0.01f,
+				colliderPosA.Z,
 				colliderPosA.X + anchorAToWorld.X,
 				colliderPosA.Y + anchorAToWorld.Y,
-				colliderPosA.Z - 0.01f);
+				colliderPosA.Z);
 			canvas.DrawLine(
 				colliderPosB.X,
 				colliderPosB.Y,
-				colliderPosB.Z - 0.01f,
+				colliderPosB.Z,
 				colliderPosB.X + anchorBToWorld.X,
 				colliderPosB.Y + anchorBToWorld.Y,
-				colliderPosB.Z - 0.01f);
+				colliderPosB.Z);
 		}
 		private void DrawLocalDistConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB, float minDist, float maxDist)
 		{
@@ -657,10 +658,10 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					bodyPosA.X + anchorA.X + distVec.X,
 					bodyPosA.Y + anchorA.Y + distVec.Y,
-					bodyPosA.Z - 0.01f, 
+					bodyPosA.Z, 
 					bodyPosA.X + anchorA.X + errorVec.X,
 					bodyPosA.Y + anchorA.Y + errorVec.Y,
-					bodyPosA.Z - 0.01f);
+					bodyPosA.Z);
 				this.DrawLocalText(canvas, bodyA,
 					string.Format("{0:F1}", dist),
 					anchorA + errorVec,
@@ -671,19 +672,19 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				bodyPosA.X + anchorA.X,
 				bodyPosA.Y + anchorA.Y,
-				bodyPosA.Z - 0.01f, 
+				bodyPosA.Z, 
 				bodyPosA.X + anchorA.X + distVec.X,
 				bodyPosA.Y + anchorA.Y + distVec.Y,
-				bodyPosA.Z - 0.01f);
+				bodyPosA.Z);
 			if (hasError)
 			{
 				canvas.DrawLine(
 					bodyPosA.X + anchorA.X + distVec.X - lineNormal.X * 5.0f,
 					bodyPosA.Y + anchorA.Y + distVec.Y - lineNormal.Y * 5.0f,
-					bodyPosA.Z - 0.01f, 
+					bodyPosA.Z, 
 					bodyPosA.X + anchorA.X + distVec.X + lineNormal.X * 5.0f,
 					bodyPosA.Y + anchorA.Y + distVec.Y + lineNormal.Y * 5.0f,
-					bodyPosA.Z - 0.01f);
+					bodyPosA.Z);
 			}
 			this.DrawLocalText(canvas, bodyA,
 				string.Format("{0:F1}", MathF.Clamp(dist, minDist, maxDist)),
@@ -723,10 +724,10 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawDashLine(
 				bodyPosA.X + anchorAToWorld.X,
 				bodyPosA.Y + anchorAToWorld.Y,
-				bodyPosA.Z - 0.01f,
+				bodyPosA.Z,
 				bodyPosB.X + anchorBToWorld.X,
 				bodyPosB.Y + anchorBToWorld.Y,
-				bodyPosB.Z - 0.01f);
+				bodyPosB.Z);
 		}
 		
 		private void DrawWorldAnchor(Canvas canvas, RigidBody body, Vector2 anchor)
@@ -739,7 +740,7 @@ namespace EditorBase.CamViewLayers
 			canvas.FillCircle(
 				anchor.X,
 				anchor.Y,
-				colliderPos.Z - 0.01f,
+				colliderPos.Z,
 				markerCircleRad);
 		}
 		private void DrawWorldPosConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor)
@@ -761,10 +762,10 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					bodyPos.X + anchorAToWorld.X,
 					bodyPos.Y + anchorAToWorld.Y,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					worldAnchor.X,
 					worldAnchor.Y,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 				this.DrawLocalText(canvas, body,
 					string.Format("{0:F1}", errorVec.Length),
 					anchorAToWorld + errorVec * 0.5f,
@@ -776,10 +777,10 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				bodyPos.X,
 				bodyPos.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				bodyPos.X + anchorAToWorld.X,
 				bodyPos.Y + anchorAToWorld.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 		}
 		private void DrawWorldDistConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor, float minDist, float maxDist)
 		{
@@ -802,10 +803,10 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					colliderPosA.X + anchorA.X + distVec.X,
 					colliderPosA.Y + anchorA.Y + distVec.Y,
-					colliderPosA.Z - 0.01f, 
+					colliderPosA.Z, 
 					colliderPosA.X + anchorA.X + errorVec.X,
 					colliderPosA.Y + anchorA.Y + errorVec.Y,
-					colliderPosA.Z - 0.01f);
+					colliderPosA.Z);
 				this.DrawLocalText(canvas, body,
 					string.Format("{0:F1}", dist),
 					anchorA + errorVec,
@@ -816,19 +817,19 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				colliderPosA.X + anchorA.X,
 				colliderPosA.Y + anchorA.Y,
-				colliderPosA.Z - 0.01f, 
+				colliderPosA.Z, 
 				colliderPosA.X + anchorA.X + distVec.X,
 				colliderPosA.Y + anchorA.Y + distVec.Y,
-				colliderPosA.Z - 0.01f);
+				colliderPosA.Z);
 			if (hasError)
 			{
 				canvas.DrawLine(
 					colliderPosA.X + anchorA.X + distVec.X - lineNormal.X * 5.0f,
 					colliderPosA.Y + anchorA.Y + distVec.Y - lineNormal.Y * 5.0f,
-					colliderPosA.Z - 0.01f, 
+					colliderPosA.Z, 
 					colliderPosA.X + anchorA.X + distVec.X + lineNormal.X * 5.0f,
 					colliderPosA.Y + anchorA.Y + distVec.Y + lineNormal.Y * 5.0f,
-					colliderPosA.Z - 0.01f);
+					colliderPosA.Z);
 			}
 			this.DrawLocalText(canvas, body,
 				string.Format("{0:F1}", MathF.Clamp(dist, minDist, maxDist)),
@@ -870,10 +871,10 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawLine(
 					bodyPos.X + anchorToWorld.X,
 					bodyPos.Y + anchorToWorld.Y,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					basePos.X,
 					basePos.Y,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 				this.DrawLocalText(canvas, body,
 					string.Format("{0:F1}", errorVal),
 					errorVec * 0.5f,
@@ -885,26 +886,26 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				worldAnchor.X + worldAxis.X * min,
 				worldAnchor.Y + worldAxis.Y * min,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				worldAnchor.X + worldAxis.X * max,
 				worldAnchor.Y + worldAxis.Y * max,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			if (!infinite)
 			{
 				canvas.DrawLine(
 					worldAnchor.X + worldAxis.X * min + worldAxis.PerpendicularLeft.X * 5.0f,
 					worldAnchor.Y + worldAxis.Y * min + worldAxis.PerpendicularLeft.Y * 5.0f,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					worldAnchor.X + worldAxis.X * min + worldAxis.PerpendicularRight.X * 5.0f,
 					worldAnchor.Y + worldAxis.Y * min + worldAxis.PerpendicularRight.Y * 5.0f,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 				canvas.DrawLine(
 					worldAnchor.X + worldAxis.X * max + worldAxis.PerpendicularLeft.X * 5.0f,
 					worldAnchor.Y + worldAxis.Y * max + worldAxis.PerpendicularLeft.Y * 5.0f,
-					bodyPos.Z - 0.01f,
+					bodyPos.Z,
 					worldAnchor.X + worldAxis.X * max + worldAxis.PerpendicularRight.X * 5.0f,
 					worldAnchor.Y + worldAxis.Y * max + worldAxis.PerpendicularRight.Y * 5.0f,
-					bodyPos.Z - 0.01f);
+					bodyPos.Z);
 			}
 		}
 		private void DrawWorldAxisMotor(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 localAnchor, Vector2 worldAnchor, float speed, float maxForce, float offset)
@@ -925,38 +926,38 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawLine(
 				arrowBegin.X + worldAxis.PerpendicularLeft.X * 2.0f,
 				arrowBegin.Y + worldAxis.PerpendicularLeft.Y * 2.0f,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				arrowBegin.X + worldAxis.PerpendicularLeft.X * 2.0f + worldAxis.X * maxForceTemp,
 				arrowBegin.Y + worldAxis.PerpendicularLeft.Y * 2.0f + worldAxis.Y * maxForceTemp,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				arrowBegin.X + worldAxis.PerpendicularRight.X * 2.0f,
 				arrowBegin.Y + worldAxis.PerpendicularRight.Y * 2.0f,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				arrowBegin.X + worldAxis.PerpendicularRight.X * 2.0f + worldAxis.X * maxForceTemp,
 				arrowBegin.Y + worldAxis.PerpendicularRight.Y * 2.0f + worldAxis.Y * maxForceTemp,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				arrowBegin.X,
 				arrowBegin.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				arrowBase.X,
 				arrowBase.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				arrowBase.X,
 				arrowBase.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				arrowBase.X + arrowA.X,
 				arrowBase.Y + arrowA.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 			canvas.DrawLine(
 				arrowBase.X,
 				arrowBase.Y,
-				bodyPos.Z - 0.01f,
+				bodyPos.Z,
 				arrowBase.X + arrowB.X,
 				arrowBase.Y + arrowB.Y,
-				bodyPos.Z - 0.01f);
+				bodyPos.Z);
 		}
 		private void DrawWorldLooseConstraint(Canvas canvas, RigidBody bodyA, Vector2 anchorA, Vector2 anchorB)
 		{
@@ -968,10 +969,10 @@ namespace EditorBase.CamViewLayers
 			canvas.DrawDashLine(
 				anchorA.X,
 				anchorA.Y,
-				bodyPosA.Z - 0.01f,
+				bodyPosA.Z,
 				anchorB.X,
 				anchorB.Y,
-				bodyPosA.Z - 0.01f);
+				bodyPosA.Z);
 		}
 
 		private float GetAnchorDist(RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB)
