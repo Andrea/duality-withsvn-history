@@ -84,6 +84,7 @@ namespace Duality.Components.Physics
 		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
 			Vector2[] vertices = this.vertices.ToArray();
+
 			FarseerPhysics.Common.Vertices farseerVert = new FarseerPhysics.Common.Vertices(vertices.Length);
 			for (int i = 0; i < vertices.Length; i++)
 			{

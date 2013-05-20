@@ -816,23 +816,22 @@ namespace FarseerPhysics.Dynamics
             input.Point2 = point2;
 
             ContactManager.BroadPhase.RayCast((rayCastInput, proxyId) =>
-                                                  {
-                                                      FixtureProxy proxy = ContactManager.BroadPhase.GetProxy(proxyId);
-                                                      Fixture fixture = proxy.Fixture;
-                                                      int index = proxy.ChildIndex;
-                                                      RayCastOutput output;
-                                                      bool hit = fixture.RayCast(out output, ref rayCastInput, index);
+            {
+                FixtureProxy proxy = ContactManager.BroadPhase.GetProxy(proxyId);
+                Fixture fixture = proxy.Fixture;
+                int index = proxy.ChildIndex;
+                RayCastOutput output;
+                bool hit = fixture.RayCast(out output, ref rayCastInput, index);
 
-                                                      if (hit)
-                                                      {
-                                                          float fraction = output.Fraction;
-                                                          Vector2 point = (1.0f - fraction) * input.Point1 +
-                                                                          fraction * input.Point2;
-                                                          return callback(fixture, point, output.Normal, fraction);
-                                                      }
+                if (hit)
+                {
+                    float fraction = output.Fraction;
+					Vector2 point = (1.0f - fraction) * rayCastInput.Point1 + fraction * rayCastInput.Point2;
+                    return callback(fixture, point, output.Normal, fraction);
+                }
 
-                                                      return input.MaxFraction;
-                                                  }, ref input);
+                return rayCastInput.MaxFraction; //input.MaxFraction;
+            }, ref input);
         }
 
         private void Solve(ref TimeStep step)
