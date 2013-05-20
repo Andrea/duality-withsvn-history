@@ -1213,10 +1213,14 @@ namespace EditorBase.CamViewStates
 			}
 			catch (Exception exception)
 			{
-				Log.Editor.WriteError("An error occured during CamView {1} rendering: {0}", Log.Exception(exception), this.CameraComponent.ToString());
+				Log.Editor.WriteError("An error occured during CamView {1} rendering. The current DrawDevice state may be compromised. Exception: {0}", Log.Exception(exception), this.CameraComponent.ToString());
 			}
-
+			
+			Performance.BeginMeasure("Duality_Render");
+			Performance.BeginMeasure("Duality_Render_SwapBuffers");
 			DualityEditorApp.MainContextControl.SwapBuffers();
+			Performance.EndMeasure("Duality_Render_SwapBuffers");
+			Performance.EndMeasure("Duality_Render");
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
