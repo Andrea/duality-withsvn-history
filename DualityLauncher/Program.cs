@@ -65,7 +65,11 @@ namespace DualityLauncher
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
 
 			DualityApp.Render();
+			Performance.timeRender.BeginMeasure();
+			Performance.timeSwapBuffers.BeginMeasure();
 			this.SwapBuffers();
+			Performance.timeSwapBuffers.EndMeasure();
+			Performance.timeRender.EndMeasure();
 		}
 
 		private void SetMouseDeviceX(int x)

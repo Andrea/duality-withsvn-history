@@ -128,6 +128,7 @@ namespace Duality
 		internal	static	Counter	timeUpdatePhysicsSolve			= new Counter("Duality_Update_Physics_Solve");
 
 		internal	static	Counter	timeRender				= new Counter("Duality_Render");
+		internal	static	Counter	timeSwapBuffers				= new Counter("Duality_Render_SwapBuffers");
 		internal	static	Counter	timeCollectDrawcalls		= new Counter("Duality_Render_CollectDrawcalls");
 		internal	static	Counter	timeOptimizeDrawcalls		= new Counter("Duality_Render_OptimizeDrawcalls");
 		internal	static	Counter	timeProcessDrawcalls		= new Counter("Duality_Render_ProcessDrawcalls");
