@@ -214,6 +214,13 @@ namespace Duality.Resources
 		/// </summary>
 		protected abstract ShaderType OglShaderType { get; }
 		/// <summary>
+		/// [GET] The shaders OpenGL id.
+		/// </summary>
+		internal protected int OglShaderId
+		{
+			get { return this.glShaderId; }
+		}
+		/// <summary>
 		/// [GET] Whether this shader has been compiled yet or not.
 		/// </summary>
 		public bool Compiled
@@ -369,18 +376,6 @@ namespace Duality.Resources
 			}
 
 			this.varInfo = varInfoList.ToArray();
-		}
-		
-		internal void AttachTo(int glProgId)
-		{
-			DualityApp.GuardSingleThreadState();
-			if (!this.compiled) this.Compile();
-			GL.AttachShader(glProgId, this.glShaderId);
-		}
-		internal void DetachFrom(int glProgId)
-		{
-			DualityApp.GuardSingleThreadState();
-			GL.DetachShader(glProgId, this.glShaderId);
 		}
 
 		protected override void OnLoaded()
