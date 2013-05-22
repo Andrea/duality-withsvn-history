@@ -203,8 +203,13 @@ namespace Duality.Resources
 			this.vert = v;
 			this.frag = f;
 
-			if (this.vert.IsAvailable) this.vert.Res.AttachTo(this.glProgramId);
-			if (this.frag.IsAvailable) this.frag.Res.AttachTo(this.glProgramId);
+			// Assure both shaders are compiled
+			if (this.vert.IsAvailable) this.vert.Res.Compile();
+			if (this.frag.IsAvailable) this.frag.Res.Compile();
+			
+			// Attach both shaders
+			if (this.vert.IsAvailable) GL.AttachShader(this.glProgramId, this.vert.Res.OglShaderId);
+			if (this.frag.IsAvailable) GL.AttachShader(this.glProgramId, this.frag.Res.OglShaderId);
 		}
 		/// <summary>
 		/// Detaches <see cref="VertexShader">Vertex-</see> and <see cref="FragmentShader"/> from the ShaderProgram.
@@ -213,8 +218,20 @@ namespace Duality.Resources
 		{
 			if (this.glProgramId == 0) return;
 			this.compiled = false;
-			if (this.frag.IsLoaded) this.frag.Res.DetachFrom(this.glProgramId);
-			if (this.vert.IsLoaded) this.vert.Res.DetachFrom(this.glProgramId);
+
+			// Determine currently attached shaders
+			int[] attachedShaders = new int[10];
+			int attachCount = 0;
+			unsafe
+			{
+				GL.GetAttachedShaders(this.glProgramId, attachedShaders.Length, &attachCount, attachedShaders);
+			}
+
+			// Detach all attached shaders
+			for (int i = 0; i < attachCount; i++)
+			{
+				GL.DetachShader(this.glProgramId, attachedShaders[i]);
+			}
 		}
 
 		/// <summary>
@@ -235,7 +252,7 @@ namespace Duality.Resources
 			if (result == 0)
 			{
 				string infoLog = GL.GetProgramInfoLog(this.glProgramId);
-				Log.Core.WriteError("Error compiling shader program. InfoLog:\n{0}", infoLog);
+				Log.Core.WriteError("Error linking shader program. InfoLog:\n{0}", infoLog);
 				return;
 			}
 			this.compiled = true;
