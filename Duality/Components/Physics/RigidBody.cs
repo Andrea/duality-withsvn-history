@@ -172,10 +172,10 @@ namespace Duality.Components.Physics
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The bodies overall friction value.
+		/// [GET / SET] The bodies overall friction value. Usually a value between 0.0 and 1.0, but higher values can be used to indicate unusually strong friction.
 		/// </summary>
 		[EditorHintIncrement(0.05f)]
-		[EditorHintRange(0.0f, 1.0f)]
+		[EditorHintRange(0.0f, 10000.0f)]
 		public float Friction
 		{
 			get { return this.shapes == null || this.shapes.Count == 0 ? 0.0f : this.shapes.Average(s => s.Friction); }
@@ -189,7 +189,7 @@ namespace Duality.Components.Physics
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The bodies overall restitution value.
+		/// [GET / SET] The bodies overall restitution value. Should be a value between 0.0 and 1.0.
 		/// </summary>
 		[EditorHintIncrement(0.05f)]
 		[EditorHintRange(0.0f, 1.0f)]

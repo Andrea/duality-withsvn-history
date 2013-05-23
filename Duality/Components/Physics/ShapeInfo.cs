@@ -60,17 +60,17 @@ namespace Duality.Components.Physics
 			set { this.sensor = value; this.UpdateFixture(); }
 		}
 		/// <summary>
-		/// [GET / SET] The shapes friction value.
+		/// [GET / SET] The shapes friction value. Usually a value between 0.0 and 1.0, but higher values can be used to indicate unusually strong friction.
 		/// </summary>
 		[EditorHintIncrement(0.05f)]
-		[EditorHintRange(0.0f, 1.0f)]
+		[EditorHintRange(0.0f, 10000.0f)]
 		public float Friction
 		{
 			get { return this.friction; }
 			set { this.friction = value; this.UpdateFixture(); }
 		}
 		/// <summary>
-		/// [GET / SET] The shapes restitution value.
+		/// [GET / SET] The shapes restitution value. Should be a value between 0.0 and 1.0.
 		/// </summary>
 		[EditorHintIncrement(0.05f)]
 		[EditorHintRange(0.0f, 1.0f)]
