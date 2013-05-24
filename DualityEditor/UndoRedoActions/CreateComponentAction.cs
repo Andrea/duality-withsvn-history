@@ -58,7 +58,7 @@ namespace DualityEditor.UndoRedoActions
 			{
 				Component obj = this.targetObj[i];
 
-				foreach (Type required in obj.GetRequiredComponents())
+				foreach (Type required in obj.GetRequiredComponents().Reverse())
 				{
 					if (this.targetParentObj.GetComponent(required) != null) continue;
 					obj = required.CreateInstanceOf() as Component;

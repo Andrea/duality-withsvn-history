@@ -133,7 +133,7 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
-				launcherWindow.CursorVisible = System.Diagnostics.Debugger.IsAttached;
+				launcherWindow.CursorVisible = System.Diagnostics.Debugger.IsAttached || DualityApp.UserData.SystemCursorVisible;
 				launcherWindow.VSync = debugging ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
 				launcherWindow.Run();
 			}
