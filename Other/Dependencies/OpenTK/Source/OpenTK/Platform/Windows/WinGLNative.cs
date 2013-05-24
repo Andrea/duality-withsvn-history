@@ -70,6 +70,7 @@ namespace OpenTK.Platform.Windows
         WindowState windowState = WindowState.Normal;
         bool borderless_maximized_window_state = false; // Hack to get maximized mode with hidden border (not normally possible).
         bool focused;
+		bool cursor_visible = true;
         bool mouse_outside_window = true;
         bool invisible_since_creation; // Set by WindowsMessage.CREATE and consumed by Visible = true (calls BringWindowToFront).
         int suppress_resize; // Used in WindowBorder and WindowState in order to avoid rapid, consecutive resize events.
@@ -93,7 +94,6 @@ namespace OpenTK.Platform.Windows
 
         KeyPressEventArgs key_press = new KeyPressEventArgs((char)0);
 
-        int cursor_visible_count = 0;
 
         static readonly object SyncRoot = new object();
 
@@ -213,10 +213,6 @@ namespace OpenTK.Platform.Windows
                                 if (suppress_resize <= 0)
                                     Resize(this, EventArgs.Empty);
                             }
-
-                            // Ensure cursor remains grabbed
-                            if (!CursorVisible)
-                                GrabCursor();
                         }
                     }
                     break;
@@ -235,10 +231,6 @@ namespace OpenTK.Platform.Windows
                                 windowBorder = WindowBorder.Fixed;
                         }
                     }
-
-                    // Ensure cursor remains grabbed
-                    if (!CursorVisible)
-                        GrabCursor();
                     
                     break;
 
@@ -261,10 +253,6 @@ namespace OpenTK.Platform.Windows
                         WindowStateChanged(this, EventArgs.Empty);
                     }
 
-                    // Ensure cursor remains grabbed
-                    if (!CursorVisible)
-                        GrabCursor();
-
                     break;
 
                 #endregion
@@ -285,6 +273,9 @@ namespace OpenTK.Platform.Windows
                         (short)((uint)lParam.ToInt32() & 0x0000FFFF),
                         (short)(((uint)lParam.ToInt32() & 0xFFFF0000) >> 16));
                     mouse.Position = point;
+					
+					if (!CursorVisible)
+						HideCursor();
 
                     if (mouse_outside_window)
                     {
@@ -300,6 +291,9 @@ namespace OpenTK.Platform.Windows
                 case WindowMessage.MOUSELEAVE:
                     mouse_outside_window = true;
                     // Mouse tracking is disabled automatically by the OS
+					
+					if (!CursorVisible)
+						ShowCursor();
 
                     MouseLeave(this, EventArgs.Empty);
                     break;
@@ -667,6 +661,26 @@ namespace OpenTK.Platform.Windows
                     Marshal.GetLastWin32Error()));
         }
 
+		void ShowCursor()
+		{
+			int cursor_visible_count;
+            do
+            {
+                cursor_visible_count = Functions.ShowCursor(true);
+            }
+            while (cursor_visible_count < 0);
+		}
+
+		void HideCursor()
+		{
+			int cursor_visible_count;
+            do
+            {
+                cursor_visible_count = Functions.ShowCursor(false);
+            }
+            while (cursor_visible_count >= 0);
+		}
+
         #endregion
 
         #region INativeWindow Members
@@ -894,29 +908,14 @@ namespace OpenTK.Platform.Windows
         
         public bool CursorVisible
         {
-            get { return cursor_visible_count >= 0; } // Not used
+            get { return this.cursor_visible; } // Not used
             set
             {
-                if (value && cursor_visible_count < 0)
-                {
-                    do
-                    {
-                        cursor_visible_count = Functions.ShowCursor(true);
-                    }
-                    while (cursor_visible_count < 0);
-
-                    UngrabCursor();
-                }
-                else if (!value && cursor_visible_count >= 0)
-                {
-                    do
-                    {
-                        cursor_visible_count = Functions.ShowCursor(false);
-                    }
-                    while (cursor_visible_count >= 0);
-
-                    GrabCursor();
-                }
+				this.cursor_visible = value;
+				if (value)
+					this.ShowCursor();
+				else if (!this.mouse_outside_window)
+					this.HideCursor();
             }
         }
         

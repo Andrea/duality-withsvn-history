@@ -58,16 +58,17 @@ namespace Duality
 	[Serializable]
 	public class DualityUserData
 	{
-		private	string		userName		= "Unknown";
-		private	int			gfxWidth		= 800;
-		private	int			gfxHeight		= 600;
-		private	ScreenMode	gfxMode			= ScreenMode.Window;
-		private	AAQuality	gfxAAQuality	= AAQuality.High;
-		private	float		sfxEffectVol	= 1.0f;
-		private	float		sfxSpeechVol	= 1.0f;
-		private	float		sfxMusicVol		= 1.0f;
-		private	float		sfxMasterVol	= 1.0f;
-		private	object		customData		= null;
+		private	string		userName			= "Unknown";
+		private	int			gfxWidth			= 800;
+		private	int			gfxHeight			= 600;
+		private	ScreenMode	gfxMode				= ScreenMode.Window;
+		private	AAQuality	gfxAAQuality		= AAQuality.High;
+		private	float		sfxEffectVol		= 1.0f;
+		private	float		sfxSpeechVol		= 1.0f;
+		private	float		sfxMusicVol			= 1.0f;
+		private	float		sfxMasterVol		= 1.0f;
+		private	bool		systemCursorVisible	= false;
+		private	object		customData			= null;
 
 		/// <summary>
 		/// [GET / SET] The player's name. This may be his main character's name or simply remain unused.
@@ -108,6 +109,14 @@ namespace Duality
 		{
 			get { return this.gfxAAQuality; }
 			set { this.gfxAAQuality = value; }
+		}
+		/// <summary>
+		/// [GET / SET] Determines whether or not the system cursor should be visible in windowed mode.
+		/// </summary>
+		public bool SystemCursorVisible
+		{
+			get { return this.systemCursorVisible; }
+			set { this.systemCursorVisible = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Volume factor of sound effects. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
