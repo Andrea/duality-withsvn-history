@@ -242,7 +242,7 @@ namespace EditorBase.PropertyEditors
 					Type editType = typeof(float);
 					if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
 
-					if (oldEditor.EditedType == editType)
+					if (oldEditor != null && oldEditor.EditedType == editType)
 						return oldEditor;
 					else
 					{
@@ -264,7 +264,7 @@ namespace EditorBase.PropertyEditors
 				}
 				else if (varInfo.type == ShaderVarType.Vec2)
 				{
-					if (oldEditor.EditedType == typeof(Vector2))
+					if (oldEditor != null && oldEditor.EditedType == typeof(Vector2))
 						return oldEditor;
 					else
 					{
@@ -278,7 +278,7 @@ namespace EditorBase.PropertyEditors
 				}
 				else if (varInfo.type == ShaderVarType.Vec3)
 				{
-					if (oldEditor.EditedType == typeof(Vector3))
+					if (oldEditor != null && oldEditor.EditedType == typeof(Vector3))
 						return oldEditor;
 					else
 					{
@@ -292,7 +292,7 @@ namespace EditorBase.PropertyEditors
 				}
 				else
 				{
-					if (oldEditor.EditedType == typeof(float[]))
+					if (oldEditor != null && oldEditor.EditedType == typeof(float[]))
 						return oldEditor;
 					else
 					{
