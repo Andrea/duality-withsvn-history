@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Reflection;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Duality.Serialization
 {
@@ -7,18 +10,23 @@ namespace Duality.Serialization
 	/// </summary>
 	public class ObjectIdManager
 	{
-		private	uint	idCounter	= 0;
-		private	Dictionary<object,uint>	objRefIdMap	= new Dictionary<object,uint>();
-		private	Dictionary<uint,object>	idObjRefMap	= new Dictionary<uint,object>();
+		private	int							idLevel			= 0;
+		private	List<Dictionary<Type,uint>>	idCounter		= new List<Dictionary<Type,uint>> { new Dictionary<Type,uint>() };
+		private	Dictionary<object,uint>		objRefIdMap		= new Dictionary<object,uint>();
+		private	Dictionary<uint,object>		idObjRefMap		= new Dictionary<uint,object>();
+		private	Dictionary<Type,uint>		typeHashCache	= new Dictionary<Type,uint>();
 
 		/// <summary>
 		/// Clears all object id mappings.
 		/// </summary>
 		public void Clear()
 		{
+			this.typeHashCache.Clear();
 			this.objRefIdMap.Clear();
 			this.idObjRefMap.Clear();
-			this.idCounter = 0;
+			this.idCounter.Clear();
+			this.idCounter.Add(new Dictionary<Type,uint>());
+			this.idLevel = 0;
 		}
 		/// <summary>
 		/// Returns the id that is assigned to the specified object. Assigns one, if
@@ -36,7 +44,28 @@ namespace Duality.Serialization
 				return id;
 			}
 
-			id = ++idCounter;
+			Type objType = obj != null ? obj.GetType() : typeof(object);
+			Dictionary<Type,uint> typeCounter = this.idCounter[this.idLevel];
+			if (!typeCounter.TryGetValue(objType, out id))
+				id = 0;
+			unchecked
+			{
+				const uint p = 16777619;
+				uint typeHash;
+				if (!this.typeHashCache.TryGetValue(objType, out typeHash))
+				{
+					typeHash = (uint)objType.GetTypeId().GetHashCode();
+					this.typeHashCache[objType] = typeHash;
+				}
+				uint idLevelHash = (uint)this.idLevel.GetHashCode() ^ typeHash;
+
+				while (this.idObjRefMap.ContainsKey(id))
+				{
+					id = (id ^ idLevelHash) * p;
+				}
+			}
+			typeCounter[objType] = id;
+
 			this.objRefIdMap[obj] = id;
 			this.idObjRefMap[id] = obj;
 
@@ -64,6 +93,17 @@ namespace Duality.Serialization
 		public bool Lookup(uint id, out object obj)
 		{
 			return this.idObjRefMap.TryGetValue(id, out obj);
+		}
+
+		public void PushIdLevel()
+		{
+			this.idCounter.Add(new Dictionary<Type,uint>());
+			this.idLevel++;
+		}
+		public void PopIdLevel()
+		{
+			if (this.idLevel == 0) throw new InvalidOperationException("Can't pop persistent id level, because it is already zero / root");
+			this.idLevel--;
 		}
 	}
 }

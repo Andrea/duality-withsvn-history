@@ -336,6 +336,7 @@ namespace Duality.Serialization
 			// Write object
 			try 
 			{
+				this.idManager.PushIdLevel();
 				this.WriteObjectBody(dataType, obj, objSerializeType, objId);
 			}
 			catch (Exception e)
@@ -346,6 +347,7 @@ namespace Duality.Serialization
 			finally
 			{
 				this.writer.WriteEndElement();
+				this.idManager.PopIdLevel();
 			}
 		}
 		/// <summary>
