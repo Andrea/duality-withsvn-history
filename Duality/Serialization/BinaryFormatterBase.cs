@@ -480,12 +480,14 @@ namespace Duality.Serialization
 			try
 			{
 				// Write object
+				this.idManager.PushIdLevel();
 				this.WriteObjectBody(dataType, obj, objSerializeType, objId);
 			}
 			finally
 			{
 				// Write object footer
 				this.WritePopOffset();
+				this.idManager.PopIdLevel();
 			}
 		}
 		/// <summary>
