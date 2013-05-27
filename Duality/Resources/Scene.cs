@@ -681,6 +681,7 @@ namespace Duality.Resources
 				obj.OnSaving();
 
 			this.serializeObj = this.objectManager.AllObjects.ToArray();
+			this.serializeObj.StableSort(SerializeGameObjectComparison);
 		}
 		protected override void OnSaved()
 		{
@@ -723,6 +724,23 @@ namespace Duality.Resources
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
 			this.objectManager.Clear();
 			foreach (GameObject g in obj) g.DisposeLater();
+		}
+
+		private static int SerializeGameObjectComparison(GameObject a, GameObject b)
+		{
+			int depthA = 0;
+			int depthB = 0;
+			while (a.Parent != null)
+			{
+				a = a.Parent;
+				++depthA;
+			}
+			while (b.Parent != null)
+			{
+				b = b.Parent;
+				++depthB;
+			}
+			return depthA - depthB;
 		}
 	}
 }
