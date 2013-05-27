@@ -235,30 +235,40 @@ namespace Duality
 		/// </summary>
 		/// <param name="list"></param>
 		/// <returns></returns>
-		public static int GetCombinedHashCode(this IList<byte> list)
-		{ unchecked {
-			const int p = 16777619;
-			int hash = (int)2166136261;
+		public static int GetCombinedHashCode(this IList<byte> list, int firstIndex = 0, int length = -1)
+		{
+			if (length == -1) length = list.Count;
+			int endIndex = length < 0 ? list.Count - firstIndex : firstIndex + length;
+			unchecked
+			{
+				const int p = 16777619;
+				int hash = (int)2166136261;
 
-			for (int i = 0; i < list.Count; i++)
-				hash = (hash ^ list[i]) * p;
-
-			return hash;
-		} }
+				for (int i = firstIndex; i < endIndex; i++)
+					hash = (hash ^ list[i]) * p;
+			
+				return hash;
+			}
+		}
 		/// <summary>
 		/// Returns the combined hash code of the specified list.
 		/// </summary>
 		/// <param name="list"></param>
 		/// <returns></returns>
-		public static int GetCombinedHashCode<T>(this IList<T> list)
-		{ unchecked {
-			const int p = 16777619;
-			int hash = (int)2166136261;
+		public static int GetCombinedHashCode<T>(this IList<T> list, int firstIndex = 0, int length = -1)
+		{
+			if (length == -1) length = list.Count;
+			int endIndex = length < 0 ? list.Count - firstIndex : firstIndex + length;
+			unchecked
+			{
+				const int p = 16777619;
+				int hash = (int)2166136261;
 
-			for (int i = 0; i < list.Count; i++)
-				hash = (hash ^ list[i].GetHashCode()) * p;
+				for (int i = firstIndex; i < endIndex; i++)
+					hash = (hash ^ list[i].GetHashCode()) * p;
 			
-			return hash;
-		} }
+				return hash;
+			}
+		}
 	}
 }

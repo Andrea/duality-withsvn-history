@@ -11,7 +11,8 @@ namespace Duality.Serialization
 	public class ObjectIdManager
 	{
 		private	int							idLevel			= 0;
-		private	List<Dictionary<Type,uint>>	idCounter		= new List<Dictionary<Type,uint>> { new Dictionary<Type,uint>() };
+		private	List<uint>					idCounter		= new List<uint> { 0 };
+		private	int							idStackHash		= 0;
 		private	Dictionary<object,uint>		objRefIdMap		= new Dictionary<object,uint>();
 		private	Dictionary<uint,object>		idObjRefMap		= new Dictionary<uint,object>();
 		private	Dictionary<Type,uint>		typeHashCache	= new Dictionary<Type,uint>();
@@ -25,7 +26,7 @@ namespace Duality.Serialization
 			this.objRefIdMap.Clear();
 			this.idObjRefMap.Clear();
 			this.idCounter.Clear();
-			this.idCounter.Add(new Dictionary<Type,uint>());
+			this.idCounter.Add(0);
 			this.idLevel = 0;
 		}
 		/// <summary>
@@ -44,27 +45,18 @@ namespace Duality.Serialization
 				return id;
 			}
 
-			Type objType = obj != null ? obj.GetType() : typeof(object);
-			Dictionary<Type,uint> typeCounter = this.idCounter[this.idLevel];
-			if (!typeCounter.TryGetValue(objType, out id))
-				id = 0;
+			id = this.idCounter[this.idLevel];
 			unchecked
 			{
 				const uint p = 16777619;
-				uint typeHash;
-				if (!this.typeHashCache.TryGetValue(objType, out typeHash))
-				{
-					typeHash = (uint)objType.GetTypeId().GetHashCode();
-					this.typeHashCache[objType] = typeHash;
-				}
-				uint idLevelHash = (uint)this.idLevel.GetHashCode() ^ typeHash;
+				uint idLevelHash = (uint)this.idStackHash;
 
 				while (this.idObjRefMap.ContainsKey(id))
 				{
 					id = (id ^ idLevelHash) * p;
 				}
 			}
-			typeCounter[objType] = id;
+			this.idCounter[this.idLevel] = id;
 
 			this.objRefIdMap[obj] = id;
 			this.idObjRefMap[id] = obj;
@@ -95,15 +87,23 @@ namespace Duality.Serialization
 			return this.idObjRefMap.TryGetValue(id, out obj);
 		}
 
+		/// <summary>
+		/// Increases the reference hierarchy level of the object id generator. Each level of id generation uses its own algorithm, so different levels of ids are unlikely to affect each other.
+		/// </summary>
 		public void PushIdLevel()
 		{
-			this.idCounter.Add(new Dictionary<Type,uint>());
+			this.idCounter.Add(0);
 			this.idLevel++;
+			this.idStackHash = this.idCounter.GetCombinedHashCode(0, this.idLevel);
 		}
+		/// <summary>
+		/// Decreases the reference hierarchy level of the object id generator. Each level of id generation uses its own algorithm, so different levels of ids are unlikely to affect each other.
+		/// </summary>
 		public void PopIdLevel()
 		{
 			if (this.idLevel == 0) throw new InvalidOperationException("Can't pop persistent id level, because it is already zero / root");
 			this.idLevel--;
+			this.idStackHash = this.idCounter.GetCombinedHashCode(0, this.idLevel);
 		}
 	}
 }
