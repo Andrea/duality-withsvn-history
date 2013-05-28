@@ -143,31 +143,19 @@ namespace EditorBase.CamViewStates
 				if (action == ObjectAction.Rotate) return false;
 				return base.IsActionAvailable(action);
 			}
-			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
+			public override string UpdateActionText(ObjectAction action, bool performing)
 			{
-				base.DrawActionGizmo(canvas, action, curLoc, performing);
-				curLoc.X = MathF.Round(curLoc.X);
-				curLoc.Y = MathF.Round(curLoc.Y);
-
-				string[] text = null;
-
 				if (action == ObjectAction.Move)
 				{
-					text = new string[] {
-						string.Format("Center X:{0,7:0.00}", this.circle.Position.X),
-						string.Format("Center Y:{0,7:0.00}", this.circle.Position.Y)
-					};
+					return
+						string.Format("Center X:{0,9:0.00}/n", this.circle.Position.X) +
+						string.Format("Center Y:{0,9:0.00}", this.circle.Position.Y);
 				}
 				else if (action == ObjectAction.Scale)
 				{
-					text = new string[] { string.Format("Radius:{0,7:0.00}", this.circle.Radius) };
+					return string.Format("Radius:{0,8:0.00}", this.circle.Radius);
 				}
-
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, curLoc.X, curLoc.Y);
-					canvas.DrawText(text, curLoc.X, curLoc.Y);
-				}
+				return base.UpdateActionText(action, performing);
 			}
 		}
 		public class SelPolyShape : SelShape
@@ -223,44 +211,32 @@ namespace EditorBase.CamViewStates
 				this.UpdatePolyStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
+			public override string UpdateActionText(ObjectAction action, bool performing)
 			{
-				base.DrawActionGizmo(canvas, action, curLoc, performing);
-				curLoc.X = MathF.Round(curLoc.X);
-				curLoc.Y = MathF.Round(curLoc.Y);
-
-				string[] text = null;
 				if (action == ObjectAction.Move)
 				{
-					text = new string[] {
-						string.Format("Center X:{0,7:0.00}", this.center.X),
-						string.Format("Center Y:{0,7:0.00}", this.center.Y)
-					};
+					return
+						string.Format("Center X:{0,9:0.00}/n", this.center.X) +
+						string.Format("Center Y:{0,9:0.00}", this.center.Y);
 				}
 				else if (action == ObjectAction.Scale)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
-						text = new string[] {
-							string.Format("Scale X:{0,7:0.00}", this.scale.X),
-							string.Format("Scale Y:{0,7:0.00}", this.scale.Y)
-						};
+						return
+							string.Format("Scale X:{0,8:0.00}/n", this.scale.X) +
+							string.Format("Scale Y:{0,8:0.00}", this.scale.Y);
 					}
 					else
 					{
-						text = new string[] { string.Format("Scale:{0,7:0.00}", this.scale.X) };
+						return string.Format("Scale:{0,8:0.00}", this.scale.X);
 					}
 				}
 				else if (action == ObjectAction.Rotate)
 				{
-					text = new string[] { string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)) };
+					return string.Format("Angle:{0,6:0.0}°", MathF.RadToDeg(this.angle));
 				}
-
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, curLoc.X, curLoc.Y);
-					canvas.DrawText(text, curLoc.X, curLoc.Y);
-				}
+				return base.UpdateActionText(action, performing);
 			}
 
 			public void UpdatePolyStats()
@@ -373,44 +349,32 @@ namespace EditorBase.CamViewStates
 				this.UpdateLoopStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
+			public override string UpdateActionText(ObjectAction action, bool performing)
 			{
-				base.DrawActionGizmo(canvas, action, curLoc, performing);
-				curLoc.X = MathF.Round(curLoc.X);
-				curLoc.Y = MathF.Round(curLoc.Y);
-
-				string[] text = null;
 				if (action == ObjectAction.Move)
 				{
-					text = new string[] {
-						string.Format("Center X:{0,7:0.00}", this.center.X),
-						string.Format("Center Y:{0,7:0.00}", this.center.Y)
-					};
+					return
+						string.Format("Center X:{0,9:0.00}/n", this.center.X) +
+						string.Format("Center Y:{0,9:0.00}", this.center.Y);
 				}
 				else if (action == ObjectAction.Scale)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
-						text = new string[] {
-							string.Format("Scale X:{0,7:0.00}", this.scale.X),
-							string.Format("Scale Y:{0,7:0.00}", this.scale.Y)
-						};
+						return
+							string.Format("Scale X:{0,8:0.00}/n", this.scale.X) +
+							string.Format("Scale Y:{0,8:0.00}", this.scale.Y);
 					}
 					else
 					{
-						text = new string[] { string.Format("Scale:{0,7:0.00}", this.scale.X) };
+						return string.Format("Scale:{0,8:0.00}", this.scale.X);
 					}
 				}
 				else if (action == ObjectAction.Rotate)
 				{
-					text = new string[] { string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)) };
+					return string.Format("Angle:{0,6:0.0}°", MathF.RadToDeg(this.angle));
 				}
-
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, curLoc.X, curLoc.Y);
-					canvas.DrawText(text, curLoc.X, curLoc.Y);
-				}
+				return base.UpdateActionText(action, performing);
 			}
 
 			public void UpdateLoopStats()

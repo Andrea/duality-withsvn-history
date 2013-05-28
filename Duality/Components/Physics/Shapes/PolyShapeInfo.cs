@@ -30,7 +30,11 @@ namespace Duality.Components.Physics
 		public Vector2[] Vertices
 		{
 			get { return this.vertices; }
-			set { this.vertices = value; this.UpdateFixture(true); }
+			set
+			{
+				this.vertices = value ?? new Vector2[0];
+				this.UpdateFixture(true);
+			}
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override Rect AABB
@@ -97,6 +101,25 @@ namespace Duality.Components.Physics
 			{
 				Array.Resize(ref sortedVertices, MaxVertices);
 				Log.Core.WriteWarning("Maximum Polygon Shape vertex count exceeded: {0} > {1}", this.vertices.Length, MaxVertices);
+			}
+
+			// Don't let all vertices be aligned on one axis (zero-area polygons)
+			if (sortedVertices.Length > 0)
+			{
+				Vector2 firstVertex = sortedVertices[0];
+				bool alignX = true;
+				bool alignY = true;
+				for (int i = 0; i < sortedVertices.Length; i++)
+				{
+					if (sortedVertices[i].X != firstVertex.X)
+						alignX = false;
+					if (sortedVertices[i].Y != firstVertex.Y)
+						alignY = false;
+					if (!alignX && !alignY)
+						break;
+				}
+				if (alignX) sortedVertices[0].X += 0.01f;
+				if (alignY) sortedVertices[0].Y += 0.01f;
 			}
 
 			// Sort vertices clockwise before submitting them to Farseer

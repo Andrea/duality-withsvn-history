@@ -257,7 +257,7 @@ namespace EditorBase
 		}
 		public void AddEntry(IEnumerable<DataLogOutput.LogEntry> entries)
 		{
-			foreach (var entry in entries.ToArray())
+			foreach (DataLogOutput.LogEntry entry in entries)
 			{
 				ViewEntry viewEntry = new ViewEntry(entry);
 				this.entryList.Add(viewEntry);
@@ -615,13 +615,22 @@ namespace EditorBase
 		
 		private void timerLogSchedule_Tick(object sender, EventArgs e)
 		{
-			this.ProcessIncomingEntries(this.logSchedule);
-			this.logSchedule.Clear();
+			// Process a clone of the logSchedule to prevent any interference due to cross-thread logs
+			DataLogOutput.LogEntry[] logScheduleArray = null;
+			lock (this.logSchedule)
+			{
+				logScheduleArray = this.logSchedule.ToArray();
+				this.logSchedule.Clear();
+			}
+			this.ProcessIncomingEntries(logScheduleArray);
 			this.timerLogSchedule.Enabled = false;
 		}
 		private void boundOutput_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			this.logSchedule.Add(e.Entry);
+			lock (this.logSchedule)
+			{
+				this.logSchedule.Add(e.Entry);
+			}
 			if (!this.timerLogSchedule.Enabled)
 			{
 				// Don't use a synchronous Invoke. It will block while the BuildManager is active (why?)

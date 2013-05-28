@@ -457,7 +457,7 @@ namespace Duality
 					{
 						if (stopAtLineBreak)	return null;
 						else					this.PerformNewLine();
-						if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
+						if (this.parent.maxHeight != 0 && this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 					}
 
 					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
@@ -525,7 +525,7 @@ namespace Duality
 					this.elemIndex++;
 					if (stopAtLineBreak)	return null;
 					else					this.PerformNewLine();
-					if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
+					if (this.parent.maxHeight != 0 && this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 				}
 
 				return elem;
@@ -639,7 +639,21 @@ namespace Duality
 		public string SourceText
 		{
 			get { return this.sourceText; }
-			set { this.ApplySource(value); }
+			set
+			{
+				if (value == null) value = "";
+				if (this.sourceText != value)
+				{
+					this.ApplySource(value);
+				}
+			}
+		}
+		/// <summary>
+		/// [GET] Returns whether the text is empty.
+		/// </summary>
+		public bool IsEmpty
+		{
+			get { return string.IsNullOrEmpty(this.sourceText); }
 		}
 		/// <summary>
 		/// [GET / SET] A set of icons that is available in the text.
@@ -889,6 +903,13 @@ namespace Duality
 			this.fontGlyphCount = fontGlyphCounter.ToArray();
 			this.displayedText = displayedTextBuilder.ToString();
 			this.elements = elemList.ToArray();
+		}
+		/// <summary>
+		/// Clears the text.
+		/// </summary>
+		public void Clear()
+		{
+			this.ApplySource("");
 		}
 		
 		/// <summary>

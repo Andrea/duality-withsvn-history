@@ -448,6 +448,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Loop... ähnelt.
+        /// </summary>
+        public static string ColliderEditor_CreateLoop {
+            get {
+                return ResourceManager.GetString("ColliderEditor_CreateLoop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create Polygon... ähnelt.
         /// </summary>
         public static string ColliderEditor_CreatePolygon {
