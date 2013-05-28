@@ -82,39 +82,25 @@ namespace EditorBase.CamViewStates
 				if (action == ObjectAction.Scale) return true;
 				return false;
 			}
-			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
+			public override string UpdateActionText(ObjectAction action, bool performing)
 			{
-				base.DrawActionGizmo(canvas, action, curLoc, performing);
-				curLoc.X = MathF.Round(curLoc.X);
-				curLoc.Y = MathF.Round(curLoc.Y);
-
-				string[] text = null;
 				if (action == ObjectAction.Move)
 				{
-					text = new string[] {
-						string.Format("X:{0,7:0}", this.gameObj.Transform.RelativePos.X),
-						string.Format("Y:{0,7:0}", this.gameObj.Transform.RelativePos.Y),
-						string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z)
-					};
+					return
+						string.Format("X:{0,7:0}/n", this.gameObj.Transform.RelativePos.X) +
+						string.Format("Y:{0,7:0}/n", this.gameObj.Transform.RelativePos.Y) +
+						string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z);
 				}
 				else if (action == ObjectAction.Scale)
 				{
-					text = new string[] {
-						string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale)
-					};
+					return string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale);
 				}
 				else if (action == ObjectAction.Rotate)
 				{
-					text = new string[] {
-						string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle))
-					};
+					return string.Format("Angle:{0,5:0}°", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle));
 				}
 
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, curLoc.X, curLoc.Y);
-					canvas.DrawText(text, curLoc.X, curLoc.Y);
-				}
+				return base.UpdateActionText(action, performing);
 			}
 		}
 

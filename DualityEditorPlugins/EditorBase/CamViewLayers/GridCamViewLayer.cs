@@ -112,11 +112,11 @@ namespace EditorBase.CamViewLayers
 		protected internal override void OnCollectOverlayDrawcalls(Canvas canvas)
 		{
 			base.OnCollectOverlayDrawcalls(canvas);
-			bool noAction = this.View.ActiveState.VisibleAction == CamViewState.ObjectAction.None;
+			bool noActionText = string.IsNullOrEmpty(this.View.ActiveState.ActionText);
 			bool mouseover = this.View.ActiveState.Mouseover;
 
 			Point cursorPos = this.PointToClient(Cursor.Position);
-			if (noAction && mouseover &&
+			if (noActionText && mouseover &&
 				cursorPos.X > 0 && cursorPos.X < this.ClientSize.Width &&
 				cursorPos.Y > 0 && cursorPos.Y < this.ClientSize.Height)
 			{

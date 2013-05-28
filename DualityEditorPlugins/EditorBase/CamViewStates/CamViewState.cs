@@ -48,7 +48,7 @@ namespace EditorBase.CamViewStates
 			RectSelect,
 			Move,
 			Rotate,
-			Scale
+			Scale,
 		}
 		public abstract class SelObj : IEquatable<SelObj>
 		{
@@ -88,7 +88,10 @@ namespace EditorBase.CamViewStates
 				if (action == ObjectAction.Move) return true;
 				return false;
 			}
-			public virtual void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing) {}
+			public virtual string UpdateActionText(ObjectAction action, bool performing)
+			{
+				return null;
+			}
 			
 			public override bool Equals(object obj)
 			{
@@ -125,6 +128,8 @@ namespace EditorBase.CamViewStates
 		}
 
 
+		private static readonly ContentRef<Duality.Resources.Font> OverlayFont = Duality.Resources.Font.GenericMonospace8;
+
 		private Vector3			camVel					= Vector3.Zero;
 		private	float			camAngleVel				= 0.0f;
 		private	Point			camActionBeginLoc		= Point.Empty;
@@ -154,6 +159,8 @@ namespace EditorBase.CamViewStates
 		private	bool			mouseover			= false;
 		private	CameraAction	drawCamGizmoState	= CameraAction.None;
 		private	ObjectAction	drawSelGizmoState	= ObjectAction.None;
+		private	FormattedText	statusText			= new FormattedText();
+		private	FormattedText	actionText			= new FormattedText();
 		private	List<Type>		lastActiveLayers	= new List<Type>();
 		protected	List<SelObj>	actionObjSel	= new List<SelObj>();
 		protected	List<SelObj>	allObjSel		= new List<SelObj>();
@@ -242,9 +249,13 @@ namespace EditorBase.CamViewStates
 					ObjectAction.None)));
 			}
 		}
-		protected bool CameraTransformChanged
+		public string StatusText
 		{
-			get { return this.camTransformChanged; }
+			get { return this.statusText.SourceText; }
+		}
+		public string ActionText
+		{
+			get { return this.actionText.SourceText; }
 		}
 
 
@@ -282,6 +293,7 @@ namespace EditorBase.CamViewStates
 			this.LocalGLControl.DragEnter	+= this.LocalGLControl_DragEnter;
 			this.LocalGLControl.DragLeave	+= this.LocalGLControl_DragLeave;
 			this.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
+			this.LocalGLControl.Resize		+= this.LocalGLControl_Resize;
 			this.View.PerspectiveChanged	+= this.View_FocusDistChanged;
 			this.View.CurrentCameraChanged	+= this.View_CurrentCameraChanged;
 			DualityEditorApp.UpdatingEngine += this.DualityEditorApp_UpdatingEngine;
@@ -299,6 +311,7 @@ namespace EditorBase.CamViewStates
 			
 			// Initial Camera update
 			this.OnCurrentCameraChanged(new CamView.CameraChangedEventArgs(null, this.CameraComponent));
+			this.UpdateFormattedTextRenderers();
 		}
 		internal protected virtual void OnLeaveState() 
 		{
@@ -317,6 +330,7 @@ namespace EditorBase.CamViewStates
 			this.LocalGLControl.DragEnter	-= this.LocalGLControl_DragEnter;
 			this.LocalGLControl.DragLeave	-= this.LocalGLControl_DragLeave;
 			this.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
+			this.LocalGLControl.Resize		-= this.LocalGLControl_Resize;
 			this.View.PerspectiveChanged			-= this.View_FocusDistChanged;
 			this.View.CurrentCameraChanged			-= this.View_CurrentCameraChanged;
 			DualityEditorApp.UpdatingEngine			-= this.DualityEditorApp_UpdatingEngine;
@@ -440,85 +454,101 @@ namespace EditorBase.CamViewStates
 					dotR);
 			}
 
-			// Draw action lock axes
-			this.DrawLockedAxes(canvas, this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
+			if (this.action != ObjectAction.None)
+			{
+				// Draw action lock axes
+				this.DrawLockedAxes(canvas, this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
+			}
 
 			canvas.PopState();
 		}
 		protected virtual void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
-			// Collect the views overlay layer drawcalls
-			this.CollectLayerOverlayDrawcalls(canvas);
-
+			// Gather general data
 			Point cursorPos = this.PointToClient(Cursor.Position);
 			ObjectAction visibleObjectAction = this.VisibleAction;
-			canvas.PushState();
 
-			// Draw camera movement indicators
-			if (this.camAction != CameraAction.None)
-			{
-				canvas.PushState();
-				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
-				if (this.camAction == CameraAction.DragScene)
-				{
-					// Don't draw anything.
-				}
-				else if (this.camAction == CameraAction.RotateScene)
-				{
-					canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-				}
-				else if (this.camAction == CameraAction.Move)
-				{
-					canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
-				}
-				else if (this.camAction == CameraAction.Rotate)
-				{
-					canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-				}
-				canvas.PopState();
-			}
-			
-			// Draw hovered / selected objects action gizmo
+			// Update action text from hovered / selection / action object
+			bool actionTextUpdated = false;
+			Vector2 actionTextPos = new Vector2(cursorPos.X + 30, cursorPos.Y + 10);
 			if (visibleObjectAction != ObjectAction.None && ((this.mouseoverObject != null && this.mouseoverSelect) || this.actionObjSel.Count == 1))
 			{
-				Vector2 pos;
 				SelObj obj;
 				if (this.mouseoverObject != null || this.mouseoverAction == visibleObjectAction)
 				{
 					obj = (this.mouseoverObject != null && this.mouseoverSelect) ? this.mouseoverObject : this.actionObjSel[0];
-					pos = new Vector2(cursorPos.X + 30, cursorPos.Y + 10);
 				}
 				else
 				{
 					obj = this.actionObjSel[0];
-					pos = this.GetScreenCoord(this.actionObjSel[0].Pos).Xy;
+					actionTextPos = this.GetScreenCoord(this.actionObjSel[0].Pos).Xy;
 				}
 
 				// If the SelObj is valid, draw the gizmo
 				if (obj.ActualObject != null)
 				{
-					canvas.PushState();
-					obj.DrawActionGizmo(canvas, visibleObjectAction, pos, false);
-					canvas.PopState();
+					actionTextUpdated = true;
+					this.actionText.SourceText = obj.UpdateActionText(visibleObjectAction, this.action != ObjectAction.None) ?? this.UpdateActionText();
 				}
 			}
+			if (!actionTextUpdated)
+				this.actionText.SourceText = this.UpdateActionText();
 
-			// Draw current state text
-			bool handled = false;
-			this.DrawStatusText(canvas, ref handled);
+			// Collect the views overlay layer drawcalls
+			this.CollectLayerOverlayDrawcalls(canvas);
 
-			// Draw rect selection
-			if (this.action == ObjectAction.RectSelect)
-				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
+			// Collect the states overlay drawcalls
+			canvas.PushState();
+			{
+				// Draw camera movement indicators
+				if (this.camAction != CameraAction.None)
+				{
+					canvas.PushState();
+					canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
+					if (this.camAction == CameraAction.DragScene)
+					{
+						// Don't draw anything.
+					}
+					else if (this.camAction == CameraAction.RotateScene)
+					{
+						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
+					}
+					else if (this.camAction == CameraAction.Move)
+					{
+						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
+					}
+					else if (this.camAction == CameraAction.Rotate)
+					{
+						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
+					}
+					canvas.PopState();
+				}
+			
+				// Draw current action text
+				if (!this.actionText.IsEmpty)
+				{
+					canvas.DrawTextBackground(this.actionText, actionTextPos.X, actionTextPos.Y);
+					canvas.DrawText(this.actionText, actionTextPos.X, actionTextPos.Y);
+				}
 
-			#if FALSE//DEBUG
-			canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.35f);
-			Performance.DrawAllMeasures(canvas);
-			#endif
+				// Update / Draw current status text
+				{
+					this.statusText.SourceText = this.UpdateStatusText();
+					if (!this.statusText.IsEmpty)
+					{
+						Vector2 statusTextSize = this.statusText.Measure().Size;
+						canvas.DrawTextBackground(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
+						canvas.DrawText(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
+					}
+				}
 
+				// Draw rect selection
+				if (this.action == ObjectAction.RectSelect)
+					canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
+			}
 			canvas.PopState();
 		}
 		protected virtual void OnCollectStateBackgroundDrawcalls(Canvas canvas)
@@ -526,68 +556,43 @@ namespace EditorBase.CamViewStates
 			// Collect the views overlay layer drawcalls
 			this.CollectLayerBackgroundDrawcalls(canvas);
 		}
-		protected virtual void DrawStatusText(Canvas canvas, ref bool handled)
+		protected virtual string UpdateStatusText()
 		{
-			Point cursorPos = this.PointToClient(Cursor.Position);
-			Size viewSize = this.ClientSize;
 			CameraAction visibleCamAction = this.drawCamGizmoState != CameraAction.None ? this.drawCamGizmoState : this.camAction;
 			ObjectAction visibleObjectAction = this.VisibleAction;
 
 			// Draw camera action hints
-			if (!handled)
+			if (visibleCamAction == CameraAction.Rotate || visibleCamAction == CameraAction.RotateScene)
 			{
-				int textYOff = -20;
-				string[] text = null;
-				if (visibleCamAction == CameraAction.Rotate || visibleCamAction == CameraAction.RotateScene)
+				return string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.CameraObj.Transform.Angle));
+			}
+			else if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
+			{
+				if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene)
 				{
-					text = new string[] { string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.CameraObj.Transform.Angle)) };
-					handled = true;
+					return
+						string.Format("Cam X:{0,7:0}/n", this.CameraObj.Transform.Pos.X) +
+						string.Format("Cam Y:{0,7:0}/n", this.CameraObj.Transform.Pos.Y) +
+						string.Format("Cam Z:{0,7:0}", this.CameraObj.Transform.Pos.Z);
 				}
-				else if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
+				else if (this.camVel.Z != 0.0f)
 				{
-					if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene)
-					{
-						text = new string[]
-						{
-							string.Format("Cam X:{0,7:0}", this.CameraObj.Transform.Pos.X),
-							string.Format("Cam Y:{0,7:0}", this.CameraObj.Transform.Pos.Y),
-							string.Format("Cam Z:{0,7:0}", this.CameraObj.Transform.Pos.Z)
-						};
-						textYOff -= canvas.CurrentState.TextFont.Res.LineSpacing * 2;
-						handled = true;
-					}
-					else if (this.camVel.Z != 0.0f)
-					{
-						text = new string[] { string.Format("Cam Z:{0,7:0}", this.CameraObj.Transform.Pos.Z) };
-						handled = true;
-					}
-				}
-
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, 10, viewSize.Height + textYOff);
-					canvas.DrawText(text, 10, viewSize.Height + textYOff);
+					return string.Format("Cam Z:{0,7:0}", this.CameraObj.Transform.Pos.Z);
 				}
 			}
 
 			// Draw action hints
-			if (!handled)
-			{
-				string text = null;
+			if (visibleObjectAction == ObjectAction.Move)				return PluginRes.EditorBaseRes.CamView_Action_Move;
+			else if (visibleObjectAction == ObjectAction.Rotate)		return PluginRes.EditorBaseRes.CamView_Action_Rotate;
+			else if (visibleObjectAction == ObjectAction.Scale)			return PluginRes.EditorBaseRes.CamView_Action_Scale;
+			else if (visibleObjectAction == ObjectAction.RectSelect)	return PluginRes.EditorBaseRes.CamView_Action_Select_Active;
 
-				if (visibleObjectAction == ObjectAction.Move)				text = PluginRes.EditorBaseRes.CamView_Action_Move;
-				else if (visibleObjectAction == ObjectAction.Rotate)		text = PluginRes.EditorBaseRes.CamView_Action_Rotate;
-				else if (visibleObjectAction == ObjectAction.Scale)			text = PluginRes.EditorBaseRes.CamView_Action_Scale;
-				else if (visibleObjectAction == ObjectAction.RectSelect)	text = PluginRes.EditorBaseRes.CamView_Action_Select_Active;
-
-				if (text != null)
-				{
-					canvas.DrawTextBackground(text, 10, viewSize.Height - 20);
-					canvas.DrawText(text, 10, viewSize.Height - 20);
-				}
-
-				if (visibleObjectAction != ObjectAction.None) handled = true;
-			}
+			// Unhandled
+			return null;
+		}
+		protected virtual string UpdateActionText()
+		{
+			return null;
 		}
 		protected virtual void OnRenderState()
 		{
@@ -715,6 +720,7 @@ namespace EditorBase.CamViewStates
 			this.Invalidate();
 		}
 		protected virtual void OnCurrentCameraChanged(CamView.CameraChangedEventArgs e) {}
+		protected virtual void OnLostFocus() {}
 
 		protected virtual void OnDragEnter(DragEventArgs e) {}
 		protected virtual void OnDragOver(DragEventArgs e) {}
@@ -726,7 +732,7 @@ namespace EditorBase.CamViewStates
 		protected virtual void OnMouseDown(MouseEventArgs e) {}
 		protected virtual void OnMouseUp(MouseEventArgs e) {}
 		protected virtual void OnMouseMove(MouseEventArgs e) {}
-		private void OnMouseMove()
+		protected void OnMouseMove()
 		{
 			Point mousePos = this.PointToClient(Cursor.Position);
 			this.OnMouseMove(new MouseEventArgs(Control.MouseButtons, 0, mousePos.X, mousePos.Y, 0));
@@ -941,6 +947,7 @@ namespace EditorBase.CamViewStates
 			if (this.action != ObjectAction.None)
 				this.InvalidateSelectionStats();
 		}
+
 		protected void InvalidateSelectionStats()
 		{
 			this.selectionStatsValid = false;
@@ -963,6 +970,7 @@ namespace EditorBase.CamViewStates
 
 			this.selectionStatsValid = true;
 		}
+
 		protected void UpdateMouseover(Point mouseLoc)
 		{
 			bool lastMouseoverSelect = this.mouseoverSelect;
@@ -1124,7 +1132,20 @@ namespace EditorBase.CamViewStates
 			this.actionLastLocSpace = spaceCoord;
 			this.Invalidate();
 		}
-		private Vector3 ApplyAxisLock(Vector3 baseVec, Vector3 lockedVec, Vector3 beginToTarget)
+
+		protected Vector2 ApplyAxisLock(Vector2 targetVec, Vector2 lockedVec)
+		{
+			return targetVec + this.ApplyAxisLock(Vector2.Zero, lockedVec - targetVec, lockedVec - targetVec);
+		}
+		protected Vector2 ApplyAxisLock(Vector2 baseVec, Vector2 lockedVec, Vector2 beginToTarget)
+		{
+			return this.ApplyAxisLock(new Vector3(baseVec), new Vector3(lockedVec), new Vector3(beginToTarget)).Xy;
+		}
+		protected Vector3 ApplyAxisLock(Vector3 targetVec, Vector3 lockedVec)
+		{
+			return targetVec + this.ApplyAxisLock(Vector3.Zero, lockedVec - targetVec, lockedVec - targetVec);
+		}
+		protected Vector3 ApplyAxisLock(Vector3 baseVec, Vector3 lockedVec, Vector3 beginToTarget)
 		{
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			if (!shift)
@@ -1189,6 +1210,16 @@ namespace EditorBase.CamViewStates
 				layer.OnCollectBackgroundDrawcalls(canvas);
 				canvas.PopState();
 			}
+		}
+
+		private void UpdateFormattedTextRenderers()
+		{
+			this.statusText.MaxWidth = this.ClientSize.Width - 20;
+			this.statusText.MaxHeight = this.ClientSize.Height - 20;
+			this.statusText.Fonts = new [] { OverlayFont };
+			this.actionText.MaxWidth = MathF.Min(500, this.ClientSize.Width / 2);
+			this.actionText.MaxHeight = MathF.Min(500, this.ClientSize.Height / 2);
+			this.actionText.Fonts = new [] { OverlayFont };
 		}
 
 		private void LocalGLControl_Paint(object sender, PaintEventArgs e)
@@ -1492,6 +1523,7 @@ namespace EditorBase.CamViewStates
 
 			this.camAction = CameraAction.None;
 			this.EndAction();
+			this.OnLostFocus();
 			this.Invalidate();
 		}
 		private void LocalGLControl_DragOver(object sender, DragEventArgs e)
@@ -1509,6 +1541,10 @@ namespace EditorBase.CamViewStates
 		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)
 		{
 			this.OnDragDrop(e);
+		}
+		private void LocalGLControl_Resize(object sender, EventArgs e)
+		{
+			this.UpdateFormattedTextRenderers();
 		}
 		private void View_FocusDistChanged(object sender, EventArgs e)
 		{
@@ -1540,7 +1576,7 @@ namespace EditorBase.CamViewStates
 		{
 			Canvas canvas = new Canvas(this.CameraComponent.DrawDevice);
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.FgColor));
-			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+			canvas.CurrentState.TextFont = OverlayFont;
 
 			this.OnCollectStateOverlayDrawcalls(canvas);
 		}

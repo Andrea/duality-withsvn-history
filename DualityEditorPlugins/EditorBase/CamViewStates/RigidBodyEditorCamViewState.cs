@@ -130,102 +130,6 @@ namespace EditorBase.CamViewStates
 
 			this.View.UnlockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
 		}
-		protected override void DrawStatusText(Canvas canvas, ref bool handled)
-		{
-			base.DrawStatusText(canvas, ref handled);
-
-			if (!handled && this.mouseState != CursorState.Normal)
-			{
-				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreateCircle, 10, this.ClientSize.Height - 20);
-				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreatePolygon, 10, this.ClientSize.Height - 20);
-				handled = true;
-			}
-		}
-		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.ObjectAction action)
-		{
-			base.PostPerformAction(selObjEnum, action);
-			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
-
-			// Update the body directly after modifying it
-			if (this.selectedBody != null) this.selectedBody.SynchronizeBodyShape();
-
-			// Notify property changes
-			DualityEditorApp.NotifyObjPropChanged(this,
-				new ObjectSelection(this.selectedBody),
-				ReflectionInfo.Property_RigidBody_Shapes);
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
-		}
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			base.OnMouseMove(e);
-
-			Transform selTransform = this.selectedBody != null && this.selectedBody.GameObj != null ? this.selectedBody.GameObj.Transform : null;
-			Vector3 spaceCoord = selTransform != null ? this.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z)) : Vector3.Zero;
-			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
-
-			if (this.mouseState != CursorState.Normal) this.UpdateCursorImage();
-
-			if (this.mouseState == CursorState.CreatePolygon && this.allObjSel.Any(sel => sel is SelPolyShape))
-			{
-				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
-				PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
-				List<Vector2> vertices = polyShape.Vertices.ToList();
-
-				vertices[this.createPolyIndex] = localPos;
-
-				polyShape.Vertices = vertices.ToArray();
-				selPolyShape.UpdatePolyStats();
-				
-				// Update the body directly after modifying it
-				this.selectedBody.SynchronizeBodyShape();
-
-				DualityEditorApp.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedBody),
-					ReflectionInfo.Property_RigidBody_Shapes);
-			}
-			else if (this.mouseState == CursorState.CreateLoop && this.allObjSel.Any(sel => sel is SelLoopShape))
-			{
-				SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
-				LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
-				List<Vector2> vertices = polyShape.Vertices.ToList();
-
-				vertices[this.createPolyIndex] = localPos;
-
-				polyShape.Vertices = vertices.ToArray();
-				selPolyShape.UpdateLoopStats();
-				
-				// Update the body directly after modifying it
-				this.selectedBody.SynchronizeBodyShape();
-
-				DualityEditorApp.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedBody),
-					ReflectionInfo.Property_RigidBody_Shapes);
-			}
-		}
-		protected override void OnBeginAction(CamViewState.ObjectAction action)
-		{
-			base.OnBeginAction(action);
-			bool shapeAction = 
-				action != ObjectAction.RectSelect && 
-				action != ObjectAction.None;
-			if (this.selectedBody != null && shapeAction) this.selectedBody.BeginUpdateBodyShape();
-		}
-		protected override void OnEndAction(CamViewState.ObjectAction action)
-		{
-			base.OnEndAction(action);
-			bool shapeAction = 
-				action != ObjectAction.RectSelect && 
-				action != ObjectAction.None;
-			if (this.selectedBody != null && shapeAction)
-			{
-				this.selectedBody.EndUpdateBodyShape();
-			}
-			if (this.createAction)
-			{
-				this.createAction = false;
-				UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
-			}
-		}
 
 		protected void UpdateToolbar()
 		{
@@ -484,6 +388,9 @@ namespace EditorBase.CamViewStates
 
 		private void EnterCursorState(CursorState state)
 		{
+			if (this.mouseState != CursorState.Normal)
+				this.LeaveCursorState();
+
 			this.mouseState = state;
 			this.createPolyIndex = 0;
 			this.selectedBody.BeginUpdateBodyShape();
@@ -498,6 +405,9 @@ namespace EditorBase.CamViewStates
 		}
 		private void LeaveCursorState()
 		{
+			if (this.mouseState == CursorState.Normal)
+				return;
+
 			this.mouseState = CursorState.Normal;
 			this.MouseActionAllowed = true;
 			this.selectedBody.EndUpdateBodyShape();
@@ -538,6 +448,37 @@ namespace EditorBase.CamViewStates
 			return !data.IsHidden;
 		}
 
+		protected override void OnCollectStateDrawcalls(Canvas canvas)
+		{
+			base.OnCollectStateDrawcalls(canvas);
+
+			GameObject selGameObj = this.selectedBody != null ? this.selectedBody.GameObj : null;
+			Transform selTransform = selGameObj != null ? selGameObj.Transform : null;
+			if (selTransform == null) return;
+
+			if (this.mouseState == CursorState.CreatePolygon)
+			{
+				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().FirstOrDefault();
+				if (selPolyShape != null)
+				{
+					PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
+					Vector2 lockedPos = this.createPolyIndex > 0 ? polyShape.Vertices[this.createPolyIndex - 1] : Vector2.Zero;
+					Vector3 lockedPosWorld = selTransform.GetWorldPoint(new Vector3(lockedPos));
+					this.DrawLockedAxes(canvas, lockedPosWorld.X, lockedPosWorld.Y, lockedPosWorld.Z, polyShape.AABB.BoundingRadius * 4);
+				}
+			}
+			else if (this.mouseState == CursorState.CreateLoop)
+			{
+				SelLoopShape selLoopShape = this.allObjSel.OfType<SelLoopShape>().FirstOrDefault();
+				if (selLoopShape != null)
+				{
+					LoopShapeInfo loopShape = selLoopShape.ActualObject as LoopShapeInfo;
+					Vector2 lockedPos = this.createPolyIndex > 0 ? loopShape.Vertices[this.createPolyIndex - 1] : Vector2.Zero;
+					Vector3 lockedPosWorld = selTransform.GetWorldPoint(new Vector3(lockedPos));
+					this.DrawLockedAxes(canvas, lockedPosWorld.X, lockedPosWorld.Y, lockedPosWorld.Z, loopShape.AABB.BoundingRadius * 4);
+				}
+			}
+		}
 		protected override void OnCurrentCameraChanged(CamView.CameraChangedEventArgs e)
 		{
 			base.OnCurrentCameraChanged(e);
@@ -558,6 +499,18 @@ namespace EditorBase.CamViewStates
 				else if (e.KeyCode == Keys.L && this.toolCreateLoop.Enabled)
 					this.toolCreateLoop_Clicked(this, EventArgs.Empty);
 			}
+
+			// Make sure our custom action is updated accordingto axis locks
+			if (e.KeyCode == Keys.ShiftKey && this.mouseState != CursorState.Normal)
+				this.OnMouseMove();
+		}
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			base.OnKeyUp(e);
+
+			// Make sure our custom action is updated accordingto axis locks
+			if (e.KeyCode == Keys.ShiftKey && this.mouseState != CursorState.Normal)
+				this.OnMouseMove();
 		}
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -610,6 +563,12 @@ namespace EditorBase.CamViewStates
 						PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
 						if (this.createPolyIndex <= 2 || MathF.IsPolygonConvex(polyShape.Vertices))
 						{
+							Vector2 lockedPos = this.createPolyIndex > 0 ? polyShape.Vertices[this.createPolyIndex - 1] : Vector2.Zero;
+							MathF.TransformCoord(ref lockedPos.X, ref lockedPos.Y, selTransform.Angle);
+							MathF.TransformCoord(ref localPos.X, ref localPos.Y, selTransform.Angle);
+							localPos = this.ApplyAxisLock(localPos, lockedPos);
+							MathF.TransformCoord(ref localPos.X, ref localPos.Y, -selTransform.Angle);
+
 							if (polyShape.Vertices.Length < PolyShapeInfo.MaxVertices)
 							{
 								List<Vector2> vertices = polyShape.Vertices.ToList();
@@ -688,6 +647,11 @@ namespace EditorBase.CamViewStates
 						SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
 						LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
 						List<Vector2> vertices = polyShape.Vertices.ToList();
+						Vector2 lockedPos = this.createPolyIndex > 0 ? vertices[this.createPolyIndex - 1] : Vector2.Zero;
+						MathF.TransformCoord(ref lockedPos.X, ref lockedPos.Y, selTransform.Angle);
+						MathF.TransformCoord(ref localPos.X, ref localPos.Y, selTransform.Angle);
+						localPos = this.ApplyAxisLock(localPos, lockedPos);
+						MathF.TransformCoord(ref localPos.X, ref localPos.Y, -selTransform.Angle);
 
 						vertices[this.createPolyIndex] = localPos;
 						if (this.createPolyIndex >= vertices.Count - 1)
@@ -796,6 +760,156 @@ namespace EditorBase.CamViewStates
 			//    #endregion
 			//}
 		}
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			Transform selTransform = this.selectedBody != null && this.selectedBody.GameObj != null ? this.selectedBody.GameObj.Transform : null;
+			Vector3 spaceCoord = selTransform != null ? this.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z)) : Vector3.Zero;
+			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
+
+			if (this.mouseState != CursorState.Normal) this.UpdateCursorImage();
+
+			if (this.mouseState == CursorState.CreatePolygon && this.allObjSel.Any(sel => sel is SelPolyShape))
+			{
+				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
+				PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
+				List<Vector2> vertices = polyShape.Vertices.ToList();
+				Vector2 lockedPos = this.createPolyIndex > 0 ? vertices[this.createPolyIndex - 1] : Vector2.Zero;
+				MathF.TransformCoord(ref lockedPos.X, ref lockedPos.Y, selTransform.Angle);
+				MathF.TransformCoord(ref localPos.X, ref localPos.Y, selTransform.Angle);
+				localPos = this.ApplyAxisLock(localPos, lockedPos);
+				MathF.TransformCoord(ref localPos.X, ref localPos.Y, -selTransform.Angle);
+
+				vertices[this.createPolyIndex] = localPos;
+
+				polyShape.Vertices = vertices.ToArray();
+				selPolyShape.UpdatePolyStats();
+				
+				// Update the body directly after modifying it
+				this.selectedBody.SynchronizeBodyShape();
+
+				DualityEditorApp.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedBody),
+					ReflectionInfo.Property_RigidBody_Shapes);
+			}
+			else if (this.mouseState == CursorState.CreateLoop && this.allObjSel.Any(sel => sel is SelLoopShape))
+			{
+				SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
+				LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
+				List<Vector2> vertices = polyShape.Vertices.ToList();
+				Vector2 lockedPos = this.createPolyIndex > 0 ? vertices[this.createPolyIndex - 1] : Vector2.Zero;
+				MathF.TransformCoord(ref lockedPos.X, ref lockedPos.Y, selTransform.Angle);
+				MathF.TransformCoord(ref localPos.X, ref localPos.Y, selTransform.Angle);
+				localPos = this.ApplyAxisLock(localPos, lockedPos);
+				MathF.TransformCoord(ref localPos.X, ref localPos.Y, -selTransform.Angle);
+
+				vertices[this.createPolyIndex] = localPos;
+
+				polyShape.Vertices = vertices.ToArray();
+				selPolyShape.UpdateLoopStats();
+				
+				// Update the body directly after modifying it
+				this.selectedBody.SynchronizeBodyShape();
+
+				DualityEditorApp.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedBody),
+					ReflectionInfo.Property_RigidBody_Shapes);
+			}
+		}
+		protected override void OnLostFocus()
+		{
+			base.OnLostFocus();
+			this.LeaveCursorState();
+		}
+		protected override void OnBeginAction(CamViewState.ObjectAction action)
+		{
+			base.OnBeginAction(action);
+			bool shapeAction = 
+				action != ObjectAction.RectSelect && 
+				action != ObjectAction.None;
+			if (this.selectedBody != null && shapeAction) this.selectedBody.BeginUpdateBodyShape();
+		}
+		protected override void OnEndAction(CamViewState.ObjectAction action)
+		{
+			base.OnEndAction(action);
+			bool shapeAction = 
+				action != ObjectAction.RectSelect && 
+				action != ObjectAction.None;
+			if (this.selectedBody != null && shapeAction)
+			{
+				this.selectedBody.EndUpdateBodyShape();
+			}
+			if (this.createAction)
+			{
+				this.createAction = false;
+				UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
+			}
+		}
+		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.ObjectAction action)
+		{
+			base.PostPerformAction(selObjEnum, action);
+			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
+
+			// Update the body directly after modifying it
+			if (this.selectedBody != null) this.selectedBody.SynchronizeBodyShape();
+
+			// Notify property changes
+			DualityEditorApp.NotifyObjPropChanged(this,
+				new ObjectSelection(this.selectedBody),
+				ReflectionInfo.Property_RigidBody_Shapes);
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
+		}
+		protected override string UpdateStatusText()
+		{
+			if (this.mouseState != CursorState.Normal)
+			{
+				if (this.mouseState == CursorState.CreateCircle)		return PluginRes.EditorBaseRes.ColliderEditor_CreateCircle;
+				else if (this.mouseState == CursorState.CreatePolygon)	return PluginRes.EditorBaseRes.ColliderEditor_CreatePolygon;
+				else if (this.mouseState == CursorState.CreateLoop)		return PluginRes.EditorBaseRes.ColliderEditor_CreateLoop;
+			}
+
+			return base.UpdateStatusText();
+		}
+		protected override string UpdateActionText()
+		{
+			Vector2 vertex = Vector2.Zero;
+			if (this.mouseState == CursorState.CreatePolygon || this.mouseState == CursorState.CreateLoop)
+			{
+				Point mousePos = this.PointToClient(Cursor.Position);
+				GameObject selGameObj = this.selectedBody != null ? this.selectedBody.GameObj : null;
+				Transform selTransform = selGameObj != null ? selGameObj.Transform : null;
+				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().FirstOrDefault();
+				SelLoopShape selLoopShape = this.allObjSel.OfType<SelLoopShape>().FirstOrDefault();
+				bool hasData = false;
+				if (selPolyShape != null)
+				{
+					PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
+					vertex = polyShape.Vertices[this.createPolyIndex];
+					hasData = true;
+				}
+				else if (selLoopShape != null)
+				{
+					LoopShapeInfo loopShape = selLoopShape.ActualObject as LoopShapeInfo;
+					vertex = loopShape.Vertices[this.createPolyIndex];
+					hasData = true;
+				}
+				else if (selTransform != null)
+				{
+					Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(mousePos.X, mousePos.Y, selTransform.Pos.Z));
+					vertex = selTransform.GetLocalPoint(spaceCoord).Xy;
+					hasData = true;
+				}
+
+				if (hasData)
+				{
+					return 
+						string.Format("Vertex X:{0,9:0.00}/n", vertex.X) +
+						string.Format("Vertex Y:{0,9:0.00}", vertex.Y);
+				}
+			}
+			return base.UpdateActionText();
+		}
 	
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
@@ -833,8 +947,12 @@ namespace EditorBase.CamViewStates
 			// Collider selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 			{
+				RigidBody newBody = this.QuerySelectedCollider();
+				if (newBody != this.selectedBody)
+					this.LeaveCursorState();
+
 				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
-				this.selectedBody = this.QuerySelectedCollider();
+				this.selectedBody = newBody;
 			}
 			// Other selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
