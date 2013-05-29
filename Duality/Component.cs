@@ -53,7 +53,7 @@ namespace Duality
 	/// Also, a Component may not belong to multiple GameObjects at once.
 	/// </summary>
 	[Serializable]
-	public abstract class Component : IManageableObject, ICloneable
+	public abstract class Component : IManageableObject, ICloneable, Serialization.IUniqueIdentifyable
 	{
 		/// <summary>
 		/// Describes the kind of initialization that can be performed on a Component
@@ -164,6 +164,22 @@ namespace Duality
 			{
 				if (this.gameobj != null) this.gameobj.RemoveComponent(this);
 				if (value != null) value.AddComponent(this);
+			}
+		}
+		
+		uint Serialization.IUniqueIdentifyable.PreferredId
+		{
+			get 
+			{
+				unchecked
+				{
+					int idTemp = this.GetType().GetTypeId().GetHashCode();
+					if (this.gameobj != null)
+					{
+						MathF.CombineHashCode(ref idTemp, this.gameobj.Id.GetHashCode());
+					}
+					return (uint)idTemp;
+				}
 			}
 		}
 

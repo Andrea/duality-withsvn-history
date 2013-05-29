@@ -165,6 +165,7 @@
     <Compile Include="Serialization\IDataReader.cs" />
     <Compile Include="Serialization\ISurrogate.cs" />
     <Compile Include="Serialization\Formatter.cs" />
+    <Compile Include="Serialization\IUniqueIdentifyable.cs" />
     <Compile Include="Serialization\ObjectIdManager.cs" />
     <Compile Include="Serialization\SerializeErrorHandler.cs" />
     <Compile Include="Serialization\Surrogates\GuidSurrogate.cs" />
