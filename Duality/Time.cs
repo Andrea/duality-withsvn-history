@@ -113,8 +113,8 @@ namespace Duality
 			// Initial timer start
 			if (!watch.IsRunning) watch.Restart();
 
-			Performance.timeFrame.EndMeasure();
-			Performance.timeFrame.BeginMeasure();
+			Performance.TimeFrame.EndMeasure();
+			Performance.TimeFrame.BeginMeasure();
 
 			frameCount++;
 

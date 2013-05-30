@@ -28,9 +28,9 @@ namespace Duality
 		/// </summary>
 		public	const	string	FormatElement		= "/e";
 		/// <summary>
-		/// Format string for changing the curren text color.
+		/// Format string for changing the current text color.
 		/// </summary>
-		public	const	string	FormatColor			= "/c";
+		public	const	string	FormatColorTag		= "/c";
 		/// <summary>
 		/// Format string for changing the current <see cref="Duality.Resources.Font"/>.
 		/// </summary>
@@ -55,6 +55,15 @@ namespace Duality
 		/// Format string for inserting a line break.
 		/// </summary>
 		public	const	string	FormatNewline		= "/n";
+		/// <summary>
+		/// Returns a format string for changing the current text color to the specified one.
+		/// </summary>
+		/// <returns></returns>
+		public static string FormatColor(ColorRgba color)
+		{
+			int intClr = color.ToIntRgba();
+			return string.Format("{1}{0:X8}", intClr, FormatColorTag);
+		}
 
 
 		/// <summary>
@@ -557,6 +566,9 @@ namespace Duality
 			}
 			private void PerformNewLine()
 			{
+				// In empty lines, initialize line height
+				if (this.lineHeight == 0 && this.font != null)
+					this.lineHeight = this.font.LineSpacing;
 				// Advance to new line
 				this.offset.Y += this.lineHeight;
 				this.lineIndex++;

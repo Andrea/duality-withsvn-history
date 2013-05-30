@@ -995,7 +995,7 @@ namespace Duality
 				// Z-Sorted: Back to Front
 				drawCalls += this.RenderBatches(this.drawBufferZSort);
 			}
-			Performance.statNumDrawcalls.Add(drawCalls);
+			Performance.StatNumDrawcalls.Add(drawCalls);
 
 			this.FinishBatchRendering();
 			this.drawBuffer.Clear();
@@ -1060,7 +1060,7 @@ namespace Duality
 		private void OptimizeBatches()
 		{
 			int batchCountBefore = this.drawBuffer.Count + this.drawBufferZSort.Count;
-			if (this.pickingIndex == 0) Performance.timeOptimizeDrawcalls.BeginMeasure();
+			if (this.pickingIndex == 0) Performance.TimeOptimizeDrawcalls.BeginMeasure();
 
 			// Non-ZSorted
 			if (this.drawBuffer.Count > 1)
@@ -1077,12 +1077,12 @@ namespace Duality
 				this.drawBufferZSort = this.OptimizeBatches(this.drawBufferZSort);
 			}
 
-			if (this.pickingIndex == 0) Performance.timeOptimizeDrawcalls.EndMeasure();
+			if (this.pickingIndex == 0) Performance.TimeOptimizeDrawcalls.EndMeasure();
 			int batchCountAfter = this.drawBuffer.Count + this.drawBufferZSort.Count;
 
-			Performance.statNumRawBatches.Add(this.numRawBatches);
-			Performance.statNumMergedBatches.Add(batchCountBefore);
-			Performance.statNumOptimizedBatches.Add(batchCountAfter);
+			Performance.StatNumRawBatches.Add(this.numRawBatches);
+			Performance.StatNumMergedBatches.Add(batchCountBefore);
+			Performance.StatNumOptimizedBatches.Add(batchCountAfter);
 			this.numRawBatches = 0;
 		}
 		private List<IDrawBatch> OptimizeBatches(List<IDrawBatch> sortedBuffer)
@@ -1116,7 +1116,7 @@ namespace Duality
 		}
 		private int RenderBatches(List<IDrawBatch> buffer)
 		{
-			if (this.pickingIndex == 0) Performance.timeProcessDrawcalls.BeginMeasure();
+			if (this.pickingIndex == 0) Performance.TimeProcessDrawcalls.BeginMeasure();
 
 			int drawCalls = 0;
 			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
@@ -1157,7 +1157,7 @@ namespace Duality
 			if (lastBatchRendered != null)
 				lastBatchRendered.FinishRendering();
 
-			if (this.pickingIndex == 0) Performance.timeProcessDrawcalls.EndMeasure();
+			if (this.pickingIndex == 0) Performance.TimeProcessDrawcalls.EndMeasure();
 			return drawCalls;
 		}
 		private void FinishBatchRendering()

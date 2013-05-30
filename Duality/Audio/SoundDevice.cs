@@ -258,7 +258,7 @@ namespace Duality
 		/// </summary>
 		public void Update()
 		{
-			Performance.timeUpdateAudio.BeginMeasure();
+			Performance.TimeUpdateAudio.BeginMeasure();
 
 			this.budgetAmbient.Update();
 			this.budgetMusic.Update();
@@ -272,9 +272,9 @@ namespace Duality
 			}
 			this.sounds.Sort((obj1, obj2) => obj2.Priority - obj1.Priority);
 
-			Performance.timeUpdateAudio.EndMeasure();
-			Performance.statNumPlaying2D.Add(this.numPlaying2D);
-			Performance.statNumPlaying3D.Add(this.numPlaying3D);
+			Performance.TimeUpdateAudio.EndMeasure();
+			Performance.StatNumPlaying2D.Add(this.numPlaying2D);
+			Performance.StatNumPlaying3D.Add(this.numPlaying3D);
 		}
 		private void UpdateListener()
 		{

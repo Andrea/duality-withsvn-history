@@ -338,7 +338,6 @@ namespace Duality
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
 			AppDomain.CurrentDomain.AssemblyLoad		+= CurrentDomain_AssemblyLoad;
 
-			Performance.InitDualityCounters();
 			sound = new SoundDevice();
 			LoadPlugins();
 			LoadAppData();
@@ -437,7 +436,7 @@ namespace Duality
 		public static void Update()
 		{
 			isUpdating = true;
-			Performance.timeUpdate.BeginMeasure();
+			Performance.TimeUpdate.BeginMeasure();
 
 			Time.FrameTick();
 			Performance.FrameTick();
@@ -449,7 +448,7 @@ namespace Duality
 			//CheckOpenGLErrors();
 			RunCleanup();
 
-			Performance.timeUpdate.EndMeasure();
+			Performance.TimeUpdate.EndMeasure();
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
@@ -487,7 +486,7 @@ namespace Duality
 		internal static void EditorUpdate(IEnumerable<GameObject> updateObjects, bool freezeScene, bool forceFixedStep)
 		{
 			isUpdating = true;
-			Performance.timeUpdate.BeginMeasure();
+			Performance.TimeUpdate.BeginMeasure();
 
 			Time.FrameTick(forceFixedStep);
 			Performance.FrameTick();
@@ -514,7 +513,7 @@ namespace Duality
 			//CheckOpenGLErrors();
 			RunCleanup();
 
-			Performance.timeUpdate.EndMeasure();
+			Performance.TimeUpdate.EndMeasure();
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
