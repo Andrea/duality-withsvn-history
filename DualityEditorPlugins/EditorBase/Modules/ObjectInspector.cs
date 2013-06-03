@@ -10,6 +10,7 @@ using AdamsLair.PropertyGrid;
 using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 
 using Duality;
+using Duality.Resources;
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
@@ -143,19 +144,19 @@ namespace EditorBase
 			{
 				this.displaySel = new ObjectSelection(sel.GameObjects.Union(sel.Components.GameObject()));
 				this.displayCat = ObjectSelection.Category.GameObjCmp;
-				this.propertyGrid.SelectObjects(this.displaySel.Objects, false);
+				this.propertyGrid.SelectObjects(this.displaySel, false);
 			}
 			else if ((showCat & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
 			{
 				this.displaySel = new ObjectSelection(sel.Resources);
 				this.displayCat = ObjectSelection.Category.Resource;
-				this.propertyGrid.SelectObjects(this.displaySel.Objects, this.displaySel.Resources.Any(r => r.Path.Contains(':')));
+				this.propertyGrid.SelectObjects(this.displaySel, this.displaySel.Resources.Any(r => r.Path.Contains(':')));
 			}
 			else if ((showCat & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
 			{
 				this.displaySel = new ObjectSelection(sel.OtherObjects);
 				this.displayCat = ObjectSelection.Category.Other;
-				this.propertyGrid.SelectObjects(this.displaySel.Objects, false);
+				this.propertyGrid.SelectObjects(this.displaySel, false);
 			}
 
 			this.gridExpandState.ApplyTo(this.propertyGrid.MainEditor);
@@ -179,7 +180,8 @@ namespace EditorBase
 
 			// Update values if anything changed that relates to the grids current selection
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
-				e.Objects.Objects.Any(o => this.propertyGrid.Selection.Contains(o)))
+				e.Objects.Any(o => this.propertyGrid.Selection.Contains(o)) ||
+				(e.Objects.Contains(Scene.Current) && this.propertyGrid.Selection.Any(o => o is GameObject || o is Component)))
 				this.propertyGrid.UpdateFromObjects(100);
 		}
 		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
@@ -244,7 +246,7 @@ namespace EditorBase
 				if (v.EmptySelection) continue;
 				if (v == target) continue;
 
-				var disposedObj = e.Removed.Objects.OfType<IManageableObject>().Where(o => o.Disposed);
+				var disposedObj = e.Removed.OfType<IManageableObject>().Where(o => o.Disposed);
 				if (disposedObj.Any())
 				{
 					ObjectSelection disposedSel = new ObjectSelection(disposedObj);

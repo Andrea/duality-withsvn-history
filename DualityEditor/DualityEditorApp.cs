@@ -987,7 +987,7 @@ namespace DualityEditor
 				if (!(args is PrefabAppliedEventArgs) && (args.Objects.GameObjects.Any() || args.Objects.Components.Any()))
 				{
 					HashSet<PrefabLink> changedLinks = new HashSet<PrefabLink>();
-					foreach (object o in args.Objects.Objects)
+					foreach (object o in args.Objects)
 					{
 						Component cmp = o as Component;
 						GameObject obj = o as GameObject;

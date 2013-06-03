@@ -1077,11 +1077,11 @@ namespace EditorBase.CamViewStates
 				if (this.activeRectSel.ObjectCount > 0)
 				{
 					ObjectSelection added = (this.activeRectSel - oldRectSel) + (oldRectSel - this.activeRectSel);
-					this.SelectObjects(added.Objects.OfType<SelObj>(), shift ? SelectMode.Append : SelectMode.Toggle);
+					this.SelectObjects(added.OfType<SelObj>(), shift ? SelectMode.Append : SelectMode.Toggle);
 				}
 			}
 			else if (this.activeRectSel.ObjectCount > 0)
-				this.SelectObjects(this.activeRectSel.Objects.OfType<SelObj>());
+				this.SelectObjects(this.activeRectSel.OfType<SelObj>());
 			else
 				this.ClearSelection();
 
