@@ -69,26 +69,27 @@ namespace Duality
 		public const string DataDirectory = "Data";
 
 
-		private	static	Thread					mainThread			= null;
-		private	static	bool					initialized			= false;
-		private	static	bool					isUpdating			= false;
-		private	static	bool					runFromEditor		= false;
-		private	static	bool					terminateScheduled	= false;
-		private	static	string					logfilePath			= "logfile";
-		private	static	StreamWriter			logfile				= null;
-		private	static	Vector2					targetResolution	= Vector2.Zero;
-		private	static	GraphicsMode			targetMode			= null;
-		private	static	HashSet<GraphicsMode>	availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
-		private	static	GraphicsMode			defaultMode			= null;
-		private	static	StaticMouseInput		mouse				= new StaticMouseInput();
-		private	static	StaticKeyboardInput		keyboard			= new StaticKeyboardInput();
-		private	static	SoundDevice				sound				= null;
-		private	static	ExecutionEnvironment	environment			= ExecutionEnvironment.Unknown;
-		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
-		private	static	DualityAppData			appData				= null;
-		private	static	DualityUserData			userData			= null;
-		private	static	DualityMetaData			metaData			= null;
-		private	static	List<object>			disposeSchedule		= new List<object>();
+		private	static	Thread						mainThread			= null;
+		private	static	bool						initialized			= false;
+		private	static	bool						isUpdating			= false;
+		private	static	bool						runFromEditor		= false;
+		private	static	bool						terminateScheduled	= false;
+		private	static	string						logfilePath			= "logfile";
+		private	static	StreamWriter				logfile				= null;
+		private	static	Vector2						targetResolution	= Vector2.Zero;
+		private	static	GraphicsMode				targetMode			= null;
+		private	static	HashSet<GraphicsMode>		availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
+		private	static	GraphicsMode				defaultMode			= null;
+		private	static	StaticMouseInput			mouse				= new StaticMouseInput();
+		private	static	StaticKeyboardInput			keyboard			= new StaticKeyboardInput();
+		private	static	List<StaticJoystickInput>	joysticks			= new List<StaticJoystickInput>();
+		private	static	SoundDevice					sound				= null;
+		private	static	ExecutionEnvironment		environment			= ExecutionEnvironment.Unknown;
+		private	static	ExecutionContext			execContext			= ExecutionContext.Terminated;
+		private	static	DualityAppData				appData				= null;
+		private	static	DualityUserData				userData			= null;
+		private	static	DualityMetaData				metaData			= null;
+		private	static	List<object>				disposeSchedule		= new List<object>();
 
 		private	static	Dictionary<string,CorePlugin>	plugins			= new Dictionary<string,CorePlugin>();
 		private	static	List<Assembly>					disposedPlugins	= new List<Assembly>();
@@ -150,6 +151,28 @@ namespace Duality
 		{
 			get { return keyboard; }
 			internal set { keyboard.RealInput = value; }
+		}
+		/// <summary>
+		/// [GET] Provides access to extended user input via joystick or gamepad.
+		/// </summary>
+		public static IEnumerable<IJoystickInput> Joysticks
+		{
+			get { return joysticks.Where(j => j.RealInput != null); }
+			internal set
+			{
+				int index = 0;
+				foreach (IJoystickInput joy in value)
+				{
+					if (index >= joysticks.Count)
+						joysticks.Add(new StaticJoystickInput());
+					joysticks[index].RealInput = joy;
+					++index;
+				}
+				for (; index < joysticks.Count; ++index)
+				{
+					joysticks[index].RealInput = null;
+				}
+			}
 		}
 		/// <summary>
 		/// [GET] Provides access to the main <see cref="SoundDevice"/>.

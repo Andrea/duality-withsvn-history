@@ -102,6 +102,9 @@
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
     <Compile Include="Input\IKeyboardInput.cs" />
     <Compile Include="Input\IMouseInput.cs" />
+    <Compile Include="Input\IJoystickInput.cs" />
+    <Compile Include="Input\StaticJoystickInput.cs" />
+    <Compile Include="Input\WindowJoystickInput.cs" />
     <Compile Include="Input\StaticMouseInput.cs" />
     <Compile Include="Input\StaticKeyboardInput.cs" />
     <Compile Include="Input\WindowMouseInput.cs" />

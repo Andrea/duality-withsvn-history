@@ -128,6 +128,7 @@ namespace DualityLauncher
 				// Input setup
 				DualityApp.Mouse = new WindowMouseInput(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY);
 				DualityApp.Keyboard = new WindowKeyboardInput(launcherWindow.Keyboard);
+				DualityApp.Joysticks = launcherWindow.Joysticks.Select(j => new WindowJoystickInput(j));
 
 				// Load the starting Scene
 				Scene.Current = DualityApp.AppData.StartScene.Res;
