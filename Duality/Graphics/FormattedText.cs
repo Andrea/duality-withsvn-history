@@ -83,7 +83,6 @@ namespace Duality
 			{
 				get { return this.text; }
 			}
-			public TextElement() : this("") {}
 			public TextElement(string text)
 			{
 				this.text = text;
@@ -102,7 +101,6 @@ namespace Duality
 			{
 				get { return this.iconIndex; }
 			}
-			public IconElement() : this(0) {}
 			public IconElement(int icon)
 			{
 				this.iconIndex = icon;
@@ -127,7 +125,6 @@ namespace Duality
 			{
 				get { return this.fontIndex; }
 			}
-			public FontChangeElement() : this(0) {}
 			public FontChangeElement(int font)
 			{
 				this.fontIndex = font;
@@ -146,7 +143,6 @@ namespace Duality
 			{
 				get { return this.color; }
 			}
-			public ColorChangeElement() : this(ColorRgba.White) {}
 			public ColorChangeElement(ColorRgba color)
 			{
 				this.color = color;
@@ -165,7 +161,6 @@ namespace Duality
 			{
 				get { return this.align; }
 			}
-			public AlignChangeElement() : this(Alignment.Left) {}
 			public AlignChangeElement(Alignment align)
 			{
 				this.align = align;
@@ -362,7 +357,7 @@ namespace Duality
 				this.vertTextIndex = new int[this.parent.fonts != null ? this.parent.fonts.Length : 0];
 				this.font = (this.parent.fonts != null && this.parent.fonts.Length > 0) ? this.parent.fonts[0].Res : null;
 				this.color = ColorRgba.White;
-				this.lineAlign = Alignment.Left;
+				this.lineAlign = parent.lineAlign;
 
 				this.PeekLineStats();
 				this.offset.X = this.lineBeginX;
@@ -412,12 +407,15 @@ namespace Duality
 					// Word wrap by glyph / word
 					if (this.parent.maxWidth > 0 && this.parent.wrapMode != WrapMode.Element)
 					{
+						Font.FitTextMode fitMode = Resources.Font.FitTextMode.ByChar;
+						if (this.parent.wrapMode == WrapMode.Word)
+							fitMode = (this.lineAlign == Alignment.Right) ? Font.FitTextMode.ByWordLeadingSpace : Font.FitTextMode.ByWordTrailingSpace;
 						textToDisplay = textElem.Text.Substring(this.curElemWrapIndex, textElem.Text.Length - this.curElemWrapIndex);
-						fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), this.parent.wrapMode == WrapMode.Word);
+						fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), fitMode);
 
 						// If by-word results in instant line break: Do it by glyph instead
 						if (this.offset.X == this.lineBeginX && fittingText.Length == 0 && this.parent.wrapMode == WrapMode.Word) 
-							fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), false);
+							fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), Font.FitTextMode.ByChar);
 
 						// If doing it by glyph results in an instant line break: Use at least one glyph anyway
 						if (this.lineAvailWidth == this.parent.maxWidth && 
@@ -432,7 +430,6 @@ namespace Duality
 						fittingText = textElem.Text;
 					}
 					Vector2 textElemSize = this.font.MeasureText(fittingText);
-					Vector2 textElemSizeTrimmed = this.font.MeasureText(fittingText.Trim());
 
 					// Perform word wrap by whole Element
 					if (this.parent.maxWidth > 0 && this.parent.wrapMode == WrapMode.Element)
@@ -471,7 +468,7 @@ namespace Duality
 
 					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
 					this.offset.X += textElemSize.X;
-					this.lineWidth += textElemSizeTrimmed.X;
+					this.lineWidth += textElemSize.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.font.LineSpacing);
 					this.lineBaseLine = Math.Max(this.lineBaseLine, this.font.BaseLine);
 				}
@@ -634,6 +631,7 @@ namespace Duality
 		private	int					maxWidth		= 0;
 		private	int					maxHeight		= 0;
 		private	WrapMode			wrapMode		= WrapMode.Word;
+		private	Alignment			lineAlign		= Alignment.Left;
 
 		private	string				displayedText	= null;
 		private	int[]				fontGlyphCount	= null;
@@ -729,6 +727,22 @@ namespace Duality
 			get { return this.wrapMode; }
 			set { this.wrapMode = value; this.updateVertexCache = true; }
 		}
+		/// <summary>
+		/// [GET / SET] Specifies the default horizontal alignment of each line, unless changed by format tags.
+		/// </summary>
+		public Alignment LineAlign
+		{
+			get { return this.lineAlign; }
+			set
+			{
+				value = value & (Alignment.Left | Alignment.Right);
+				if (this.lineAlign != value)
+				{
+					this.lineAlign = value;
+					this.updateVertexCache = true;
+				}
+			}
+		}
 
 		/// <summary>
 		/// [GET] The text that is actually displayed.
@@ -763,6 +777,7 @@ namespace Duality
 			this.maxWidth	= other.maxWidth;
 			this.maxHeight	= other.maxHeight;
 			this.wrapMode	= other.wrapMode;
+			this.lineAlign = other.lineAlign;
 
 			this.ApplySource(this.sourceText);
 		}

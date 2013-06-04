@@ -531,26 +531,19 @@ namespace Duality
 		/// <returns></returns>
 		public static Rect Align(Alignment align, float x, float y, float w, float h)
 		{
-			if (align == Alignment.Bottom)
-				return AlignBottom(x, y, w, h);
-			else if (align == Alignment.BottomLeft)
-				return AlignBottomLeft(x, y, w, h);
-			else if (align == Alignment.BottomRight)
-				return AlignBottomRight(x, y, w, h);
-			else if (align == Alignment.Center)
-				return AlignCenter(x, y, w, h);
-			else if (align == Alignment.Left)
-				return AlignLeft(x, y, w, h);
-			else if (align == Alignment.Right)
-				return AlignRight(x, y, w, h);
-			else if (align == Alignment.Top)
-				return AlignTop(x, y, w, h);
-			else if (align == Alignment.TopLeft)
-				return AlignTopLeft(x, y, w, h);
-			else if (align == Alignment.TopRight)
-				return AlignTopRight(x, y, w, h);
-			else
-				return new Rect(x, y, w, h);
+			switch (align)
+			{
+				default:
+				case Alignment.TopLeft:		return AlignTopLeft		(x, y, w, h);
+				case Alignment.TopRight:	return AlignTopRight	(x, y, w, h);
+				case Alignment.BottomLeft:	return AlignBottomLeft	(x, y, w, h);
+				case Alignment.BottomRight:	return AlignBottomRight	(x, y, w, h);
+				case Alignment.Center:		return AlignCenter		(x, y, w, h);
+				case Alignment.Bottom:		return AlignBottom		(x, y, w, h);
+				case Alignment.Left:		return AlignLeft		(x, y, w, h);
+				case Alignment.Right:		return AlignRight		(x, y, w, h);
+				case Alignment.Top:			return AlignTop			(x, y, w, h);
+			}
 		}
 		/// <summary>
 		/// Creates a Rect using x and y Coordinates that are assumed to be aligned centered.

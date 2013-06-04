@@ -16,7 +16,7 @@ namespace Duality.Components.Renderers
 	[Serializable]
 	public class TextRenderer : Renderer, ICmpInitializable
 	{
-		protected	Alignment				align		= Alignment.Center;
+		protected	Alignment				blockAlign	= Alignment.Center;
 		protected	FormattedText			text		= new FormattedText("Hello World");
 		protected	BatchInfo				customMat	= null;
 		protected	ColorRgba				colorTint	= ColorRgba.White;
@@ -34,12 +34,12 @@ namespace Duality.Components.Renderers
 		/// <summary>
 		/// [GET / SET] The text blocks alignment relative to the <see cref="GameObject"/>.
 		/// </summary>
-		public Alignment Align
+		public Alignment BlockAlign
 		{
-			get { return this.align; }
+			get { return this.blockAlign; }
 			set
 			{
-				this.align = value;
+				this.blockAlign = value;
 				this.UpdateText();
 			}
 		}
@@ -104,7 +104,7 @@ namespace Duality.Components.Renderers
 		public void UpdateText()
 		{
 			this.metrics = this.text.Measure();
-			this.textRect = Rect.Align(this.align, 0.0f, 0.0f, 
+			this.textRect = Rect.Align(this.blockAlign, 0.0f, 0.0f, 
 				MathF.Max(this.metrics.Size.X, this.text.MaxWidth), 
 				MathF.Min(this.metrics.Size.Y, this.text.MaxHeight));
 		}
@@ -118,8 +118,9 @@ namespace Duality.Components.Renderers
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale * scaleTemp, out xDot, out yDot);
 
-			Rect rect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
-			Vector2 textOffset = rect.TopLeft;
+			// Apply block alignment
+			Vector2 textOffset = Vector2.Zero;
+			this.blockAlign.ApplyTo(ref textOffset, this.metrics.Size);
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
@@ -133,28 +134,70 @@ namespace Duality.Components.Renderers
 					posTemp.Y += 0.5f;
 			}
 
-			// Draw design time data
+			// Draw design time metrics data
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 			{
-				Vector3 textWidth = Vector3.UnitX * rect.W;
-				Vector3 textMaxWidth = Vector3.UnitX * this.text.MaxWidth;
-				Vector3 textHeight = Vector3.UnitY * rect.H;
-				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, rect.H);
-				MathF.TransformDotVec(ref textWidth, ref xDot, ref yDot);
-				MathF.TransformDotVec(ref textMaxWidth, ref xDot, ref yDot);
-				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);
-				MathF.TransformDotVec(ref textMaxHeight, ref xDot, ref yDot);
+				bool showLimits		= true;
+				bool showLines		= false;
+				bool showElements	= false;
+				Vector3 metricsOffset = new Vector3(0.0f, 0.0f, 0.01f);
+				Vector3 lineOffset = new Vector3(0.5f, 0.5f, 0.0f);
+				Vector3 tUnitX = Vector3.UnitX;
+				Vector3 tUnitY = Vector3.UnitY;
+				MathF.TransformDotVec(ref tUnitX, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref tUnitY, ref xDot, ref yDot);
 
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Green.WithAlpha(128)), VertexMode.LineLoop,
-					new VertexFormat.VertexC1P3(posTemp),
-					new VertexFormat.VertexC1P3(posTemp + textWidth),
-					new VertexFormat.VertexC1P3(posTemp + textWidth + textHeight),
-					new VertexFormat.VertexC1P3(posTemp + textHeight));
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Red.WithAlpha(128)), VertexMode.LineLoop,
-					new VertexFormat.VertexC1P3(posTemp),
-					new VertexFormat.VertexC1P3(posTemp + textMaxWidth),
-					new VertexFormat.VertexC1P3(posTemp + textMaxWidth + textMaxHeight),
-					new VertexFormat.VertexC1P3(posTemp + textMaxHeight));
+				// Actual text size and maximum text size
+				if (showLimits)
+				{
+					Vector3 textWidth = tUnitX * this.metrics.Size.X;
+					Vector3 textHeight = tUnitY * this.metrics.Size.Y;
+					Vector3 textMaxWidth = tUnitX * this.text.MaxWidth;
+					Vector3 textMaxHeight = tUnitY * MathF.Max(this.text.MaxHeight, this.metrics.Size.Y);
+
+					ColorRgba clrSize = ColorRgba.Green.WithAlpha(128);
+					ColorRgba clrMaxSize = ColorRgba.Red.WithAlpha(128);
+					device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp, clrSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth, clrSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth + textHeight, clrSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textHeight, clrSize));
+					device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp, clrMaxSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth, clrMaxSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth + textMaxHeight, clrMaxSize),
+						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxHeight, clrMaxSize));
+				}
+
+				// Individual line sizes
+				if (showLines)
+				{
+					ColorRgba clrLineBg = (ColorRgba.Blue + ColorRgba.Red).WithAlpha(64);
+					for (int i = 0; i < this.metrics.LineBounds.Length; i++)
+					{
+						Rect lineRect = this.metrics.LineBounds[i];
+						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.Quads,
+							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.TopLeft.X * tUnitX + lineRect.TopLeft.Y * tUnitY, clrLineBg),
+							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.BottomLeft.X * tUnitX + lineRect.BottomLeft.Y * tUnitY, clrLineBg),
+							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.BottomRight.X * tUnitX + lineRect.BottomRight.Y * tUnitY, clrLineBg),
+							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.TopRight.X * tUnitX + lineRect.TopRight.Y * tUnitY, clrLineBg));
+					}
+				}
+
+				// Individual line sizes
+				if (showElements)
+				{
+					ColorRgba clrElementBg = (ColorRgba.Blue + ColorRgba.Green).WithAlpha(128);
+					for (int i = 0; i < this.metrics.ElementBounds.Length; i++)
+					{
+						Rect elemRect = this.metrics.ElementBounds[i];
+						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
+							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopLeft.X * tUnitX + elemRect.TopLeft.Y * tUnitY, clrElementBg),
+							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomLeft.X * tUnitX + elemRect.BottomLeft.Y * tUnitY, clrElementBg),
+							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomRight.X * tUnitX + elemRect.BottomRight.Y * tUnitY, clrElementBg),
+							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopRight.X * tUnitX + elemRect.TopRight.Y * tUnitY, clrElementBg));
+					}
+				}
 			}
 
 			ColorRgba matColor = this.customMat != null ? this.customMat.MainColor : ColorRgba.White;
@@ -197,7 +240,7 @@ namespace Duality.Components.Renderers
 		{
 			base.OnCopyTo(target, provider);
 			TextRenderer t = target as TextRenderer;
-			t.align		= this.align;
+			t.blockAlign		= this.blockAlign;
 			t.text		= this.text.Clone();
 			t.colorTint	= this.colorTint;
 			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
