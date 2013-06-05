@@ -163,16 +163,19 @@ namespace Duality
 
 			return result;
 		}
+
 		/// <summary>
-		/// Visits all fields of an object and all its sub-objects. This is likely to be a very expensive operation.
+		/// Visits all fields of an object and all its sub-objects in order to find and / or adjust values of a certain Type. This is likely to be a very expensive operation.
 		/// </summary>
-		/// <param name="type"></param>
+		/// <typeparam name="T">The value type that is searched for.</typeparam>
+		/// <param name="obj">The root object where the search begins.</param>
 		/// <param name="visitor">An object field visitor. Returns a new value for the visited object.</param>
-		public static void VisitObjectsDeep<T>(object obj, Func<T,T> visitor)
+		/// <param name="stopAtTarget">If true, visited objects of the target type won't be investigated deeply. If false, even target objects are unwrapped in order to check their sub-objects.</param>
+		public static void VisitObjectsDeep<T>(object obj, Func<T,T> visitor, bool stopAtTarget = true)
 		{
-			VisitObjectsDeep<T>(obj, visitor, new HashSet<object>(), new Dictionary<Type,bool>());
+			VisitObjectsDeep<T>(obj, visitor, stopAtTarget, new HashSet<object>(), new Dictionary<Type,bool>());
 		}
-		private static object VisitObjectsDeep<T>(object obj, Func<T,T> visitor, HashSet<object> visitedGraph, Dictionary<Type,bool> exploreTypeCache)
+		private static object VisitObjectsDeep<T>(object obj, Func<T,T> visitor, bool stopAtTarget, HashSet<object> visitedGraph, Dictionary<Type,bool> exploreTypeCache)
 		{
 			if (obj == null) return obj;
 			if (visitedGraph.Contains(obj)) return obj;
@@ -180,7 +183,11 @@ namespace Duality
 
 			// Visit object
 			if (objType.IsClass) visitedGraph.Add(obj);
-			if (obj is T) obj = visitor((T)obj);
+			if (obj is T)
+			{
+				obj = visitor((T)obj);
+				if (stopAtTarget) return obj;
+			}
 
 			// Check if object type should be explored
 			bool explore = false;
@@ -204,7 +211,7 @@ namespace Duality
 					for (int i = 0; i < length; ++i)
 					{
 						object val = baseArray.GetValue(i);
-						val = VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+						val = VisitObjectsDeep<T>(val, visitor, stopAtTarget, visitedGraph, exploreTypeCache);
 						baseArray.SetValue(val, i);
 					}
 				}
@@ -213,7 +220,7 @@ namespace Duality
 					for (int i = 0; i < length; ++i)
 					{
 						object val = baseArray.GetValue(i);
-						VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+						VisitObjectsDeep<T>(val, visitor, stopAtTarget, visitedGraph, exploreTypeCache);
 					}
 				}
 			}
@@ -225,7 +232,7 @@ namespace Duality
 				foreach (FieldInfo field in fields)
 				{
 					object val = field.GetValue(obj);
-					val = VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+					val = VisitObjectsDeep<T>(val, visitor, stopAtTarget, visitedGraph, exploreTypeCache);
 					if (!objType.IsClass || typeof(T).IsAssignableFrom(field.FieldType)) field.SetValue(obj, val);
 				}
 			}
@@ -245,6 +252,70 @@ namespace Duality
 
 			// Check referred fields
 			return type.GetAllFields(BindInstanceAll).Any(f => VisitObjectsDeep_ExploreType(baseType, f.FieldType, visitedTypes));
+		}
+
+		/// <summary>
+		/// Cleans the specified object instance from event bindings that lead to a specific invalid Assembly.
+		/// This method is used to sweep forgotten event bindings upon plugin reload.
+		/// </summary>
+		/// <param name="targetObject"></param>
+		/// <param name="invalidAssembly"></param>
+		/// <returns>Returns true, if any event binding was removed.</returns>
+		public static bool CleanEventBindings(object targetObject, Assembly invalidAssembly)
+		{
+			bool cleanedAny = false;
+			Type targetType = targetObject.GetType();
+			List<FieldInfo> targetFields = targetType.GetAllFields(BindInstanceAll);
+			foreach (FieldInfo field in targetFields)
+			{
+				if (typeof(Delegate).IsAssignableFrom(field.FieldType))
+				{
+					Delegate delOld = field.GetValue(targetObject) as Delegate;
+					Delegate delNew = CleanEventBindings_Delegate(delOld, invalidAssembly);
+					if (!object.ReferenceEquals(delNew, delOld))
+					{
+						cleanedAny = true;
+						field.SetValue(targetObject, delNew);
+					}
+				}
+			}
+			return cleanedAny;
+		}
+		/// <summary>
+		/// Cleans the specified class from static event bindings that lead to a specific invalid Assembly.
+		/// This method is used to sweep forgotten event bindings upon plugin reload.
+		/// </summary>
+		/// <param name="targetType"></param>
+		/// <param name="invalidAssembly"></param>
+		/// <returns>Returns true, if any event binding was removed.</returns>
+		public static bool CleanEventBindings(Type targetType, Assembly invalidAssembly)
+		{
+			bool cleanedAny = false;
+			List<FieldInfo> targetFields = targetType.GetAllFields(BindStaticAll);
+			foreach (FieldInfo field in targetFields)
+			{
+				if (typeof(Delegate).IsAssignableFrom(field.FieldType))
+				{
+					Delegate delOld = field.GetValue(null) as Delegate;
+					Delegate delNew = CleanEventBindings_Delegate(delOld, invalidAssembly);
+					if (!object.ReferenceEquals(delNew, delOld))
+					{
+						cleanedAny = true;
+						field.SetValue(null, delNew);
+					}
+				}
+			}
+			return cleanedAny;
+		}
+		private static Delegate CleanEventBindings_Delegate(Delegate del, Assembly invalidAssembly)
+		{
+			if (del == null) return del;
+			Delegate[] oldInvokeList = del.GetInvocationList();
+			if (oldInvokeList.Any(e => e.Method.DeclaringType.Assembly == invalidAssembly))
+			{
+				return Delegate.Combine(oldInvokeList.Where(e => e.Method.DeclaringType.Assembly != invalidAssembly).ToArray());
+			}
+			return del;
 		}
 
 		/// <summary>

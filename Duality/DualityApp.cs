@@ -775,12 +775,12 @@ namespace Duality
 		}
 		private static void UnloadPlugins()
 		{
-			OnDiscardPluginData();
 			foreach (CorePlugin plugin in plugins.Values)
 			{
 				disposedPlugins.Add(plugin.PluginAssembly);
 				plugin.Dispose();
 			}
+			OnDiscardPluginData(plugins.Values);
 			plugins.Clear();
 		}
 		internal static void ReloadPlugin(string pluginFileName)
@@ -798,7 +798,7 @@ namespace Duality
 			Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
 			CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
 
-			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
+			// If we're overwriting an old plugin here, add the old version to the "disposed" blacklist
 			CorePlugin oldPlugin;
 			if (plugins.TryGetValue(plugin.AssemblyName, out oldPlugin))
 			{
@@ -809,8 +809,8 @@ namespace Duality
 			// Register newly loaded plugin
 			plugins[plugin.AssemblyName] = plugin;
 			
-			// Discard plugin-related data
-			OnDiscardPluginData();
+			// Discard temporary plugin-related data (cached Types, etc.)
+			OnDiscardPluginData(new[] { oldPlugin });
 
 			Log.Core.PopIndent();
 
@@ -909,18 +909,55 @@ namespace Duality
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
 		}
-		private static void OnDiscardPluginData()
+		private static void OnDiscardPluginData(IEnumerable<CorePlugin> oldPlugins)
 		{
 			if (DiscardPluginData != null)
 				DiscardPluginData(null, EventArgs.Empty);
 
+			// Clean event bindings linked to the disposed Assembly.
+			if (oldPlugins != null)
+			{
+				foreach (CorePlugin plugin in oldPlugins)
+				{
+					CleanEventBindings(plugin.PluginAssembly);
+				}
+			}
+
+			// Clean globally cached type values
 			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
 			Component.ClearTypeCache();
+
+			// Dispose any existing Resources that could reference plugin data
 			if (!Scene.Current.IsEmpty)
 				Scene.Current.Dispose();
 			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
 				ContentProvider.UnregisterContent(r.Path);
+		}
+		private static void CleanEventBindings(Assembly invalidAssembly)
+		{
+			// Note that this method is only a countermeasure against common mistakes. It doesn't guarantee
+			// full error safety in all cases. Event bindings inbetween different plugins aren't checked,
+			// for example.
+
+			string warningText = string.Format(
+				"Found leaked event bindings to invalid Assembly '{0}' from {1}. " +
+				"This is a common problem when registering global events from within a CorePlugin " +
+				"without properly unregistering them later. Please make sure that all events are " +
+				"unregistered in CorePlugin::OnDisposePlugin().",
+				invalidAssembly.FullName.Split(',')[0],
+				"{0}");
+
+			if (ReflectionHelper.CleanEventBindings(typeof(DualityApp),	invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)));
+			if (ReflectionHelper.CleanEventBindings(typeof(Scene),		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Scene)));
+			if (ReflectionHelper.CleanEventBindings(typeof(Resource),	invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Resource)));
+			if (ReflectionHelper.CleanEventBindings(Log.LogData,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Log)) + ".LogData");
+			if (ReflectionHelper.CleanEventBindings(keyboard,			invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Keyboard");
+			if (ReflectionHelper.CleanEventBindings(mouse,				invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Mouse");
+			foreach (StaticJoystickInput joystick in joysticks)
+			{
+				if (ReflectionHelper.CleanEventBindings(joystick,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Joysticks");
+			}
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
