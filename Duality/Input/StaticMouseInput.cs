@@ -11,6 +11,7 @@ namespace Duality
 		private	EventHandler<MouseMoveEventArgs>	pipeMove;
 		private	EventHandler<MouseWheelEventArgs>	pipeWheel;
 
+
 		public IMouseInput RealInput
 		{
 			get { return this.realInput; }
@@ -38,6 +39,46 @@ namespace Duality
 				}
 			}
 		}
+		public int X
+		{
+			get { return this.realInput != null ? this.realInput.X : 0; }
+			set { if (this.realInput != null) this.realInput.X = value; }
+		}
+		public int Y
+		{
+			get { return this.realInput != null ? this.realInput.Y : 0; }
+			set { if (this.realInput != null) this.realInput.Y = value; }
+		}
+		public int Wheel
+		{
+			get { return this.realInput != null ? this.realInput.Wheel : 0; }
+		}
+		public bool this[MouseButton btn]
+		{
+			get { return this.realInput != null ? this.realInput[btn] : false; }
+		}
+
+		public event EventHandler<MouseButtonEventArgs> ButtonUp
+		{
+			add { this.pipeKeyUp += value; }
+			remove { this.pipeKeyUp -= value; }
+		}
+		public event EventHandler<MouseButtonEventArgs> ButtonDown
+		{
+			add { this.pipeKeyDown += value; }
+			remove { this.pipeKeyDown -= value; }
+		}
+		public event EventHandler<MouseMoveEventArgs> Move
+		{
+			add { this.pipeMove += value; }
+			remove { this.pipeMove -= value; }
+		}
+		public event EventHandler<MouseWheelEventArgs> WheelChanged
+		{
+			add { this.pipeWheel += value; }
+			remove { this.pipeWheel -= value; }
+		}
+
 		
 		private void realInput_ButtonUp(object sender, MouseButtonEventArgs e)
 		{
@@ -58,45 +99,6 @@ namespace Duality
 		{
 			if (this.pipeWheel != null)
 				this.pipeWheel(sender, e);
-		}
-
-		int IMouseInput.X
-		{
-			get { return this.realInput != null ? this.realInput.X : 0; }
-			set { if (this.realInput != null) this.realInput.X = value; }
-		}
-		int IMouseInput.Y
-		{
-			get { return this.realInput != null ? this.realInput.Y : 0; }
-			set { if (this.realInput != null) this.realInput.Y = value; }
-		}
-		int IMouseInput.Wheel
-		{
-			get { return this.realInput != null ? this.realInput.Wheel : 0; }
-		}
-		bool IMouseInput.this[MouseButton btn]
-		{
-			get { return this.realInput != null ? this.realInput[btn] : false; }
-		}
-		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonUp
-		{
-			add { this.pipeKeyUp += value; }
-			remove { this.pipeKeyUp -= value; }
-		}
-		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonDown
-		{
-			add { this.pipeKeyDown += value; }
-			remove { this.pipeKeyDown -= value; }
-		}
-		event EventHandler<MouseMoveEventArgs> IMouseInput.Move
-		{
-			add { this.pipeMove += value; }
-			remove { this.pipeMove -= value; }
-		}
-		event EventHandler<MouseWheelEventArgs> IMouseInput.WheelChanged
-		{
-			add { this.pipeWheel += value; }
-			remove { this.pipeWheel -= value; }
 		}
 	}
 }

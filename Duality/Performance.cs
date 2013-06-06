@@ -2,9 +2,12 @@
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System;
 
 using OpenTK;
+
+using Duality.ColorFormat;
 
 namespace Duality
 {
@@ -13,66 +16,144 @@ namespace Duality
 	/// </summary>
 	public static class Performance
 	{
-		internal class Counter
+		[Flags]
+		public enum ReportOptions
 		{
-			private	string		name		= null;
-			private	Stopwatch	watch		= new Stopwatch();
-			private	float		value		= 0.0f;
-			private	float		lastValue	= 0.0f;
-			private	bool		isInt		= false;
-			private	bool		used		= true;
-			private	bool		lastUsed	= true;
-			// Profiling report data
-			private	double		accumValue		= 0.0d;
-			private	float		accumMaxValue	= float.MinValue;
-			private	float		accumMinValue	= float.MaxValue;
-			private	int			accumSamples	= 0;
+			None			= 0x00,
+
+			LastValue		= 0x01,
+			AverageValue	= 0x02,
+			SampleCount		= 0x04,
+			MinValue		= 0x08,
+			MaxValue		= 0x10,
+			TotalValue		= 0x20,
+
+			GroupHeader		= 0x1000,
+			Header			= 0x2000,
+			FormattedText	= 0x4000
+		}
+		public abstract class Counter
+		{
+			// Management
+			private		string		path		= null;
+			private		string		name		= null;
+			private		string		parentName	= null;
+			private		Counter		parent		= null;
+			// Measurement
+			protected	bool		used		= true;
+			protected	bool		lastUsed	= true;
+			protected	int			sampleCount	= 0;
 
 
 			public string Name
 			{
 				get { return this.name; }
+				private set
+				{
+					this.path = value;
+					this.name = Path.GetFileName(value);
+					this.parentName = Path.GetDirectoryName(value);
+				}
+			}
+			public string FullName
+			{
+				get { return this.path; }
+			}
+			public string DisplayName
+			{
+				get { return this.Parent == null ? this.FullName : this.Name; }
+			}
+			public Counter Parent
+			{
+				get
+				{
+					if (this.parent == null && !string.IsNullOrEmpty(this.parentName))
+						Performance.counterMap.TryGetValue(this.parentName, out this.parent);
+					return this.parent;
+				}
+			}
+			public int ParentDepth
+			{
+				get
+				{
+					return 
+						this.Parent == null ? 
+						0 : 
+						1 + this.Parent.ParentDepth;
+				}
 			}
 			public bool WasUsed
 			{
 				get { return this.lastUsed; }
 			}
-			public bool IsIntCounter
+			public int SampleCount
 			{
-				get { return this.isInt; }
+				get { return this.sampleCount; }
 			}
+
+			public virtual float Severity
+			{
+				get { return 0.5f; }
+			}
+			protected internal abstract string DisplayLastValue { get; }
+			protected internal abstract string DisplayAverageValue { get; }
+			protected internal abstract string DisplayMinValue { get; }
+			protected internal abstract string DisplayMaxValue { get; }
+			protected internal abstract string DisplayTotalValue { get; }
+
+
+			public abstract void Reset();
+
+			protected internal virtual void OnFrameTick() {}
+
+			public static T Create<T>(string name) where T : Counter, new()
+			{
+				T counter = new T();
+				counter.Name = name;
+				return counter;
+			}
+		}
+		public class TimeCounter : Counter
+		{
+			// Measurement
+			private	Stopwatch	watch		= new Stopwatch();
+			private	float		value		= 0.0f;
+			private	float		lastValue	= 0.0f;
+			private	double		accumValue		= 0.0d;
+			private	float		accumMaxValue	= float.MinValue;
+			private	float		accumMinValue	= float.MaxValue;
+
+
 			public float LastValue
 			{
 				get { return this.lastValue; }
 			}
+			
+			public override float Severity
+			{
+				get { return MathF.Clamp(this.lastValue / Time.MsPFMult, 0.0f, 1.0f); }
+			}
+			protected internal override string DisplayLastValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F}", this.lastValue); }
+			}
+			protected internal override string DisplayAverageValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F}", (float)(this.accumValue / (double)this.sampleCount)); }
+			}
+			protected internal override string DisplayMinValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F}", this.accumMinValue); }
+			}
+			protected internal override string DisplayMaxValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F}", this.accumMaxValue); }
+			}
+			protected internal override string DisplayTotalValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F}", this.accumValue); }
+			}
 
-			internal double ProfileAccumValue
-			{
-				get { return this.accumValue; }
-			}
-			internal float ProfileAverage
-			{
-				get { return (float)(this.accumValue / this.accumSamples); }
-			}
-			internal float ProfileMinimum
-			{
-				get { return this.accumMinValue; }
-			}
-			internal float ProfileMaximum
-			{
-				get { return this.accumMaxValue; }
-			}
-			internal int ProfileAccumSamples
-			{
-				get { return this.accumSamples; }
-			}
-
-
-			public Counter(string name, bool isInt = false)
-			{
-				this.name = name;
-				this.isInt = isInt;
-			}
 
 			public void BeginMeasure()
 			{
@@ -81,7 +162,6 @@ namespace Duality
 			public void EndMeasure()
 			{
 				this.value += this.watch.ElapsedTicks * 1000.0f / Stopwatch.Frequency;
-				this.isInt = false;
 				this.used = true;
 			}
 			public void Add(float value)
@@ -94,7 +174,7 @@ namespace Duality
 				this.value = value;
 				this.used = true;
 			}
-			public void Reset()
+			public override void Reset()
 			{
 				this.lastUsed = this.used;
 				this.used = false;
@@ -103,239 +183,194 @@ namespace Duality
 				this.value = 0.0f;
 			}
 
-			internal void SampleProfile()
+			protected internal override void OnFrameTick()
 			{
 				if (this.used)
 				{
-					this.accumSamples++;
+					this.sampleCount++;
 					this.accumMaxValue = MathF.Max(this.value, this.accumMaxValue);
 					this.accumMinValue = MathF.Min(this.value, this.accumMinValue);
 					this.accumValue += this.value;
 				}
+				this.Reset();
 			}
 		}
+		public class StatCounter : Counter
+		{
+			// Measurement
+			private	int		value		= 0;
+			private	int		lastValue	= 0;
+			// Report data
+			private	long	accumValue		= 0;
+			private	int		accumMaxValue	= int.MinValue;
+			private	int		accumMinValue	= int.MaxValue;
+			
 
-		internal	static	Counter	timeFrame				= new Counter("Duality_Frame");
-		internal	static	Counter	timeUpdate				= new Counter("Duality_Update");
-		internal	static	Counter	timeUpdateScene				= new Counter("Duality_Update_Scene");
-		internal	static	Counter	timeUpdateAudio				= new Counter("Duality_Update_Audio");
-
-		internal	static	Counter	timeUpdatePhysics			= new Counter("Duality_Update_Physics");
-		internal	static	Counter	timeUpdatePhysicsAddRemove		= new Counter("Duality_Update_Physics_AddRemove");
-		internal	static	Counter	timeUpdatePhysicsContacts		= new Counter("Duality_Update_Physics_Contacts");
-		internal	static	Counter	timeUpdatePhysicsContinous		= new Counter("Duality_Update_Physics_Continous");
-		internal	static	Counter	timeUpdatePhysicsController		= new Counter("Duality_Update_Physics_Controller");
-		internal	static	Counter	timeUpdatePhysicsSolve			= new Counter("Duality_Update_Physics_Solve");
-
-		internal	static	Counter	timeRender				= new Counter("Duality_Render");
-		internal	static	Counter	timeSwapBuffers				= new Counter("Duality_Render_SwapBuffers");
-		internal	static	Counter	timeCollectDrawcalls		= new Counter("Duality_Render_CollectDrawcalls");
-		internal	static	Counter	timeOptimizeDrawcalls		= new Counter("Duality_Render_OptimizeDrawcalls");
-		internal	static	Counter	timeProcessDrawcalls		= new Counter("Duality_Render_ProcessDrawcalls");
-		internal	static	Counter	timePostProcessing			= new Counter("Duality_Render_PostProcessing");
-		internal	static	Counter	timeVisualPicking			= new Counter("Duality_Render_Picking");
-
-		internal	static	Counter	statNumPlaying2D			= new Counter("Duality_Audio_StatNumPlaying2D", true);
-		internal	static	Counter	statNumPlaying3D			= new Counter("Duality_Audio_StatNumPlaying3D", true);
-		internal	static	Counter	statNumDrawcalls			= new Counter("Duality_Render_StatNumDrawcalls", true);
-		internal	static	Counter	statNumRawBatches			= new Counter("Duality_Render_StatNumRawBatches", true);
-		internal	static	Counter	statNumMergedBatches		= new Counter("Duality_Render_StatNumMergedBatches", true);
-		internal	static	Counter	statNumOptimizedBatches		= new Counter("Duality_Render_StatNumOptimizedBatches", true);
-
-		internal	static	Counter	timeLog					= new Counter("Duality_Log");
-
-		private	static	Dictionary<string,Counter>	counterMap	= new Dictionary<string,Counter>();
-		
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame took.
-		/// </summary>
-		public static float FrameTime
-		{
-			get { return timeFrame.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last DualityApp.Update() call took
-		/// </summary>
-		public static float UpdateTime
-		{
-			get { return timeUpdate.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for physics calculation
-		/// </summary>
-		public static float UpdatePhysicsTime
-		{
-			get { return timeUpdatePhysics.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for scene updates
-		/// </summary>
-		public static float UpdateSceneTime
-		{
-			get { return timeUpdateScene.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for audio updates (without streaming)
-		/// </summary>
-		public static float UpdateAudioTime
-		{
-			get { return timeUpdateAudio.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last DualityApp.Render() call took
-		/// </summary>
-		public static float RenderTime
-		{
-			get { return timeRender.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for collecting drawcalls
-		/// </summary>
-		public static float CollectDrawcallsTime
-		{
-			get { return timeCollectDrawcalls.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for optimizing drawcalls / batching
-		/// </summary>
-		public static float OptimizeDrawcallsTime
-		{
-			get { return timeOptimizeDrawcalls.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for processing drawcalls
-		/// </summary>
-		public static float ProcessDrawcallsTime
-		{
-			get { return timeProcessDrawcalls.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for postprocessing.
-		/// </summary>
-		public static float PostProcessingTime
-		{
-			get { return timePostProcessing.LastValue; }
-		}
-		/// <summary>
-		/// [GET] Time in milliseconds the last frame used for visual picking operations.
-		/// </summary>
-		public static float PickingTime
-		{
-			get { return timeVisualPicking.LastValue; }
-		}
-		/// <summary>
-		/// [GET] The number of drawcalls that have been emitted last frame.
-		/// </summary>
-		public static int StatNumDrawcalls
-		{
-			get { return MathF.RoundToInt(statNumDrawcalls.LastValue); }
-		}
-		/// <summary>
-		/// [GET] The number of raw, submitted batches without merging.
-		/// </summary>
-		public static int StatNumRawBatches
-		{
-			get { return MathF.RoundToInt(statNumRawBatches.LastValue); }
-		}
-		/// <summary>
-		/// [GET] The number of batches before optimization.
-		/// </summary>
-		public static int StatNumMergedBatches
-		{
-			get { return MathF.RoundToInt(statNumMergedBatches.LastValue); }
-		}
-		/// <summary>
-		/// [GET] The number of batches after optimization.
-		/// </summary>
-		public static int StatNumOptimizedBatches
-		{
-			get { return MathF.RoundToInt(statNumOptimizedBatches.LastValue); }
-		}
-		/// <summary>
-		/// [GET] The number of currently playing 2d sounds.
-		/// </summary>
-		public static int StatNumPlaying2D
-		{
-			get { return MathF.RoundToInt(statNumPlaying2D.LastValue); }
-		}
-		/// <summary>
-		/// [GET] The number of currently playing 3d sounds.
-		/// </summary>
-		public static int StatNumPlaying3D
-		{
-			get { return MathF.RoundToInt(statNumPlaying3D.LastValue); }
-		}
-		
-		public static void BeginMeasure(string counter)
-		{
-			Counter c;
-			if (!counterMap.TryGetValue(counter, out c))
+			public int LastValue
 			{
-				c = new Counter(counter);
-				counterMap[counter] = c;
+				get { return this.lastValue; }
 			}
-			c.BeginMeasure();
-		}
-		public static void EndMeasure(string counter)
-		{
-			Counter c;
-			if (counterMap.TryGetValue(counter, out c)) c.EndMeasure();
-		}
-		public static float GetMeasure(string counter)
-		{
-			Counter c;
-			if (counterMap.TryGetValue(counter, out c))
-				return c.LastValue;
-			else
-				return 0.0f;
-		}
-		public static KeyValuePair<string,float>[] GetAllMeasures()
-		{
-			return GetUsedCounters()
-				.Where(p => !p.IsIntCounter)
-				.Select(p => new KeyValuePair<string,float>(p.Name, p.LastValue))
-				.ToArray();
-		}
-		public static void AddToStat(string counter, int value)
-		{
-			Counter c;
-			if (!counterMap.TryGetValue(counter, out c))
+
+			protected internal override string DisplayLastValue
 			{
-				c = new Counter(counter, true);
-				counterMap[counter] = c;
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", this.lastValue); }
 			}
-			c.Add(value);
+			protected internal override string DisplayAverageValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", (int)Math.Round((double)this.accumValue / (double)this.sampleCount)); }
+			}
+			protected internal override string DisplayMinValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", this.accumMinValue); }
+			}
+			protected internal override string DisplayMaxValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", this.accumMaxValue); }
+			}
+			protected internal override string DisplayTotalValue
+			{
+				get { return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", this.accumValue); }
+			}
+
+
+			public void Add(int value)
+			{
+				this.value += value;
+				this.used = true;
+			}
+			public void Set(int value)
+			{
+				this.value = value;
+				this.used = true;
+			}
+			public override void Reset()
+			{
+				this.lastUsed = this.used;
+				this.used = false;
+
+				this.lastValue = this.value;
+				this.value = 0;
+			}
+
+			protected internal override void OnFrameTick()
+			{
+				if (this.used)
+				{
+					this.sampleCount++;
+					this.accumMaxValue = MathF.Max(this.value, this.accumMaxValue);
+					this.accumMinValue = MathF.Min(this.value, this.accumMinValue);
+					this.accumValue += this.value;
+				}
+				this.Reset();
+			}
 		}
-		public static int GetStat(string counter)
+
+
+		private	static	Dictionary<string,Counter>	counterMap			= new Dictionary<string,Counter>();
+		private static	FormattedText				textReport			= null;
+		private	static	TimeSpan					textReportLast		= TimeSpan.Zero;
+		public static readonly TimeCounter	TimeUpdatePhysics			= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics");
+		public static readonly TimeCounter	TimeFrame					= RequestCounter<TimeCounter>(@"Duality\Frame");
+		public static readonly TimeCounter	TimeUpdatePhysicsContacts	= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics\Contacts");
+		public static readonly TimeCounter	TimeUpdate					= RequestCounter<TimeCounter>(@"Duality\Frame\Update");
+		public static readonly TimeCounter	TimeUpdatePhysicsController	= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics\Controller");
+		public static readonly TimeCounter	TimeUpdateScene				= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Scene");
+		public static readonly TimeCounter	TimeUpdatePhysicsContinous	= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics\Continous");
+		public static readonly TimeCounter	TimeUpdateAudio				= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Audio");
+		public static readonly TimeCounter	TimeUpdatePhysicsAddRemove	= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics\AddRemove");
+		public static readonly TimeCounter	TimeUpdatePhysicsSolve		= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics\Solve");
+		public static readonly TimeCounter	TimeRender					= RequestCounter<TimeCounter>(@"Duality\Frame\Render");
+		public static readonly TimeCounter	TimeSwapBuffers				= RequestCounter<TimeCounter>(@"Duality\Frame\Render\SwapBuffers");
+		public static readonly TimeCounter	TimeCollectDrawcalls		= RequestCounter<TimeCounter>(@"Duality\Frame\Render\CollectDrawcalls");
+		public static readonly TimeCounter	TimeOptimizeDrawcalls		= RequestCounter<TimeCounter>(@"Duality\Frame\Render\OptimizeDrawcalls");
+		public static readonly TimeCounter	TimeProcessDrawcalls		= RequestCounter<TimeCounter>(@"Duality\Frame\Render\ProcessDrawcalls");
+		public static readonly TimeCounter	TimePostProcessing			= RequestCounter<TimeCounter>(@"Duality\Frame\Render\PostProcessing");
+		public static readonly TimeCounter	TimeLog						= RequestCounter<TimeCounter>(@"Duality\Frame\Log");
+		public static readonly TimeCounter	TimeVisualPicking			= RequestCounter<TimeCounter>(@"Duality\VisualPicking");
+		public static readonly StatCounter	StatNumPlaying2D			= RequestCounter<StatCounter>(@"Duality\Stats\Audio\NumPlaying2D");
+		public static readonly StatCounter	StatNumPlaying3D			= RequestCounter<StatCounter>(@"Duality\Stats\Audio\NumPlaying3D");
+		public static readonly StatCounter	StatNumDrawcalls			= RequestCounter<StatCounter>(@"Duality\Stats\Render\NumDrawcalls");
+		public static readonly StatCounter	StatNumRawBatches			= RequestCounter<StatCounter>(@"Duality\Stats\Render\NumRawBatches");
+		public static readonly StatCounter	StatNumMergedBatches		= RequestCounter<StatCounter>(@"Duality\Stats\Render\NumMergedBatches");
+		public static readonly StatCounter	StatNumOptimizedBatches		= RequestCounter<StatCounter>(@"Duality\Stats\Render\NumOptimizedBatches");
+
+
+		public static T GetCounter<T>(string name) where T : Counter
 		{
 			Counter c;
-			if (counterMap.TryGetValue(counter, out c))
-				return MathF.RoundToInt(c.LastValue);
-			else
-				return 0;
+			if (!counterMap.TryGetValue(name, out c)) return null;
+			T cc = c as T;
+			if (cc == null) throw new InvalidOperationException(string.Format("The specified performance counter '{0}' is not a {1}.", name, Log.Type(typeof(T))));
+			return cc;
 		}
-		public static KeyValuePair<string,int>[] GetAllStats()
+		public static T RequestCounter<T>(string name) where T : Counter, new()
 		{
-			return GetUsedCounters()
-				.Where(p => p.IsIntCounter)
-				.Select(p => new KeyValuePair<string,int>(p.Name, MathF.RoundToInt(p.LastValue)))
-				.ToArray();
+			T c = GetCounter<T>(name);
+			if (c != null) return c;
+			
+			c = Counter.Create<T>(name);
+			counterMap[name] = c;
+			return c;
 		}
-		private static IEnumerable<Counter> GetUsedCounters()
+		public static IEnumerable<Counter> GetUsedCounters()
 		{
 			return counterMap.Values.Where(p => p.WasUsed);
 		}
 
-		public static void DrawAllMeasures(Canvas canvas, float x = 10.0f, float y = 10.0f, bool background = true)
+		public static void BeginMeasure(string counter)
 		{
-			string[] text = GetUsedCounters()
-				.Where(m => m.LastValue >= 0.005f)
-				.Select(m => string.Format(System.Globalization.CultureInfo.InvariantCulture, m.IsIntCounter ? "{0}: {1}" : "{0}: {1:F}", m.Name, m.IsIntCounter ? MathF.Round(m.LastValue) : m.LastValue))
-				.ToArray();
+			TimeCounter tc = RequestCounter<TimeCounter>(counter);
+			tc.BeginMeasure();
+		}
+		public static void EndMeasure(string counter)
+		{
+			TimeCounter tc = RequestCounter<TimeCounter>(counter);
+			tc.EndMeasure();
+		}
+		public static float GetMeasure(string counter)
+		{
+			TimeCounter tc = GetCounter<TimeCounter>(counter);
+			if (tc != null)
+				return tc.LastValue;
+			else
+				return 0.0f;
+		}
 
-			if (background)
-				canvas.DrawTextBackground(text, x, y);
-			canvas.DrawText(text, x, y);
+		public static void AddToStat(string counter, int value)
+		{
+			StatCounter sc = RequestCounter<StatCounter>(counter);
+			sc.Add(value);
+		}
+		public static int GetStat(string counter)
+		{
+			StatCounter sc = RequestCounter<StatCounter>(counter);
+			if (sc != null)
+				return sc.LastValue;
+			else
+				return 0;
+		}
+
+		public static void DrawTextReport(Canvas canvas, float x = 10.0f, float y = 10.0f, bool background = true, ReportOptions options = ReportOptions.LastValue | ReportOptions.FormattedText)
+		{
+			BeginMeasure(@"DrawTextReport");
+			if (textReport == null || (Time.MainTimer - textReportLast).TotalMilliseconds > 250)
+			{
+				string report = GetTextReport(GetUsedCounters(), options);
+				if (textReport == null)
+				{
+					textReport = new FormattedText(report);
+					textReport.Fonts = new [] { canvas.CurrentState.TextFont };
+				}
+				else
+				{
+					textReport.SourceText = report;
+				}
+				textReportLast = Time.MainTimer;
+			}
+
+			if (background) canvas.DrawTextBackground(textReport, x, y);
+			canvas.DrawText(textReport, x, y);
+			EndMeasure(@"DrawTextReport");
 		}
 		public static void SaveTextReport(string filePath)
 		{
@@ -346,100 +381,162 @@ namespace Duality
 		}
 		public static void SaveTextReport(Stream stream)
 		{
+			string report = GetTextReport(counterMap.Values, 
+				ReportOptions.GroupHeader | 
+				ReportOptions.Header | 
+				ReportOptions.AverageValue |
+				ReportOptions.MaxValue | 
+				ReportOptions.MinValue |
+				ReportOptions.SampleCount |
+				ReportOptions.TotalValue);
 			using (StreamWriter writer = new StreamWriter(stream))
 			{
-				Counter[] timeCounters = counterMap.Values.Where(c => !c.IsIntCounter).ToArray();
-				Counter[] statCounters = counterMap.Values.Where(c => c.IsIntCounter).ToArray();
-				timeCounters.StableSort((a, b) => (int)(100.0d * (b.ProfileAccumValue - a.ProfileAccumValue)));
-				statCounters.StableSort((a, b) => StringComparer.InvariantCulture.Compare(a.Name, b.Name));
-				
-				int maxNameLen;
-				int maxSamples;
-				maxNameLen = timeCounters.Max(c => c.Name.Length);
-				maxSamples = timeCounters.Max(c => c.ProfileAccumSamples);
-				
-				// Write time header
-				writer.Write("Name".PadRight(maxNameLen));
-				writer.Write(": ");
-				writer.Write("Samples".PadRight(18));
-				writer.Write(" ");
-				writer.Write("Total value (ms)".PadRight(18));
-				writer.Write(" ");
-				writer.Write("Total impact (ms)".PadRight(18));
-				writer.Write(" ");
-				writer.Write("Avg. value (ms)");
-				writer.WriteLine();
-
-				// Write time data
-				foreach (Counter c in timeCounters)
-				{
-					writer.Write(c.Name.PadRight(maxNameLen));
-					writer.Write(": ");
-					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(18));
-					writer.Write(" ");
-					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue).PadRight(18));
-					writer.Write(" ");
-					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue / (double)maxSamples).PadRight(18));
-					writer.Write(" ");
-					writer.Write(string.Format("{0:F2}", c.ProfileAverage));
-					writer.WriteLine();
-				}
-
-				writer.WriteLine();
-				writer.WriteLine("-----------------------------------------------------------------");
-				writer.WriteLine();
-
-				maxNameLen = statCounters.Max(c => c.Name.Length);
-				maxSamples = statCounters.Max(c => c.ProfileAccumSamples);
-				
-				// Write stat header
-				writer.Write("Name".PadRight(maxNameLen));
-				writer.Write(": ");
-				writer.Write("Samples".PadRight(15));
-				writer.Write(" ");
-				writer.Write("Min. value".PadRight(15));
-				writer.Write(" ");
-				writer.Write("Avg. value".PadRight(15));
-				writer.Write(" ");
-				writer.Write("Max. value");
-				writer.WriteLine();
-
-				// Write stat data
-				foreach (Counter c in statCounters)
-				{
-					writer.Write(c.Name.PadRight(maxNameLen));
-					writer.Write(": ");
-					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(15));
-					writer.Write(" ");
-					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileMinimum)).PadRight(15));
-					writer.Write(" ");
-					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileAverage)).PadRight(15));
-					writer.Write(" ");
-					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileMaximum)));
-					writer.WriteLine();
-				}
+				writer.Write(report);
 			}
 		}
-
-		internal static void InitDualityCounters()
+		public static string GetTextReport(IEnumerable<Counter> reportCounters, ReportOptions options = ReportOptions.LastValue)
 		{
-			foreach (System.Reflection.FieldInfo field in typeof(Performance).GetAllFields(ReflectionHelper.BindStaticAll))
-			{
-				if (field.FieldType != typeof(Counter)) continue;
+			StringBuilder reportBuilder = new StringBuilder();
 
-				Counter counter = field.GetValue(null) as Counter;
-				if (counter != null) counterMap.Add(counter.Name, counter);
+			// Group Counters by Type
+			Dictionary<Type,List<Counter>> countersByType = new Dictionary<Type,List<Counter>>();
+			Type[] existingTypes = reportCounters.Select(c => c.GetType()).Distinct().ToArray();
+			foreach (Type type in existingTypes)
+			{
+				countersByType[type] = reportCounters.Where(c => c.GetType() == type).ToList();
 			}
+
+			// Handle each group separately
+			foreach (var pair in countersByType)
+			{
+				IEnumerable<Counter> counters = pair.Value;
+				int minDepth = counters.Min(c => c.ParentDepth);
+				IEnumerable<Counter> rootCounters = counters.Where(c => c.ParentDepth == minDepth);
+
+				int maxNameLen	= counters.Max(c => c.DisplayName.Length + c.ParentDepth * 2);
+				int maxSamples	= counters.Max(c => c.SampleCount);
+					
+				if (options.HasFlag(ReportOptions.GroupHeader))
+				{
+					reportBuilder.AppendLine();
+					reportBuilder.AppendLine(("[ " + pair.Key.Name + " ]").PadLeft(35, '-').PadRight(50,'-'));
+					reportBuilder.AppendLine();
+				}
+				else if (reportBuilder.Length > 0)
+				{
+					reportBuilder.AppendLine();
+				}
+
+				if (options.HasFlag(ReportOptions.Header))
+				{
+					reportBuilder.Append("Name".PadRight(1 + maxNameLen));
+					reportBuilder.Append(" ");
+					if (options.HasFlag(ReportOptions.LastValue))
+					{
+						reportBuilder.Append("Last Value".PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.AverageValue))
+					{
+						reportBuilder.Append("Avg. Value".PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.MinValue))
+					{
+						reportBuilder.Append("Min. Value".PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.MaxValue))
+					{
+						reportBuilder.Append("Max. Value".PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.SampleCount))
+					{
+						reportBuilder.Append("Samples".PadLeft(15));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.TotalValue))
+					{
+						reportBuilder.Append("Total Value".PadLeft(15));
+						reportBuilder.Append(" ");
+					}
+					reportBuilder.AppendLine();
+				}
+				Stack<Counter> appendStack = new Stack<Counter>(rootCounters.Reverse());
+				while (appendStack.Count > 0)
+				{
+					Counter current = appendStack.Pop();
+					
+					if (options.HasFlag(ReportOptions.FormattedText))
+					{
+						float severity = current.Severity;
+						ColorRgba lineColor = severity >= 0.5f ? 
+							ColorRgba.Mix(ColorRgba.White, ColorRgba.Red, 2.0f * (severity - 0.5f)) :
+							ColorRgba.Mix(ColorRgba.TransparentWhite, ColorRgba.White, 0.1f + 0.9f * (2.0f * severity));
+						reportBuilder.Append(FormattedText.FormatColor(lineColor));
+						reportBuilder.Append(FormattedText.FormatColor(lineColor));
+						reportBuilder.Append(FormattedText.FormatColor(lineColor));
+						reportBuilder.Append(FormattedText.FormatColor(lineColor));
+					}
+					reportBuilder.Append((new string(' ', current.ParentDepth * 2) + current.DisplayName + ":").PadRight(1 + maxNameLen));
+					reportBuilder.Append(" ");
+					if (options.HasFlag(ReportOptions.LastValue))
+					{
+						reportBuilder.Append(current.DisplayLastValue.PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.AverageValue))
+					{
+						reportBuilder.Append(current.DisplayAverageValue.PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.MinValue))
+					{
+						reportBuilder.Append(current.DisplayMinValue.PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.MaxValue))
+					{
+						reportBuilder.Append(current.DisplayMaxValue.PadLeft(13));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.SampleCount))
+					{
+						reportBuilder.Append(string.Format("{0}", current.SampleCount).PadLeft(15));
+						reportBuilder.Append(" ");
+					}
+					if (options.HasFlag(ReportOptions.TotalValue))
+					{
+						reportBuilder.Append(current.DisplayTotalValue.PadLeft(15));
+						reportBuilder.Append(" ");
+					}
+					reportBuilder.AppendLine();
+
+					IEnumerable<Counter> childCounters = counters.Where(c => c.Parent == current);
+					foreach (Counter child in childCounters.Reverse())
+						appendStack.Push(child);
+				}
+				if (options.HasFlag(ReportOptions.FormattedText))
+				{
+					reportBuilder.Append(FormattedText.FormatColor(ColorRgba.White));
+				}
+			}
+
+			string report = reportBuilder.ToString();
+			string[] reportLines = report.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
+			report = string.Join(Environment.NewLine, reportLines.Select(l => l.TrimEnd()));
+			if (options.HasFlag(ReportOptions.FormattedText))
+			{
+				report = report.Replace(Environment.NewLine, FormattedText.FormatNewline);
+			}
+			return report;
 		}
+
 		internal static void FrameTick()
 		{
 			foreach (Counter c in counterMap.Values.ToArray())
-			{
-				// Gather profiling data
-				c.SampleProfile();
-				// Reset counter values
-				c.Reset();
-			}
+				c.OnFrameTick();
 		}
 	}
 }

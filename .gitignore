@@ -4,6 +4,7 @@
 
 #Tooling
 _ReSharper*/
+/Other/NightlyBuild/Package/Duality.zip
 *.resharper
 [Tt]est[Rr]esult*
 _dotCover*/

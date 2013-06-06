@@ -68,8 +68,8 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.val = 0m;
 			else
 			{
-				this.val = values.Any(o => o != null) ? values.Where(o => o != null).Average(o => Convert.ToDecimal(o)) : 0m;
-				this.valMultiple = values.Any(o => o == null) || !values.All(o => Convert.ToDecimal(o) == this.val);
+				this.val = values.Any(o => o != null) ? values.Where(o => o != null).Average(o => SafeToDecimal(o)) : 0m;
+				this.valMultiple = values.Any(o => o == null) || !values.All(o => SafeToDecimal(o) == this.val);
 			}
 
 			this.numEditor.Value = this.val;
@@ -230,6 +230,19 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			this.OnEditingFinished(e.Reason);
 			this.PerformGetValue();
+		}
+
+		private static decimal SafeToDecimal(object o)
+		{
+			double v = Convert.ToDouble(o);
+			if (double.IsNaN(v))
+				return decimal.Zero;
+			else if (v <= (double)decimal.MinValue || double.IsNegativeInfinity(v))
+				return decimal.MinValue;
+			else if (v >= (double)decimal.MaxValue || double.IsPositiveInfinity(v))
+				return decimal.MaxValue;
+			else
+				return (decimal)v;
 		}
 	}
 }

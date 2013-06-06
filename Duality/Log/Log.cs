@@ -165,7 +165,7 @@ namespace Duality
 			Performance.timeLog.BeginMeasure();
 			foreach (ILogOutput log in this.strOut)
 				log.Write(this, type, message);
-			Performance.timeLog.EndMeasure();
+			Performance.TimeLog.EndMeasure();
 		}
 
 		/// <summary>

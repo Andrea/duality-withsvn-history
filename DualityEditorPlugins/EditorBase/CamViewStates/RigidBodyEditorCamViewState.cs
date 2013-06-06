@@ -921,7 +921,7 @@ namespace EditorBase.CamViewStates
 					return;
 				}
 			}
-			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
+			if (e.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
 				if (e is PrefabAppliedEventArgs)
@@ -957,8 +957,8 @@ namespace EditorBase.CamViewStates
 			// Other selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
 			{
-				if (e.Current.Objects.OfType<ShapeInfo>().Any())
-					this.allObjSel = e.Current.Objects.OfType<ShapeInfo>().Select(s => SelShape.Create(s) as SelObj).ToList();
+				if (e.Current.OfType<ShapeInfo>().Any())
+					this.allObjSel = e.Current.OfType<ShapeInfo>().Select(s => SelShape.Create(s) as SelObj).ToList();
 				else
 					this.allObjSel = new List<SelObj>();
 

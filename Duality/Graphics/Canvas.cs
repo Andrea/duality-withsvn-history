@@ -190,22 +190,67 @@ namespace Duality
 			}
 		}
 
+		/// <summary>
+		/// Describes a pattern for dashed lines.
+		/// </summary>
 		public enum DashPattern : uint
 		{
+			/// <summary>
+			/// There is no line at all.
+			/// </summary>
 			Empty		= 0x0U,
 
+			/// <summary>
+			/// A dotted line with a a lot of dots.
+			/// Pattern: #_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_
+			/// </summary>
 			DotMore		= 0xAAAAAAAAU,
+			/// <summary>
+			/// A dotted line.
+			/// Pattern: #___#___#___#___#___#___#___#___
+			/// </summary>
 			Dot			= 0x88888888U,
+			/// <summary>
+			/// A dotted line with less dots.
+			/// Pattern: #_______#_______#_______#_______
+			/// </summary>
 			DotLess		= 0x80808080U,
 
+			/// <summary>
+			/// A dashed line with short dashes.
+			/// Pattern: ##__##__##__##__##__##__##__##__
+			/// </summary>
 			DashShort	= 0xCCCCCCCCU,
+			/// <summary>
+			/// A dashed line.
+			/// Pattern: ####____####____####____####____
+			/// </summary>
 			Dash		= 0xF0F0F0F0U,
+			/// <summary>
+			/// A dashed line with long dashes.
+			/// Pattern: ########________########________
+			/// </summary>
 			DashLong	= 0xFF00FF00U,
 
+			/// <summary>
+			/// A line with alternating dashes and dots.
+			/// Pattern: ###__#__###__#__###__#__###__#__
+			/// </summary>
 			DashDot		= 0xE4E4E4E4U,
+			/// <summary>
+			/// An alternating line with more dots than dashes.
+			/// Pattern: #####___#___#___#####___#___#___
+			/// </summary>
 			DashDotDot	= 0xF888F888U,
+			/// <summary>
+			/// An alternating line with more dashes than dots.
+			/// Pattern: ####____####____####____#___#___
+			/// </summary>
 			DashDashDot	= 0xF0F0F088U,
 
+			/// <summary>
+			/// The line isn't dashed.
+			/// </summary>
 			Full		= 0xFFFFFFFFU
 		}
 
@@ -1175,9 +1220,10 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawText(string text, float x, float y, float z = 0.0f)
+		/// <param name="blockAlign">Specifies the alignment of the text block.</param>
+		public void DrawText(string text, float x, float y, float z = 0.0f, Alignment blockAlign = Alignment.TopLeft)
 		{
-			this.DrawText(new string[] { text }, x, y, z);
+			this.DrawText(new string[] { text }, x, y, z, blockAlign);
 		}
 		/// <summary>
 		/// Draws the specified text.
@@ -1186,9 +1232,16 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawText(string[] text, float x, float y, float z = 0.0f)
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
+		public void DrawText(string[] text, float x, float y, float z = 0.0f, Alignment blockAlign = Alignment.TopLeft)
 		{
 			if (text == null || text.Length == 0) return;
+
+			if (blockAlign != Alignment.TopLeft)
+			{
+				Vector2 textSize = this.MeasureText(text);
+				blockAlign.ApplyTo(ref x, ref y, textSize.X, textSize.Y);
+			}
 
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
@@ -1222,8 +1275,17 @@ namespace Duality
 		/// <param name="y"></param>
 		/// <param name="z"></param>
 		/// <param name="iconMat"></param>
-		public void DrawText(FormattedText text, float x, float y, float z = 0.0f, BatchInfo iconMat = null)
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, make use of <see cref="FormattedText"/> format tags.</param>
+		public void DrawText(FormattedText text, float x, float y, float z = 0.0f, BatchInfo iconMat = null, Alignment blockAlign = Alignment.TopLeft)
 		{
+			if (text == null || text.IsEmpty) return;
+
+			if (blockAlign != Alignment.TopLeft)
+			{
+				FormattedText.Metrics metrics = text.Measure();
+				blockAlign.ApplyTo(ref x, ref y, metrics.Size.X, metrics.Size.Y);
+			}
+
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
@@ -1262,9 +1324,11 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawTextBackground(string text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		/// <param name="backAlpha"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
+		public void DrawTextBackground(string text, float x, float y, float z = 0.0f, float backAlpha = 0.65f, Alignment blockAlign = Alignment.TopLeft)
 		{
-			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha);
+			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha, blockAlign);
 		}
 		/// <summary>
 		/// Draws a simple background rectangle for the specified text. Its color is automatically determined
@@ -1274,9 +1338,11 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawTextBackground(string[] text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		/// <param name="backAlpha"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
+		public void DrawTextBackground(string[] text, float x, float y, float z = 0.0f, float backAlpha = 0.65f, Alignment blockAlign = Alignment.TopLeft)
 		{
-			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha);
+			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha, blockAlign);
 		}
 		/// <summary>
 		/// Draws a simple background rectangle for the specified text. Its color is automatically determined
@@ -1286,13 +1352,27 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawTextBackground(FormattedText text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		/// <param name="backAlpha"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, make use of <see cref="FormattedText"/> format tags.</param>
+		public void DrawTextBackground(FormattedText text, float x, float y, float z = 0.0f, float backAlpha = 0.65f, Alignment blockAlign = Alignment.TopLeft)
 		{
-			this.DrawTextBackground(text.Measure().Size, x, y, z, backAlpha);
+			this.DrawTextBackground(text.Measure().Size, x, y, z, backAlpha, blockAlign);
 		}
-		private void DrawTextBackground(Vector2 totalSize, float x, float y, float z, float backAlpha)
+		/// <summary>
+		/// Draws a simple background rectangle for a text of the specified size. Its color is automatically determined
+		/// based on the current state in order to generate an optimal contrast to the text.
+		/// </summary>
+		/// <param name="textSize"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="backAlpha"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
+		public void DrawTextBackground(Vector2 textSize, float x, float y, float z = 0.0f, float backAlpha = 0.65f, Alignment blockAlign = Alignment.TopLeft)
 		{
 			Vector2 padding = new Vector2(this.CurrentState.TextFont.Res.Height, this.CurrentState.TextFont.Res.Height) * 0.35f;
+			
+			blockAlign.ApplyTo(ref x, ref y, textSize.X, textSize.Y);
 
 			ColorFormat.ColorRgba clr = this.CurrentState.MaterialDirect.MainColor * this.CurrentState.ColorTint;
 			float alpha = (float)clr.A / 255.0f;
@@ -1303,7 +1383,7 @@ namespace Duality
 				Resources.DrawTechnique.Alpha, 
 				(lum > 0.5f ? ColorFormat.ColorRgba.Black : ColorFormat.ColorRgba.White).WithAlpha(alpha * backAlpha)));
 			this.CurrentState.ColorTint = ColorFormat.ColorRgba.White;
-			this.FillRect(x - padding.X, y - padding.Y, totalSize.X + padding.X * 2, totalSize.Y + padding.Y * 2);
+			this.FillRect(x - padding.X, y - padding.Y, textSize.X + padding.X * 2, textSize.Y + padding.Y * 2);
 			this.PopState();
 		}
 

@@ -116,11 +116,11 @@ namespace DualityEditor
 
 		public bool HasObject(object obj)
 		{
-			return this.obj.Objects.Contains(obj);
+			return this.obj.Contains(obj);
 		}
 		public bool HasAnyObject(IEnumerable<object> objEnum)
 		{
-			return objEnum.Any(o => this.obj.Objects.Contains(o));
+			return objEnum.Any(o => this.obj.Contains(o));
 		}
 
 		public bool HasProperty(PropertyInfo info)

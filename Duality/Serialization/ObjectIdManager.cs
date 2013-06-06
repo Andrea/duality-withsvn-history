@@ -11,7 +11,8 @@ namespace Duality.Serialization
 	public class ObjectIdManager
 	{
 		private	int							idLevel			= 0;
-		private	List<uint>					idCounter		= new List<uint> { 0 };
+		private	List<uint>					idGenSeed		= new List<uint> { 0 };
+		private	List<uint>					idStack			= new List<uint> { 0 };
 		private	int							idStackHash		= 0;
 		private	Dictionary<object,uint>		objRefIdMap		= new Dictionary<object,uint>();
 		private	Dictionary<uint,object>		idObjRefMap		= new Dictionary<uint,object>();
@@ -25,8 +26,10 @@ namespace Duality.Serialization
 			this.typeHashCache.Clear();
 			this.objRefIdMap.Clear();
 			this.idObjRefMap.Clear();
-			this.idCounter.Clear();
-			this.idCounter.Add(0);
+			this.idGenSeed.Clear();
+			this.idGenSeed.Add(0);
+			this.idStack.Clear();
+			this.idStack.Add(0);
 			this.idLevel = 0;
 		}
 		/// <summary>
@@ -45,7 +48,19 @@ namespace Duality.Serialization
 				return id;
 			}
 
-			id = this.idCounter[this.idLevel];
+			// Choose a base value for the object id
+			bool isGeneratedId = false;
+			if (obj is IUniqueIdentifyable)
+			{
+				id = (obj as IUniqueIdentifyable).PreferredId;
+				isGeneratedId = true;
+			}
+			else
+			{
+				id = this.idGenSeed[this.idLevel];
+			}
+
+			// Make sure it doesn't collide
 			unchecked
 			{
 				const uint p = 16777619;
@@ -56,7 +71,11 @@ namespace Duality.Serialization
 					id = (id ^ idLevelHash) * p;
 				}
 			}
-			this.idCounter[this.idLevel] = id;
+
+			// When using the id generator, keep the current seed in mind.
+			if (!isGeneratedId)
+				this.idGenSeed[this.idLevel] = id;
+			this.idStack[this.idLevel] = id;
 
 			this.objRefIdMap[obj] = id;
 			this.idObjRefMap[id] = obj;
@@ -92,9 +111,10 @@ namespace Duality.Serialization
 		/// </summary>
 		public void PushIdLevel()
 		{
-			this.idCounter.Add(0);
+			this.idGenSeed.Add(0);
+			this.idStack.Add(0);
 			this.idLevel++;
-			this.idStackHash = this.idCounter.GetCombinedHashCode(0, this.idLevel);
+			this.idStackHash = this.idStack.GetCombinedHashCode(0, this.idLevel);
 		}
 		/// <summary>
 		/// Decreases the reference hierarchy level of the object id generator. Each level of id generation uses its own algorithm, so different levels of ids are unlikely to affect each other.
@@ -102,8 +122,10 @@ namespace Duality.Serialization
 		public void PopIdLevel()
 		{
 			if (this.idLevel == 0) throw new InvalidOperationException("Can't pop persistent id level, because it is already zero / root");
+			this.idGenSeed.RemoveAt(this.idLevel);
+			this.idStack.RemoveAt(this.idLevel);
 			this.idLevel--;
-			this.idStackHash = this.idCounter.GetCombinedHashCode(0, this.idLevel);
+			this.idStackHash = this.idStack.GetCombinedHashCode(0, this.idLevel);
 		}
 	}
 }

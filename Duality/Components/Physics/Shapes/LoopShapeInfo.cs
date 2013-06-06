@@ -28,7 +28,11 @@ namespace Duality.Components.Physics
 		public Vector2[] Vertices
 		{
 			get { return this.vertices; }
-			set { this.vertices = value; this.UpdateFixture(true); }
+			set
+			{
+				this.vertices = value ?? new Vector2[] { Vector2.Zero, Vector2.UnitX, Vector2.UnitY };
+				this.UpdateFixture(true);
+			}
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override Rect AABB
@@ -59,7 +63,15 @@ namespace Duality.Components.Physics
 		protected override Fixture CreateFixture(Body body)
 		{
 			if (!body.IsStatic) return null; // Loop shapes aren't allowed on nonstatic bodies.
-			return body.CreateFixture(new LoopShape(this.CreateVertices(1.0f)), this);
+			var farseerVert = this.CreateVertices(1.0f);
+			if (farseerVert == null) return null;
+
+			this.Parent.CheckValidTransform();
+
+			Fixture f = body.CreateFixture(new LoopShape(farseerVert), this);
+
+			this.Parent.CheckValidTransform();
+			return f;
 		}
 		internal override void UpdateFixture(bool updateShape = false)
 		{
@@ -83,6 +95,7 @@ namespace Duality.Components.Physics
 		}
 		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
+			if (this.vertices == null || this.vertices.Length < 3) return null;
 			Vector2[] vertices = this.vertices.ToArray();
 
 			FarseerPhysics.Common.Vertices farseerVert = new FarseerPhysics.Common.Vertices(vertices.Length);

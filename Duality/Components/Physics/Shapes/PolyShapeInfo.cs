@@ -32,7 +32,7 @@ namespace Duality.Components.Physics
 			get { return this.vertices; }
 			set
 			{
-				this.vertices = value ?? new Vector2[0];
+				this.vertices = value ?? new Vector2[] { Vector2.Zero, Vector2.UnitX, Vector2.UnitY };
 				this.UpdateFixture(true);
 			}
 		}
@@ -93,6 +93,7 @@ namespace Duality.Components.Physics
 		}
 		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
+			if (this.vertices == null || this.vertices.Length < 3) return null;
 			if (!MathF.IsPolygonConvex(this.vertices)) return null;
 			
 			// Be sure to not exceed the maximum vertex count

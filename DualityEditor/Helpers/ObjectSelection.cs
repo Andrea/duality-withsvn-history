@@ -5,7 +5,7 @@ using Duality;
 
 namespace DualityEditor
 {
-	public class ObjectSelection : IEquatable<ObjectSelection>
+	public class ObjectSelection : IEquatable<ObjectSelection>, IEnumerable<object>
 	{
 		[Flags]
 		public enum Category
@@ -390,6 +390,15 @@ namespace DualityEditor
 		public static ObjectSelection operator +(ObjectSelection first, ObjectSelection second)
 		{
 			return new ObjectSelection(first.obj.Concat(second.obj).Distinct());
+		}
+
+		IEnumerator<object> IEnumerable<object>.GetEnumerator()
+		{
+			return this.obj.GetEnumerator();
+		}
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return this.obj.GetEnumerator();
 		}
 	}
 }

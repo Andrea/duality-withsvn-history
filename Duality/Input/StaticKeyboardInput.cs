@@ -10,6 +10,7 @@ namespace Duality
 		private	EventHandler<KeyboardKeyEventArgs>	pipeKeyUp;
 		private	EventHandler<KeyboardKeyEventArgs>	pipeKeyDown;
 
+
 		public IKeyboardInput RealInput
 		{
 			get { return this.realInput; }
@@ -34,7 +35,32 @@ namespace Duality
 				}
 			}
 		}
+		public bool KeyRepeat
+		{
+			get { return this.keyRepeat; }
+			set 
+			{
+				this.keyRepeat = value;
+				if (this.realInput != null) this.realInput.KeyRepeat = this.keyRepeat;
+			}
+		}
+		public bool this[Key key]
+		{
+			get { return this.realInput != null ? this.realInput[key] : false; }
+		}
+
+		public event EventHandler<KeyboardKeyEventArgs> KeyUp
+		{
+			add { this.pipeKeyUp += value; }
+			remove { this.pipeKeyUp -= value; }
+		}
+		public event EventHandler<KeyboardKeyEventArgs> KeyDown
+		{
+			add { this.pipeKeyDown += value; }
+			remove { this.pipeKeyDown -= value; }
+		}
 		
+
 		private void realInput_KeyUp(object sender, KeyboardKeyEventArgs e)
 		{
 			if (this.pipeKeyUp != null)
@@ -46,28 +72,5 @@ namespace Duality
 				this.pipeKeyDown(sender, e);
 		}
 
-		bool IKeyboardInput.KeyRepeat
-		{
-			get { return this.keyRepeat; }
-			set 
-			{
-				this.keyRepeat = value;
-				if (this.realInput != null) this.realInput.KeyRepeat = this.keyRepeat;
-			}
-		}
-		bool IKeyboardInput.this[Key key]
-		{
-			get { return this.realInput != null ? this.realInput[key] : false; }
-		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyUp
-		{
-			add { this.pipeKeyUp += value; }
-			remove { this.pipeKeyUp -= value; }
-		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyDown
-		{
-			add { this.pipeKeyDown += value; }
-			remove { this.pipeKeyDown -= value; }
-		}
 	}
 }

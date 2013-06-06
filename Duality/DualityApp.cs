@@ -69,26 +69,27 @@ namespace Duality
 		public const string DataDirectory = "Data";
 
 
-		private	static	Thread					mainThread			= null;
-		private	static	bool					initialized			= false;
-		private	static	bool					isUpdating			= false;
-		private	static	bool					runFromEditor		= false;
-		private	static	bool					terminateScheduled	= false;
-		private	static	string					logfilePath			= "logfile";
-		private	static	StreamWriter			logfile				= null;
-		private	static	Vector2					targetResolution	= Vector2.Zero;
-		private	static	GraphicsMode			targetMode			= null;
-		private	static	HashSet<GraphicsMode>	availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
-		private	static	GraphicsMode			defaultMode			= null;
-		private	static	StaticMouseInput		mouse				= new StaticMouseInput();
-		private	static	StaticKeyboardInput		keyboard			= new StaticKeyboardInput();
-		private	static	SoundDevice				sound				= null;
-		private	static	ExecutionEnvironment	environment			= ExecutionEnvironment.Unknown;
-		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
-		private	static	DualityAppData			appData				= null;
-		private	static	DualityUserData			userData			= null;
-		private	static	DualityMetaData			metaData			= null;
-		private	static	List<object>			disposeSchedule		= new List<object>();
+		private	static	Thread						mainThread			= null;
+		private	static	bool						initialized			= false;
+		private	static	bool						isUpdating			= false;
+		private	static	bool						runFromEditor		= false;
+		private	static	bool						terminateScheduled	= false;
+		private	static	string						logfilePath			= "logfile";
+		private	static	StreamWriter				logfile				= null;
+		private	static	Vector2						targetResolution	= Vector2.Zero;
+		private	static	GraphicsMode				targetMode			= null;
+		private	static	HashSet<GraphicsMode>		availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
+		private	static	GraphicsMode				defaultMode			= null;
+		private	static	StaticMouseInput			mouse				= new StaticMouseInput();
+		private	static	StaticKeyboardInput			keyboard			= new StaticKeyboardInput();
+		private	static	List<StaticJoystickInput>	joysticks			= new List<StaticJoystickInput>();
+		private	static	SoundDevice					sound				= null;
+		private	static	ExecutionEnvironment		environment			= ExecutionEnvironment.Unknown;
+		private	static	ExecutionContext			execContext			= ExecutionContext.Terminated;
+		private	static	DualityAppData				appData				= null;
+		private	static	DualityUserData				userData			= null;
+		private	static	DualityMetaData				metaData			= null;
+		private	static	List<object>				disposeSchedule		= new List<object>();
 
 		private	static	Dictionary<string,CorePlugin>	plugins			= new Dictionary<string,CorePlugin>();
 		private	static	List<Assembly>					disposedPlugins	= new List<Assembly>();
@@ -150,6 +151,28 @@ namespace Duality
 		{
 			get { return keyboard; }
 			internal set { keyboard.RealInput = value; }
+		}
+		/// <summary>
+		/// [GET] Provides access to extended user input via joystick or gamepad.
+		/// </summary>
+		public static IEnumerable<IJoystickInput> Joysticks
+		{
+			get { return joysticks.Where(j => j.RealInput != null); }
+			internal set
+			{
+				int index = 0;
+				foreach (IJoystickInput joy in value)
+				{
+					if (index >= joysticks.Count)
+						joysticks.Add(new StaticJoystickInput());
+					joysticks[index].RealInput = joy;
+					++index;
+				}
+				for (; index < joysticks.Count; ++index)
+				{
+					joysticks[index].RealInput = null;
+				}
+			}
 		}
 		/// <summary>
 		/// [GET] Provides access to the main <see cref="SoundDevice"/>.
@@ -338,7 +361,6 @@ namespace Duality
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
 			AppDomain.CurrentDomain.AssemblyLoad		+= CurrentDomain_AssemblyLoad;
 
-			Performance.InitDualityCounters();
 			sound = new SoundDevice();
 			LoadPlugins();
 			LoadAppData();
@@ -437,7 +459,7 @@ namespace Duality
 		public static void Update()
 		{
 			isUpdating = true;
-			Performance.timeUpdate.BeginMeasure();
+			Performance.TimeUpdate.BeginMeasure();
 
 			Time.FrameTick();
 			Performance.FrameTick();
@@ -449,7 +471,7 @@ namespace Duality
 			//CheckOpenGLErrors();
 			RunCleanup();
 
-			Performance.timeUpdate.EndMeasure();
+			Performance.TimeUpdate.EndMeasure();
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
@@ -487,7 +509,7 @@ namespace Duality
 		internal static void EditorUpdate(IEnumerable<GameObject> updateObjects, bool freezeScene, bool forceFixedStep)
 		{
 			isUpdating = true;
-			Performance.timeUpdate.BeginMeasure();
+			Performance.TimeUpdate.BeginMeasure();
 
 			Time.FrameTick(forceFixedStep);
 			Performance.FrameTick();
@@ -514,7 +536,7 @@ namespace Duality
 			//CheckOpenGLErrors();
 			RunCleanup();
 
-			Performance.timeUpdate.EndMeasure();
+			Performance.TimeUpdate.EndMeasure();
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
@@ -753,12 +775,12 @@ namespace Duality
 		}
 		private static void UnloadPlugins()
 		{
-			OnDiscardPluginData();
 			foreach (CorePlugin plugin in plugins.Values)
 			{
 				disposedPlugins.Add(plugin.PluginAssembly);
 				plugin.Dispose();
 			}
+			OnDiscardPluginData(plugins.Values);
 			plugins.Clear();
 		}
 		internal static void ReloadPlugin(string pluginFileName)
@@ -776,7 +798,7 @@ namespace Duality
 			Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
 			CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
 
-			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
+			// If we're overwriting an old plugin here, add the old version to the "disposed" blacklist
 			CorePlugin oldPlugin;
 			if (plugins.TryGetValue(plugin.AssemblyName, out oldPlugin))
 			{
@@ -787,8 +809,8 @@ namespace Duality
 			// Register newly loaded plugin
 			plugins[plugin.AssemblyName] = plugin;
 			
-			// Discard plugin-related data
-			OnDiscardPluginData();
+			// Discard temporary plugin-related data (cached Types, etc.)
+			OnDiscardPluginData(new[] { oldPlugin });
 
 			Log.Core.PopIndent();
 
@@ -887,18 +909,55 @@ namespace Duality
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
 		}
-		private static void OnDiscardPluginData()
+		private static void OnDiscardPluginData(IEnumerable<CorePlugin> oldPlugins)
 		{
 			if (DiscardPluginData != null)
 				DiscardPluginData(null, EventArgs.Empty);
 
+			// Clean event bindings linked to the disposed Assembly.
+			if (oldPlugins != null)
+			{
+				foreach (CorePlugin plugin in oldPlugins)
+				{
+					CleanEventBindings(plugin.PluginAssembly);
+				}
+			}
+
+			// Clean globally cached type values
 			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
 			Component.ClearTypeCache();
+
+			// Dispose any existing Resources that could reference plugin data
 			if (!Scene.Current.IsEmpty)
 				Scene.Current.Dispose();
 			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
 				ContentProvider.UnregisterContent(r.Path);
+		}
+		private static void CleanEventBindings(Assembly invalidAssembly)
+		{
+			// Note that this method is only a countermeasure against common mistakes. It doesn't guarantee
+			// full error safety in all cases. Event bindings inbetween different plugins aren't checked,
+			// for example.
+
+			string warningText = string.Format(
+				"Found leaked event bindings to invalid Assembly '{0}' from {1}. " +
+				"This is a common problem when registering global events from within a CorePlugin " +
+				"without properly unregistering them later. Please make sure that all events are " +
+				"unregistered in CorePlugin::OnDisposePlugin().",
+				invalidAssembly.FullName.Split(',')[0],
+				"{0}");
+
+			if (ReflectionHelper.CleanEventBindings(typeof(DualityApp),	invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)));
+			if (ReflectionHelper.CleanEventBindings(typeof(Scene),		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Scene)));
+			if (ReflectionHelper.CleanEventBindings(typeof(Resource),	invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Resource)));
+			if (ReflectionHelper.CleanEventBindings(Log.LogData,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Log)) + ".LogData");
+			if (ReflectionHelper.CleanEventBindings(keyboard,			invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Keyboard");
+			if (ReflectionHelper.CleanEventBindings(mouse,				invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Mouse");
+			foreach (StaticJoystickInput joystick in joysticks)
+			{
+				if (ReflectionHelper.CleanEventBindings(joystick,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Joysticks");
+			}
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)

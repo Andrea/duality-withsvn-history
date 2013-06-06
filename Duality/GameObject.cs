@@ -21,7 +21,7 @@ namespace Duality
 	/// <seealso cref="Duality.Resources.Scene"/>
 	/// <seealso cref="Duality.Resources.PrefabLink"/>
 	[Serializable]
-	public sealed class GameObject : IManageableObject, ICloneable
+	public sealed class GameObject : IManageableObject, ICloneable, Serialization.IUniqueIdentifyable
 	{
 		internal	PrefabLink					prefabLink	= null;
 		private		Guid						identifier	= Guid.NewGuid();
@@ -273,6 +273,11 @@ namespace Duality
 		public Components.Physics.RigidBody RigidBody
 		{
 			get { return this.GetComponent<Components.Physics.RigidBody>(); }
+		}
+
+		uint Serialization.IUniqueIdentifyable.PreferredId
+		{
+			get { unchecked { return (uint)this.identifier.GetHashCode(); } }
 		}
 		
 		

@@ -123,7 +123,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A string containing all characters that are supported by Duality.
 		/// </summary>
-		public static readonly string			SupportedChars	= " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,;.:-_<>|#'+*~@^°!\"§$%&/()=?`²³{[]}\\´öäüÖÄÜ";
+		public static readonly string			SupportedChars	= " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,;.:-_<>|#'+*~@^°!\"§$%&/()=?`²³{[]}\\´öäüÖÄÜß";
 		private const string					BodyAscentRef = "acehmnorsuvwxz";
 		private static readonly int[]			CharLookup;
 
@@ -141,6 +141,29 @@ namespace Duality.Resources
 			CharLookup = cl;
 		}
 
+
+		/// <summary>
+		/// Specifies how a text fitting algorithm works.
+		/// </summary>
+		public enum FitTextMode
+		{
+			/// <summary>
+			/// Text is fit by character, i.e. can be separated anywhere.
+			/// </summary>
+			ByChar,
+			/// <summary>
+			/// Text is fit <see cref="ByWord">by word</see>, preferring leading whitespaces.
+			/// </summary>
+			ByWordLeadingSpace,
+			/// <summary>
+			/// Text is fit <see cref="ByWord">by word</see>, preferring trailing whitespaces.
+			/// </summary>
+			ByWordTrailingSpace,
+			/// <summary>
+			/// Text is fit by word boundaries, i.e. can only be separated between words.
+			/// </summary>
+			ByWord = ByWordTrailingSpace
+		}
 
 		/// <summary>
 		/// Configures a Fonts internal glyph rasterizer.
@@ -1066,9 +1089,9 @@ namespace Duality.Resources
 		/// </summary>
 		/// <param name="text">The original text.</param>
 		/// <param name="maxWidth">The maximum width it may occupy.</param>
-		/// <param name="byWord">If true, only whole words may be cropped.</param>
+		/// <param name="fitMode">The mode by which the text fitting algorithm operates.</param>
 		/// <returns></returns>
-		public string FitText(string text, float maxWidth, bool byWord = false)
+		public string FitText(string text, float maxWidth, FitTextMode fitMode = FitTextMode.ByChar)
 		{
 			Vector2 textSize = Vector2.Zero;
 
@@ -1087,8 +1110,10 @@ namespace Duality.Resources
 
 				if (textSize.X > maxWidth) return lastValidLength > 0 ? text.Substring(0, lastValidLength) : "";
 
-				if (!byWord || text[i] == ' ')
-					lastValidLength = i + 1;
+				if (fitMode == FitTextMode.ByChar)
+					lastValidLength = i;
+				else if (text[i] == ' ')
+					lastValidLength = fitMode == FitTextMode.ByWordLeadingSpace ? i : i + 1;
 
 				curOffset += glyphXAdv;
 			}

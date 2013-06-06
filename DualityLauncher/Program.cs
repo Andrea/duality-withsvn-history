@@ -65,11 +65,11 @@ namespace DualityLauncher
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
 
 			DualityApp.Render();
-			Performance.timeRender.BeginMeasure();
-			Performance.timeSwapBuffers.BeginMeasure();
+			Performance.TimeRender.BeginMeasure();
+			Performance.TimeSwapBuffers.BeginMeasure();
 			this.SwapBuffers();
-			Performance.timeSwapBuffers.EndMeasure();
-			Performance.timeRender.EndMeasure();
+			Performance.TimeSwapBuffers.EndMeasure();
+			Performance.TimeRender.EndMeasure();
 		}
 
 		private void SetMouseDeviceX(int x)
@@ -128,6 +128,7 @@ namespace DualityLauncher
 				// Input setup
 				DualityApp.Mouse = new WindowMouseInput(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY);
 				DualityApp.Keyboard = new WindowKeyboardInput(launcherWindow.Keyboard);
+				DualityApp.Joysticks = launcherWindow.Joysticks.Select(j => new WindowJoystickInput(j));
 
 				// Load the starting Scene
 				Scene.Current = DualityApp.AppData.StartScene.Res;

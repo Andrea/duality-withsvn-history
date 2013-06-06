@@ -1077,11 +1077,11 @@ namespace EditorBase.CamViewStates
 				if (this.activeRectSel.ObjectCount > 0)
 				{
 					ObjectSelection added = (this.activeRectSel - oldRectSel) + (oldRectSel - this.activeRectSel);
-					this.SelectObjects(added.Objects.OfType<SelObj>(), shift ? SelectMode.Append : SelectMode.Toggle);
+					this.SelectObjects(added.OfType<SelObj>(), shift ? SelectMode.Append : SelectMode.Toggle);
 				}
 			}
 			else if (this.activeRectSel.ObjectCount > 0)
-				this.SelectObjects(this.activeRectSel.Objects.OfType<SelObj>());
+				this.SelectObjects(this.activeRectSel.OfType<SelObj>());
 			else
 				this.ClearSelection();
 
@@ -1247,11 +1247,11 @@ namespace EditorBase.CamViewStates
 				Log.Editor.WriteError("An error occured during CamView {1} rendering. The current DrawDevice state may be compromised. Exception: {0}", Log.Exception(exception), this.CameraComponent.ToString());
 			}
 			
-			Performance.BeginMeasure("Duality_Render");
-			Performance.BeginMeasure("Duality_Render_SwapBuffers");
+			Performance.TimeRender.BeginMeasure();
+			Performance.TimeSwapBuffers.BeginMeasure();
 			DualityEditorApp.MainContextControl.SwapBuffers();
-			Performance.EndMeasure("Duality_Render_SwapBuffers");
-			Performance.EndMeasure("Duality_Render");
+			Performance.TimeSwapBuffers.EndMeasure();
+			Performance.TimeRender.EndMeasure();
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
