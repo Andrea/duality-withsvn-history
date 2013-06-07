@@ -80,14 +80,14 @@ namespace EditorBase
 
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
-			DualityEditorApp.MainContextControl.Context.MakeCurrent(this.LocalGLControl.WindowInfo);
+			DualityEditorApp.GLMakeCurrent(this.LocalGLControl);
 			this.MakeDualityTarget();
 			var result = this.CameraComponent.PickRendererAt(x, y);
 			return result;
 		}
 		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
-			DualityEditorApp.MainContextControl.Context.MakeCurrent(this.LocalGLControl.WindowInfo);
+			DualityEditorApp.GLMakeCurrent(this.LocalGLControl);
 			this.MakeDualityTarget();
 			var result = this.CameraComponent.PickRenderersIn(x, y, w, h);
 			return result;

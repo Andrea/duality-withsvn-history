@@ -361,7 +361,7 @@ namespace EditorBase
 			}
 
 			// Create a new glControl
-			this.glControl = new GLControl(DualityEditorApp.MainContextControl.GraphicsMode);
+			this.glControl = DualityEditorApp.GLCreateControl();
 			this.glControl.BackColor = Color.Black;
 			this.glControl.Dock = DockStyle.Fill;
 			this.glControl.Name = "glControl";

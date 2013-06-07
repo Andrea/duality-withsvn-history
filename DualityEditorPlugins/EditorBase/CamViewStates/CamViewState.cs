@@ -1227,7 +1227,7 @@ namespace EditorBase.CamViewStates
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
 
 			// Retrieve OpenGL context
- 			try { DualityEditorApp.MainContextControl.Context.MakeCurrent(this.LocalGLControl.WindowInfo); } catch (Exception) { return; }
+ 			try { DualityEditorApp.GLMakeCurrent(this.LocalGLControl); } catch (Exception) { return; }
 			this.MakeDualityTarget();
 
 			try
@@ -1247,11 +1247,7 @@ namespace EditorBase.CamViewStates
 				Log.Editor.WriteError("An error occured during CamView {1} rendering. The current DrawDevice state may be compromised. Exception: {0}", Log.Exception(exception), this.CameraComponent.ToString());
 			}
 			
-			Performance.TimeRender.BeginMeasure();
-			Performance.TimeSwapBuffers.BeginMeasure();
-			DualityEditorApp.MainContextControl.SwapBuffers();
-			Performance.TimeSwapBuffers.EndMeasure();
-			Performance.TimeRender.EndMeasure();
+			DualityEditorApp.GLSwapBuffers(this.LocalGLControl);
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{

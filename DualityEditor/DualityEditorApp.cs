@@ -18,6 +18,8 @@ using DualityEditor.CorePluginInterface;
 using DualityEditor.UndoRedoActions;
 
 using OpenTK;
+using OpenTK.Platform;
+using OpenTK.Platform.Windows;
 
 using Ionic.Zip;
 using WeifenLuo.WinFormsUI.Docking;
@@ -47,7 +49,7 @@ namespace DualityEditor
 		
 		private	static MainForm						mainForm			= null;
 		private	static GLControl					mainContextControl	= null;
-		private	static OpenTK.Platform.Windows.WinMMJoystick mainJoystickDriver = null;
+		private	static WinMMJoystick				mainJoystickDriver	= null;
 		private	static List<EditorPlugin>			plugins				= new List<EditorPlugin>();
 		private	static Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
 		private	static ReloadCorePluginDialog		corePluginReloader	= null;
@@ -55,6 +57,7 @@ namespace DualityEditor
 		private	static GameObjectManager			editorObjects		= new GameObjectManager();
 		private	static HashSet<GameObject>			updateObjects		= new HashSet<GameObject>();
 		private	static bool							dualityAppSuspended	= true;
+		private	static HashSet<IWindowInfo>			glSwapBuffers		= new HashSet<IWindowInfo>();
 		private	static List<Resource>				unsavedResources	= new List<Resource>();
 		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
 		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
@@ -102,10 +105,6 @@ namespace DualityEditor
 					corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.ReloadPlugins ||
 					corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.RecoverFromRestart;
 			}
-		}
-		public static GLControl MainContextControl
-		{
-			get { return mainContextControl; }
 		}
 		public static IEnumerable<EditorPlugin> Plugins
 		{
@@ -524,6 +523,18 @@ namespace DualityEditor
 			mainContextControl.VSync = false;
 			mainContextControl.MakeCurrent();
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
+		}
+		public static void GLMakeCurrent(GLControl control)
+		{
+			mainContextControl.Context.MakeCurrent(control.WindowInfo);
+		}
+		public static void GLSwapBuffers(GLControl control)
+		{
+			glSwapBuffers.Add(control.WindowInfo);
+		}
+		public static GLControl GLCreateControl()
+		{
+			return new GLControl(mainContextControl.GraphicsMode);
 		}
 
 		public static void UpdateGameObject(GameObject obj)
@@ -1131,6 +1142,21 @@ namespace DualityEditor
 					OnUpdatingEngine();
 
 					if (fixedSingleStep) DualityApp.ExecContext = lastContext;
+				}
+				
+				// Perform a buffer swap
+				if (glSwapBuffers.Count > 0)
+				{
+					Performance.TimeRender.BeginMeasure();
+					Performance.TimeSwapBuffers.BeginMeasure();
+					foreach (IWindowInfo window in glSwapBuffers)
+					{
+						mainContextControl.Context.MakeCurrent(window);
+						mainContextControl.SwapBuffers();
+					}
+					Performance.TimeSwapBuffers.EndMeasure();
+					Performance.TimeRender.EndMeasure();
+					glSwapBuffers.Clear();
 				}
 
 				// Give the processor a rest if we have the time, don't use 100% CPU
