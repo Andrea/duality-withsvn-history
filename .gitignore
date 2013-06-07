@@ -57,3 +57,6 @@ Ankh.NoLoad
 
 /Duality/Duality.xml
 /DualityEditor/DualityEditor.xml
+
+/DualityEditorPlugins/EditorBase/bin/*
+/DualityEditorPlugins/EditorBase/obj/*

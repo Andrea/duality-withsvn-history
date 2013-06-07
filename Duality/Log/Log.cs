@@ -162,7 +162,7 @@ namespace Duality
 				Write(LogMessageType.Error, string.Format("Was expecting a parameter or more in the message but could not find them {0}", e));
 			}
 
-			Performance.timeLog.BeginMeasure();
+			Performance.TimeLog.BeginMeasure();
 			foreach (ILogOutput log in this.strOut)
 				log.Write(this, type, message);
 			Performance.TimeLog.EndMeasure();
