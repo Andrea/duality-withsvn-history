@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using System.Drawing;
 
 using Duality;
@@ -15,6 +14,9 @@ namespace DualityLauncher
 {
 	public class DualityLauncher : GameWindow
 	{
+		private	static bool	isDebugging			= false;
+		private	static bool	isProfiling			= false;
+		private	static bool	isRunFromEditor		= false;
 		private Stopwatch	frameLimiterWatch	= new Stopwatch();
 
 		public DualityLauncher(int w, int h, GraphicsMode mode, string title, GameWindowFlags flags)
@@ -34,7 +36,7 @@ namespace DualityLauncher
 				return;
 			}
 			
-			if (!System.Diagnostics.Debugger.IsAttached) // Don't limit frame rate when debugging.
+			if (!isDebugging && !isProfiling) // Don't limit frame rate when debugging or profiling.
 			{
 				//// Assure we'll at least wait 16 ms until updating again.
 				//if (this.frameLimiterWatch.IsRunning)
@@ -75,15 +77,19 @@ namespace DualityLauncher
 		private void SetMouseDeviceX(int x)
 		{
 			if (!this.Focused) return;
-			Point targetPos = this.PointToScreen(new Point(x, this.PointToClient(Cursor.Position).Y));
-			Cursor.Position = targetPos;
+			Point curPos;
+			NativeMethods.GetCursorPos(out curPos);
+			Point targetPos = this.PointToScreen(new Point(x, this.PointToClient(curPos).Y));
+			NativeMethods.SetCursorPos(targetPos.X, targetPos.Y);
 			return;
 		}
 		private void SetMouseDeviceY(int y)
 		{
 			if (!this.Focused) return;
-			Point targetPos = this.PointToScreen(new Point(this.PointToClient(Cursor.Position).X, y));
-			Cursor.Position = targetPos;
+			Point curPos;
+			NativeMethods.GetCursorPos(out curPos);
+			Point targetPos = this.PointToScreen(new Point(this.PointToClient(curPos).X, y));
+			NativeMethods.SetCursorPos(targetPos.X, targetPos.Y);
 			return;
 		}
 
@@ -93,9 +99,10 @@ namespace DualityLauncher
 			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
-			bool debugging = System.Diagnostics.Debugger.IsAttached || args.Contains(DualityApp.CmdArgDebug);
-			bool editor = args.Contains(DualityApp.CmdArgEditor);
-			if (debugging || editor) ShowConsole();
+			isDebugging = System.Diagnostics.Debugger.IsAttached || args.Contains(DualityApp.CmdArgDebug);
+			isRunFromEditor = args.Contains(DualityApp.CmdArgEditor);
+			isProfiling = args.Contains(DualityApp.CmdArgProfiling);
+			if (isDebugging || isRunFromEditor) ShowConsole();
 
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 
@@ -104,14 +111,14 @@ namespace DualityLauncher
 				DualityApp.UserData.GfxHeight, 
 				DualityApp.DefaultMode, 
 				DualityApp.AppData.AppName,
-				(DualityApp.UserData.GfxMode == ScreenMode.Fullscreen && !debugging) ? GameWindowFlags.Fullscreen : GameWindowFlags.Default))
+				(DualityApp.UserData.GfxMode == ScreenMode.Fullscreen && !isDebugging) ? GameWindowFlags.Fullscreen : GameWindowFlags.Default))
 			{
 				// Retrieve icon from executable file and set it as window icon
 				string executablePath = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
 				launcherWindow.Icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
 
 				// Go into native fullscreen mode
-				if (DualityApp.UserData.GfxMode == ScreenMode.Native && !debugging)
+				if (DualityApp.UserData.GfxMode == ScreenMode.Native && !isDebugging)
 					launcherWindow.WindowState = WindowState.Fullscreen;
 
 				if (DualityApp.UserData.GfxMode == ScreenMode.FixedWindow)
@@ -134,8 +141,8 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
-				launcherWindow.CursorVisible = System.Diagnostics.Debugger.IsAttached || DualityApp.UserData.SystemCursorVisible;
-				launcherWindow.VSync = debugging ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
+				launcherWindow.CursorVisible = isDebugging || DualityApp.UserData.SystemCursorVisible;
+				launcherWindow.VSync = (isProfiling || isDebugging) ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
 				launcherWindow.Run();
 			}
 			DualityApp.Terminate();
@@ -145,11 +152,8 @@ namespace DualityLauncher
 		public static void ShowConsole()
 		{
 			if (hasConsole) return;
-			AllocConsole();
+			NativeMethods.AllocConsole();
 			hasConsole = true;
 		}
-
-		[DllImport("kernel32.dll")]
-		private static extern Int32 AllocConsole();
 	}
 }

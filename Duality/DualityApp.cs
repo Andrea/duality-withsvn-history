@@ -65,6 +65,7 @@ namespace Duality
 
 		public const string CmdArgDebug = "debug";
 		public const string CmdArgEditor = "editor";
+		public const string CmdArgProfiling = "profile";
 		public const string PluginDirectory = "Plugins";
 		public const string DataDirectory = "Data";
 
