@@ -254,6 +254,15 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select which launcher application should be used for external game tests. By default, the Duality Launcher is used. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_ConfigureLauncher {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_ConfigureLauncher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die If you&apos;re using a professional version of Visual Studio, this action will run the Duality launcher and trigger a debug event that allows you to attach the debugger to your game before anything happens. You can achieve the same by clicking the &quot;Run&quot; button of your Core Plugin in Visual Studio itself. ähnelt.
         /// </summary>
         public static string MenuItemInfo_DebugGame {
@@ -277,6 +286,15 @@ namespace DualityEditor.EditorRes {
         public static string MenuItemInfo_OpenProjectSource {
             get {
                 return ResourceManager.GetString("MenuItemInfo_OpenProjectSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Runs the game in profiling mode without VSync or any other frame rate limiting mechanism. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_ProfileGame {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_ProfileGame", resourceCulture);
             }
         }
         
@@ -362,11 +380,29 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select Launcher... ähnelt.
+        /// </summary>
+        public static string MenuItemName_ConfigureLauncher {
+            get {
+                return ResourceManager.GetString("MenuItemName_ConfigureLauncher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die New Project... ähnelt.
         /// </summary>
         public static string MenuItemName_NewProject {
             get {
                 return ResourceManager.GetString("MenuItemName_NewProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Profile Game ähnelt.
+        /// </summary>
+        public static string MenuItemName_ProfileGame {
+            get {
+                return ResourceManager.GetString("MenuItemName_ProfileGame", resourceCulture);
             }
         }
         

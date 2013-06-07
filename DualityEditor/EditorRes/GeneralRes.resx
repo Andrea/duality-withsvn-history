@@ -457,4 +457,16 @@
   <data name="ColorWheel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>icon_color.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="MenuItemInfo_ConfigureLauncher" xml:space="preserve">
+    <value>Select which launcher application should be used for external game tests. By default, the Duality Launcher is used.</value>
+  </data>
+  <data name="MenuItemInfo_ProfileGame" xml:space="preserve">
+    <value>Runs the game in profiling mode without VSync or any other frame rate limiting mechanism.</value>
+  </data>
+  <data name="MenuItemName_ConfigureLauncher" xml:space="preserve">
+    <value>Select Launcher...</value>
+  </data>
+  <data name="MenuItemName_ProfileGame" xml:space="preserve">
+    <value>Profile Game</value>
+  </data>
 </root>

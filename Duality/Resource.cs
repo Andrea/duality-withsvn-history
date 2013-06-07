@@ -177,7 +177,7 @@ namespace Duality
 			{
 				FileStream fileStream = str as FileStream;
 				if (PathHelper.IsPathLocatedIn(fileStream.Name, "."))
-					streamName = PathHelper.MakeFilePathRelative(fileStream.Name, ".");
+					streamName = PathHelper.MakeFilePathRelative(fileStream.Name);
 				else
 					streamName = fileStream.Name;
 			}

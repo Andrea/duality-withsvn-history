@@ -16,7 +16,7 @@ namespace DualityEditor.Forms
 			this.InitializeComponent();
 			FileVersionInfo versionCore = FileVersionInfo.GetVersionInfo(typeof(DualityApp).Assembly.Location);
 			FileVersionInfo versionEditor = FileVersionInfo.GetVersionInfo(typeof(DualityEditorApp).Assembly.Location);
-			FileVersionInfo versionLauncher = FileVersionInfo.GetVersionInfo(EditorHelper.LauncherExecFile);
+			FileVersionInfo versionLauncher = FileVersionInfo.GetVersionInfo(EditorHelper.DualityLauncherExecFile);
 			this.labelVersionData.Text = string.Format(this.labelVersionData.Text, 
 				versionCore.FileVersion,
 				versionEditor.FileVersion,

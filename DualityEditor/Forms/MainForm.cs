@@ -106,31 +106,33 @@ namespace DualityEditor.Forms
 		}
 		public void InitMenus()
 		{
-			ToolStripMenuItem fileItem =	this.RequestMenu(GeneralRes.MenuName_File);
-			ToolStripMenuItem newProjectItem =	this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_NewProject);
-												this.RequestSeparator(GeneralRes.MenuName_File, "SaveSeparator");
-			ToolStripMenuItem saveAllItem =		this.RequestMenu(GeneralRes.MenuName_File, this.actionSaveAll.Text);
-												this.RequestSeparator(GeneralRes.MenuName_File, "CodeSeparator");
-			ToolStripMenuItem openCodeItem =	this.RequestMenu(GeneralRes.MenuName_File, this.actionOpenCode.Text);
-												this.RequestSeparator(GeneralRes.MenuName_File, "EndSeparator");
-			ToolStripMenuItem quitItem =		this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_Quit);
-			ToolStripMenuItem editItem =	this.RequestMenu(GeneralRes.MenuName_Edit);
-			this.menuEditUndo =					this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Undo);
-			this.menuEditRedo =					this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Redo);
-			ToolStripMenuItem viewItem =	this.RequestMenu(GeneralRes.MenuName_View);
-			ToolStripMenuItem runItem =		this.RequestMenu(GeneralRes.MenuName_Run);
-			ToolStripMenuItem runGameItem =		this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunApp.Text);
-			ToolStripMenuItem debugGameItem	=	this.RequestMenu(GeneralRes.MenuName_Run, this.actionDebugApp.Text);
-												this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxSeparator");
-			this.menuRunSandboxPlay	=			this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunSandbox.Text);
-			this.menuRunSandboxStep =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionStepSandbox.Text);
-			this.menuRunSandboxPause =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionPauseSandbox.Text);
-			this.menuRunSandboxStop =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionStopSandbox.Text);
-												this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxDebugSeparator");
-			this.menuRunSandboxSlower =			this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxSlower);
-			this.menuRunSandboxFaster =			this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxFaster);
-			ToolStripMenuItem helpItem =	this.RequestMenu(GeneralRes.MenuName_Help);
-			ToolStripMenuItem aboutItem =		this.RequestMenu(GeneralRes.MenuName_Help, GeneralRes.MenuItemName_About);
+			ToolStripMenuItem fileItem =		this.RequestMenu(GeneralRes.MenuName_File);
+			ToolStripMenuItem newProjectItem =		this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_NewProject);
+													this.RequestSeparator(GeneralRes.MenuName_File, "SaveSeparator");
+			ToolStripMenuItem saveAllItem =			this.RequestMenu(GeneralRes.MenuName_File, this.actionSaveAll.Text);
+													this.RequestSeparator(GeneralRes.MenuName_File, "CodeSeparator");
+			ToolStripMenuItem openCodeItem =		this.RequestMenu(GeneralRes.MenuName_File, this.actionOpenCode.Text);
+													this.RequestSeparator(GeneralRes.MenuName_File, "EndSeparator");
+			ToolStripMenuItem quitItem =			this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_Quit);
+			ToolStripMenuItem editItem =		this.RequestMenu(GeneralRes.MenuName_Edit);
+			this.menuEditUndo =						this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Undo);
+			this.menuEditRedo =						this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Redo);
+			ToolStripMenuItem viewItem =		this.RequestMenu(GeneralRes.MenuName_View);
+			ToolStripMenuItem runItem =			this.RequestMenu(GeneralRes.MenuName_Run);
+			ToolStripMenuItem runGameItem =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunApp.Text);
+			ToolStripMenuItem debugGameItem	=		this.RequestMenu(GeneralRes.MenuName_Run, this.actionDebugApp.Text);
+			ToolStripMenuItem profileGameItem =		this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_ProfileGame);
+			ToolStripMenuItem configLauncherItem =	this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_ConfigureLauncher);
+													this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxSeparator");
+			this.menuRunSandboxPlay	=				this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunSandbox.Text);
+			this.menuRunSandboxStep =				this.RequestMenu(GeneralRes.MenuName_Run, this.actionStepSandbox.Text);
+			this.menuRunSandboxPause =				this.RequestMenu(GeneralRes.MenuName_Run, this.actionPauseSandbox.Text);
+			this.menuRunSandboxStop =				this.RequestMenu(GeneralRes.MenuName_Run, this.actionStopSandbox.Text);
+													this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxDebugSeparator");
+			this.menuRunSandboxSlower =				this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxSlower);
+			this.menuRunSandboxFaster =				this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxFaster);
+			ToolStripMenuItem helpItem =		this.RequestMenu(GeneralRes.MenuName_Help);
+			ToolStripMenuItem aboutItem =			this.RequestMenu(GeneralRes.MenuName_Help, GeneralRes.MenuItemName_About);
 
 			// ---------- File ----------
 			newProjectItem.Image = EditorRes.GeneralResCache.ImageAppCreate;
@@ -146,17 +148,6 @@ namespace DualityEditor.Forms
 			openCodeItem.Click += this.actionOpenCode_Click;
 			openCodeItem.Tag = HelpInfo.FromText(openCodeItem.Text, GeneralRes.MenuItemInfo_OpenProjectSource);
 
-			runGameItem.Image = this.actionRunApp.Image;
-			runGameItem.Click += this.actionRunApp_Click;
-			runGameItem.ShortcutKeys = Keys.Alt | Keys.F5;
-			runGameItem.Tag = HelpInfo.FromText(runGameItem.Text, GeneralRes.MenuItemInfo_RunGame);
-
-			debugGameItem.Image = this.actionDebugApp.Image;
-			debugGameItem.Click += this.actionDebugApp_Click;
-			debugGameItem.Enabled = this.actionDebugApp.Enabled;
-			debugGameItem.ShortcutKeys = Keys.Alt | Keys.F6;
-			debugGameItem.Tag = HelpInfo.FromText(debugGameItem.Text, GeneralRes.MenuItemInfo_DebugGame);
-
 			quitItem.Click += this.quitItem_Click;
 			quitItem.ShortcutKeys = Keys.Alt | Keys.F4;
 
@@ -170,6 +161,24 @@ namespace DualityEditor.Forms
 			this.menuEditRedo.Image = GeneralResCache.arrow_redo;
 
 			// ---------- Run ----------
+			runGameItem.Image = this.actionRunApp.Image;
+			runGameItem.Click += this.actionRunApp_Click;
+			runGameItem.ShortcutKeys = Keys.Alt | Keys.F5;
+			runGameItem.Tag = HelpInfo.FromText(runGameItem.Text, GeneralRes.MenuItemInfo_RunGame);
+
+			debugGameItem.Image = this.actionDebugApp.Image;
+			debugGameItem.Click += this.actionDebugApp_Click;
+			debugGameItem.Enabled = this.actionDebugApp.Enabled;
+			debugGameItem.ShortcutKeys = Keys.Alt | Keys.F6;
+			debugGameItem.Tag = HelpInfo.FromText(debugGameItem.Text, GeneralRes.MenuItemInfo_DebugGame);
+
+			profileGameItem.Image = Properties.Resources.application_stopwatch;
+			profileGameItem.Click += this.actionProfileApp_Click;
+			profileGameItem.Tag = HelpInfo.FromText(profileGameItem.Text, GeneralRes.MenuItemInfo_ProfileGame);
+
+			configLauncherItem.Click += this.actionConfigureLauncher_Click;
+			configLauncherItem.Tag = HelpInfo.FromText(configLauncherItem.Text, GeneralRes.MenuItemInfo_ConfigureLauncher);
+
 			this.menuRunSandboxPlay.Image = this.actionRunSandbox.Image;
 			this.menuRunSandboxPlay.Click += this.actionRunSandbox_Click;
 			this.menuRunSandboxPlay.ShortcutKeys = Keys.F5;
@@ -346,16 +355,55 @@ namespace DualityEditor.Forms
 		private void actionRunApp_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(EditorHelper.LauncherExecFile, DualityApp.CmdArgEditor);
+			System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+			startInfo.FileName = Path.GetFileName(DualityEditorApp.LauncherAppPath);
+			startInfo.Arguments = DualityApp.CmdArgEditor;
+			startInfo.WorkingDirectory = Path.GetDirectoryName(DualityEditorApp.LauncherAppPath);
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(startInfo);
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}
 		private void actionDebugApp_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(EditorHelper.LauncherExecFile, DualityApp.CmdArgEditor + " " + DualityApp.CmdArgDebug);
+			System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+			startInfo.FileName = Path.GetFileName(DualityEditorApp.LauncherAppPath);
+			startInfo.Arguments = DualityApp.CmdArgEditor + " " + DualityApp.CmdArgDebug;
+			startInfo.WorkingDirectory = Path.GetDirectoryName(DualityEditorApp.LauncherAppPath);
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(startInfo);
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
+		}
+		private void actionProfileApp_Click(object sender, EventArgs e)
+		{
+			DualityEditorApp.SaveAllProjectData();
+			System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+			startInfo.FileName = Path.GetFileName(DualityEditorApp.LauncherAppPath);
+			startInfo.Arguments = DualityApp.CmdArgEditor + " " + DualityApp.CmdArgProfiling;
+			startInfo.WorkingDirectory = Path.GetDirectoryName(DualityEditorApp.LauncherAppPath);
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(startInfo);
+			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
+			runningDialog.ShowDialog(this);
+		}
+		private void actionConfigureLauncher_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog fileDialog = new OpenFileDialog();
+			fileDialog.InitialDirectory = Path.GetDirectoryName(DualityEditorApp.LauncherAppPath);
+			if (string.IsNullOrWhiteSpace(fileDialog.InitialDirectory))
+				fileDialog.InitialDirectory = Environment.CurrentDirectory;
+			fileDialog.FileName = Path.GetFileName(DualityEditorApp.LauncherAppPath);
+			fileDialog.Filter = "Executable files (*.exe)|*.exe";
+			fileDialog.FilterIndex = 1;
+			fileDialog.RestoreDirectory = true;
+			fileDialog.Multiselect = false;
+			fileDialog.Title = GeneralRes.MenuItemName_ConfigureLauncher;
+			fileDialog.CheckFileExists = true;
+			fileDialog.CheckPathExists = true;
+			fileDialog.CustomPlaces.Add(Environment.CurrentDirectory);
+			if (fileDialog.ShowDialog(this) == DialogResult.OK)
+			{
+				DualityEditorApp.LauncherAppPath = PathHelper.MakeFilePathRelative(fileDialog.FileName);
+			}
 		}
 		private void actionSaveAll_Click(object sender, EventArgs e)
 		{

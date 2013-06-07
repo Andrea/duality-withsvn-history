@@ -81,6 +81,13 @@ namespace DualityEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap application_stopwatch {
+            get {
+                object obj = ResourceManager.GetObject("application_stopwatch", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap arrow_refresh {
             get {
                 object obj = ResourceManager.GetObject("arrow_refresh", resourceCulture);

@@ -63,7 +63,7 @@ namespace Duality.Serialization.MetaFormat
 			// Assure reloading the modified resource
 			if (updateContent && PathHelper.IsPathLocatedIn(filePath, "."))
 			{
-				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
+				string dataPath = PathHelper.MakeFilePathRelative(filePath);
 				ContentProvider.UnregisterContent(dataPath);
 			}
 		}

@@ -88,7 +88,7 @@ namespace Duality
 		/// <example>
 		/// <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
 		/// </example>
-		public static string MakeFilePathRelative(string filePath, string relativeToDir)
+		public static string MakeFilePathRelative(string filePath, string relativeToDir = ".")
 		{
 			string dir		= Path.GetFullPath(filePath);
 			string dirRel	= Path.GetFullPath(relativeToDir);
@@ -123,7 +123,6 @@ namespace Duality
 			if (numBackDir > 0)
 			{
 				resultDir = 
-					Path.DirectorySeparatorChar + 
 					(".." + Path.DirectorySeparatorChar).Multiply(numBackDir) + 
 					resultDir;
 			}

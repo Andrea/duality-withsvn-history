@@ -718,7 +718,7 @@ namespace EditorBase
 			string basePath = this.GetInsertActionTargetBasePath(baseNode);
 			string nameExt = Resource.GetFileExtByType(type);
 			string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
-			resPath = PathHelper.MakeFilePathRelative(resPath, ".");
+			resPath = PathHelper.MakeFilePathRelative(resPath);
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
 			resInstance.Save(resPath);
@@ -1062,7 +1062,7 @@ namespace EditorBase
 							string resPath = Path.Combine(basePath, desiredName) + nameExt;
 							if (!pointsToFile || Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
 								resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
-							resPath = PathHelper.MakeFilePathRelative(resPath, ".");
+							resPath = PathHelper.MakeFilePathRelative(resPath);
 
 							if (pointsToFile && File.Exists(res.Path))
 								File.Move(res.Path, resPath);

@@ -20,7 +20,7 @@ namespace DualityEditor
 {
 	public static class EditorHelper
 	{
-		public const string LauncherExecFile			= @"DualityLauncher.exe";
+		public const string DualityLauncherExecFile		= @"DualityLauncher.exe";
 		public const string BackupDirectory				= @"Backup";
 		public const string SourceDirectory				= @"Source";
 		public const string SourceMediaDirectory		= SourceDirectory + @"\Media";

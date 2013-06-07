@@ -67,6 +67,7 @@ namespace DualityEditor
 		private	static bool							backupsEnabled		= true;
 		private	static AutosaveFrequency			autosaveFrequency	= AutosaveFrequency.ThirtyMinutes;
 		private	static DateTime						autosaveLast		= DateTime.Now;
+		private	static string						launcherApp			= null;
 
 
 		public	static	event	EventHandler	Terminating			= null;
@@ -123,6 +124,24 @@ namespace DualityEditor
 		{
 			get { return autosaveFrequency; }
 			set { autosaveFrequency = value; }
+		}
+		public static string LauncherAppPath
+		{
+			get
+			{
+				if (string.IsNullOrWhiteSpace(launcherApp)) return EditorHelper.DualityLauncherExecFile;
+				if (!File.Exists(launcherApp)) return EditorHelper.DualityLauncherExecFile;
+				return launcherApp;
+			}
+			set
+			{
+				if (Path.GetFullPath(value) == Path.GetFullPath(EditorHelper.DualityLauncherExecFile)) value = null;
+				if (value != launcherApp)
+				{
+					launcherApp = value;
+					UpdatePluginSourceCode();
+				}
+			}
 		}
 		private static bool AppStillIdle
 		{
@@ -379,6 +398,7 @@ namespace DualityEditor
 				rootElement.AppendChild(editorAppElement);
 				editorAppElement.SetAttribute("backups", backupsEnabled.ToString(System.Globalization.CultureInfo.InvariantCulture));
 				editorAppElement.SetAttribute("autosaves", autosaveFrequency.ToString());
+				editorAppElement.SetAttribute("launcher", launcherApp);
 				foreach (EditorPlugin plugin in plugins)
 				{
 					XmlElement pluginXmlElement = xmlDoc.CreateElement("Plugin_" + plugin.Id);
@@ -445,6 +465,7 @@ namespace DualityEditor
 						XmlElement editorAppElement = editorAppElemQuery[0] as System.Xml.XmlElement;
 						bool.TryParse(editorAppElement.GetAttribute("backups"), out backupsEnabled);
 						Enum.TryParse<AutosaveFrequency>(editorAppElement.GetAttribute("autosaves"), out autosaveFrequency);
+						launcherApp = editorAppElement.GetAttribute("launcher");
 					}
 					foreach (XmlElement child in xmlDoc.DocumentElement)
 					{
@@ -700,7 +721,7 @@ namespace DualityEditor
 					userDoc = new XmlDocument();
 					userDoc.Load(userFileCore);
 					foreach (XmlElement element in userDoc.GetElementsByTagName("StartProgram").OfType<XmlElement>())
-						element.InnerText = Path.GetFullPath(EditorHelper.LauncherExecFile);
+						element.InnerText = Path.GetFullPath(DualityEditorApp.LauncherAppPath);
 					foreach (XmlElement element in userDoc.GetElementsByTagName("StartWorkingDirectory").OfType<XmlElement>())
 						element.InnerText = Path.GetFullPath(".");
 					userDoc.Save(userFileCore);
