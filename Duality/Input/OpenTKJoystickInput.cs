@@ -3,7 +3,7 @@ using OpenTK.Input;
 
 namespace Duality
 {
-	internal class WindowJoystickInput : IJoystickInput
+	public class OpenTKJoystickInput : IJoystickInput
 	{
 		private	JoystickDevice	device;
 		
@@ -36,7 +36,7 @@ namespace Duality
 			get { return this.device.Axis[axis]; }
 		}
 
-		public WindowJoystickInput(JoystickDevice device)
+		public OpenTKJoystickInput(JoystickDevice device)
 		{
 			this.device = device;
 		}

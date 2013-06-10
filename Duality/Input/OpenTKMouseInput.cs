@@ -3,7 +3,7 @@ using OpenTK.Input;
 
 namespace Duality
 {
-	internal class WindowMouseInput : IMouseInput
+	public class OpenTKMouseInput : IMouseInput
 	{
 		public delegate void CursorPosSetter(int v);
 
@@ -51,7 +51,7 @@ namespace Duality
 			get { return this.device[key]; }
 		}
 
-		public WindowMouseInput(MouseDevice device, CursorPosSetter cursorPosSetterX, CursorPosSetter cursorPosSetterY)
+		public OpenTKMouseInput(MouseDevice device, CursorPosSetter cursorPosSetterX, CursorPosSetter cursorPosSetterY)
 		{
 			this.device = device;
 			this.cursorPosSetterX = cursorPosSetterX;

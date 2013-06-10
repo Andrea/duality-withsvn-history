@@ -65,10 +65,14 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\"</PostBuildEvent>
+copy "$(TargetPath)" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\"
+copy "$(TargetPath).config" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

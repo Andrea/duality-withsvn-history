@@ -138,28 +138,28 @@ namespace Duality
 			set { targetMode = value; }
 		}
 		/// <summary>
-		/// [GET] Provides access to mouse user input.
+		/// [GET / SET] Provides access to mouse user input.
 		/// </summary>
 		public static IMouseInput Mouse
 		{
 			get { return mouse; }
-			internal set { mouse.RealInput = value; }
+			set { mouse.RealInput = value; }
 		}
 		/// <summary>
-		/// [GET] Provides access to keyboard user input
+		/// [GET / SET] Provides access to keyboard user input
 		/// </summary>
 		public static IKeyboardInput Keyboard
 		{
 			get { return keyboard; }
-			internal set { keyboard.RealInput = value; }
+			set { keyboard.RealInput = value; }
 		}
 		/// <summary>
-		/// [GET] Provides access to extended user input via joystick or gamepad.
+		/// [GET / SET] Provides access to extended user input via joystick or gamepad.
 		/// </summary>
 		public static IEnumerable<IJoystickInput> Joysticks
 		{
 			get { return joysticks.Where(j => j.RealInput != null); }
-			internal set
+			set
 			{
 				int index = 0;
 				foreach (IJoystickInput joy in value)

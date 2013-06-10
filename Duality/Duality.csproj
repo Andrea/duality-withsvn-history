@@ -108,11 +108,11 @@
     <Compile Include="Input\IMouseInput.cs" />
     <Compile Include="Input\IJoystickInput.cs" />
     <Compile Include="Input\StaticJoystickInput.cs" />
-    <Compile Include="Input\WindowJoystickInput.cs" />
+    <Compile Include="Input\OpenTKJoystickInput.cs" />
     <Compile Include="Input\StaticMouseInput.cs" />
     <Compile Include="Input\StaticKeyboardInput.cs" />
-    <Compile Include="Input\WindowMouseInput.cs" />
-    <Compile Include="Input\WindowKeyboardInput.cs" />
+    <Compile Include="Input\OpenTKMouseInput.cs" />
+    <Compile Include="Input\OpenTKKeyboardInput.cs" />
     <Compile Include="Performance.cs" />
     <Compile Include="Log\ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />

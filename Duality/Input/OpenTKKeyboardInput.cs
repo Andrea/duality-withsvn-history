@@ -3,7 +3,7 @@ using OpenTK.Input;
 
 namespace Duality
 {
-	internal class WindowKeyboardInput : IKeyboardInput
+	public class OpenTKKeyboardInput : IKeyboardInput
 	{
 		private	KeyboardDevice	device;
 		
@@ -28,7 +28,7 @@ namespace Duality
 			get { return this.device[key]; }
 		}
 
-		public WindowKeyboardInput(KeyboardDevice device)
+		public OpenTKKeyboardInput(KeyboardDevice device)
 		{
 			this.device = device;
 		}
