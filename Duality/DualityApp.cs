@@ -138,21 +138,21 @@ namespace Duality
 			set { targetMode = value; }
 		}
 		/// <summary>
-		/// [GET] Provides access to mouse user input.
+		/// [GET / SET] Provides access to mouse user input.
 		/// </summary>
 		public static MouseInput Mouse
 		{
 			get { return mouse; }
 		}
 		/// <summary>
-		/// [GET] Provides access to keyboard user input
+		/// [GET / SET] Provides access to keyboard user input
 		/// </summary>
 		public static KeyboardInput Keyboard
 		{
 			get { return keyboard; }
 		}
 		/// <summary>
-		/// [GET] Provides access to extended user input via joystick or gamepad.
+		/// [GET / SET] Provides access to extended user input via joystick or gamepad.
 		/// </summary>
 		public static JoystickInputCollection Joysticks
 		{
