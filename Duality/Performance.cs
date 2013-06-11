@@ -7,6 +7,7 @@ using System;
 
 using OpenTK;
 
+using Duality.Resources;
 using Duality.ColorFormat;
 
 namespace Duality
@@ -350,7 +351,7 @@ namespace Duality
 				return 0;
 		}
 
-		public static void DrawTextReport(Canvas canvas, float x = 10.0f, float y = 10.0f, bool background = true, ReportOptions options = ReportOptions.LastValue | ReportOptions.FormattedText)
+		public static void DrawTextReport(Canvas canvas, float x = 10.0f, float y = 10.0f, float z = 0.0f, bool background = true, ReportOptions options = ReportOptions.LastValue | ReportOptions.FormattedText)
 		{
 			BeginMeasure(@"DrawTextReport");
 			if (textReport == null || (Time.MainTimer - textReportLast).TotalMilliseconds > 250)
@@ -368,8 +369,12 @@ namespace Duality
 				textReportLast = Time.MainTimer;
 			}
 
-			if (background) canvas.DrawTextBackground(textReport, x, y);
-			canvas.DrawText(textReport, x, y);
+			canvas.PushState();
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White, null));
+			if (background) canvas.DrawTextBackground(textReport, x, y, z);
+			canvas.DrawText(textReport, x, y, z);
+			canvas.PopState();
+
 			EndMeasure(@"DrawTextReport");
 		}
 		public static void SaveTextReport(string filePath)

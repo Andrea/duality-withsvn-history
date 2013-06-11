@@ -34,7 +34,6 @@ namespace Duality.Components
 		private	float	scale		= 1.0f;
 		private	bool	deriveAngle		= true;
 		private	bool	ignoreParent	= false;
-		private	DirtyFlags	changes	= DirtyFlags.None;
 
 		// Cached values, recalc on change
 		private	Transform	parentTransform	= null;
@@ -46,11 +45,12 @@ namespace Duality.Components
 		private	Vector3		velAbs			= Vector3.Zero;
 		private	float		angleVel		= 0.0f;
 		private	float		angleVelAbs		= 0.0f;
-		// Velocity accumulators
-		private	Vector3		tempVel			= Vector3.Zero;
-		private	Vector3		tempVelAbs		= Vector3.Zero;
-		private	float		tempAngleVel	= 0.0f;
-		private	float		tempAngleVelAbs	= 0.0f;
+		// Temporary per-frame values
+		[NonSerialized] private	DirtyFlags	changes			= DirtyFlags.None;
+		[NonSerialized] private	Vector3		tempVel			= Vector3.Zero;
+		[NonSerialized] private	Vector3		tempVelAbs		= Vector3.Zero;
+		[NonSerialized] private	float		tempAngleVel	= 0.0f;
+		[NonSerialized] private	float		tempAngleVelAbs	= 0.0f;
 
 		[NonSerialized]
 		private EventHandler<TransformChangedEventArgs> eventTransformChanged = null;

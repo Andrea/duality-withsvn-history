@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
+using Duality;
 using DualityEditor.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -28,7 +29,7 @@ namespace DualityEditor
 		protected EditorPlugin()
 		{
 			this.assembly = this.GetType().Assembly;
-			this.asmName = this.assembly.FullName.Split(',')[0];
+			this.asmName = this.assembly.GetShortAssemblyName();
 		}
 		/// <summary>
 		/// This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.

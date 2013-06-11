@@ -15,7 +15,7 @@ namespace Duality
 		/// </summary>
 		public class SharedState
 		{
-			private int indent = 0;
+			private	int	indent	= 0;
 
 			/// <summary>
 			/// [GET / SET] The Logs indent value.
@@ -27,10 +27,10 @@ namespace Duality
 			}
 		}
 
-		private static Log logGame = null;
-		private static Log logCore = null;
-		private static Log logEditor = null;
-		private static DataLogOutput data = null;
+		private	static	Log				logGame		= null;
+		private	static	Log				logCore		= null;
+		private	static	Log				logEditor	= null;
+		private	static	DataLogOutput	data		= null;
 
 		/// <summary>
 		/// [GET] A log for game-related entries. Use this for logging data from game plugins.
@@ -65,16 +65,16 @@ namespace Duality
 		{
 			SharedState state = new SharedState();
 			data = new DataLogOutput();
-			logGame = new Log("Game", state, new ConsoleLogOutput(ConsoleColor.DarkGray), data);
-			logCore = new Log("Core", state, new ConsoleLogOutput(ConsoleColor.DarkBlue), data);
-			logEditor = new Log("Edit", state, new ConsoleLogOutput(ConsoleColor.DarkMagenta), data);
+			logGame		= new Log("Game", state, new ConsoleLogOutput(ConsoleColor.DarkGray), data);
+			logCore		= new Log("Core", state, new ConsoleLogOutput(ConsoleColor.DarkBlue), data);
+			logEditor	= new Log("Edit", state, new ConsoleLogOutput(ConsoleColor.DarkMagenta), data);
 		}
 
 
-		private List<ILogOutput> strOut = null;
-		private SharedState state = null;
-		private string name = "Log";
-		private string prefix = "[Log] ";
+		private	List<ILogOutput>	strOut		= null;
+		private	SharedState			state		= null;
+		private	string				name		= "Log";
+		private string				prefix		= "[Log] ";
 
 		/// <summary>
 		/// [GET] The Log's name
@@ -116,7 +116,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="name">The Logs name</param>
 		/// <param name="output">It will be initially connected to the specified outputs.</param>
-		public Log(string name, params ILogOutput[] output) : this(name, new SharedState(), output) { }
+		public Log(string name, params ILogOutput[] output) : this(name, new SharedState(), output) {}
 
 		/// <summary>
 		/// Registers an output to write log entries to.
@@ -150,21 +150,11 @@ namespace Duality
 			this.state.Indent--;
 		}
 
-		private void Write(LogMessageType type, string format, params object[] obj)
+		private void Write(LogMessageType type, string msg)
 		{
-			string message = format;
-			try
-			{
-				message = String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj);
-			}
-			catch (Exception e)
-			{
-				Write(LogMessageType.Error, string.Format("Was expecting a parameter or more in the message but could not find them {0}", e));
-			}
-
 			Performance.TimeLog.BeginMeasure();
 			foreach (ILogOutput log in this.strOut)
-				log.Write(this, type, message);
+				log.Write(this, type, msg);
 			Performance.TimeLog.EndMeasure();
 		}
 
@@ -175,7 +165,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void Write(string format, params object[] obj)
 		{
-			this.Write(LogMessageType.Message, format, obj);
+			this.Write(LogMessageType.Message, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 		/// <summary>
 		/// Writes a new warning log entry.
@@ -184,7 +174,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteWarning(string format, params object[] obj)
 		{
-			this.Write(LogMessageType.Warning, format, obj);
+			this.Write(LogMessageType.Warning, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 		/// <summary>
 		/// Writes a new error log entry.
@@ -193,9 +183,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteError(string format, params object[] obj)
 		{
-			
-				this.Write(LogMessageType.Error, format, obj);
-			
+			this.Write(LogMessageType.Error, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 
 		/// <summary>
@@ -228,6 +216,15 @@ namespace Duality
 		}
 
 		/// <summary>
+		/// Returns a string that can be used for representing a <see cref="System.Assembly"/> in log entries.
+		/// </summary>
+		/// <param name="asm"></param>
+		/// <returns></returns>
+		public static string Assembly(Assembly asm)
+		{
+			return asm.GetShortAssemblyName();
+		}
+		/// <summary>
 		/// Returns a string that can be used for representing a <see cref="System.Type"/> in log entries.
 		/// </summary>
 		/// <param name="type"></param>
@@ -245,14 +242,16 @@ namespace Duality
 		public static string MethodInfo(MethodInfo info, bool includeDeclaringType = true)
 		{
 			string declTypeName = Type(info.DeclaringType);
+			string returnTypeName = Type(info.ReturnType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
 			string[] genArgNames = info.GetGenericArguments().Select(Type).ToArray();
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
-				"{0}{1}{3}({2})",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{4} {0}{1}{3}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name,
 				paramNames.ToString(", "),
-				genArgNames.Length > 0 ? "<" + genArgNames.ToString(", ") + ">" : "");
+				genArgNames.Length > 0 ? "<" + genArgNames.ToString(", ") + ">" : "",
+				returnTypeName);
 		}
 		/// <summary>
 		/// Returns a string that can be used for representing a method or constructor in log entries.
@@ -281,7 +280,7 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0}{1}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
 				info.DeclaringType.Name,
@@ -298,7 +297,7 @@ namespace Duality
 			string declTypeName = Type(info.DeclaringType);
 			string propTypeName = Type(info.PropertyType);
 			string[] paramNames = info.GetIndexParameters().Select(p => Type(p.ParameterType)).ToArray();
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0} {1}{2}{3}",
 				propTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
@@ -315,7 +314,7 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string fieldTypeName = Type(info.FieldType);
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0} {1}{2}",
 				fieldTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
@@ -331,7 +330,7 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string fieldTypeName = Type(info.EventHandlerType);
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0} {1}{2}",
 				fieldTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
@@ -362,7 +361,7 @@ namespace Duality
 			else
 				return "null";
 		}
-
+		
 		/// <summary>
 		/// Returns a string that can be used for representing an exception in log entries.
 		/// It usually does not include the full call stack and is significantly shorter than
@@ -377,7 +376,7 @@ namespace Duality
 			string eName = Type(e.GetType());
 			string eSite = e.TargetSite != null ? MemberInfo(e.TargetSite) : null;
 
-			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0}{1}: {2}{4}CallStack:{4}{3}",
 				eName,
 				eSite != null ? " at " + eSite : "",

@@ -369,10 +369,10 @@ namespace Duality
 			LoadMetaData();
 			
 			// Determine available and default graphics modes
-			int[] aaLevels = new int[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 };
+			int[] aaLevels = new int[] { 0, 2, 4, 6, 8, 16 };
 			foreach (int samplecount in aaLevels)
 			{
-				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
+				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount, new OpenTK.Graphics.ColorFormat(0), 2, false);
 				if (!availModes.Contains(mode)) availModes.Add(mode);
 			}
 			int highestAALevel = MathF.RoundToInt(MathF.Log(MathF.Max(availModes.Max(m => m.Samples), 1.0f), 2.0f));
@@ -946,7 +946,7 @@ namespace Duality
 				"This is a common problem when registering global events from within a CorePlugin " +
 				"without properly unregistering them later. Please make sure that all events are " +
 				"unregistered in CorePlugin::OnDisposePlugin().",
-				invalidAssembly.FullName.Split(',')[0],
+				invalidAssembly.GetShortAssemblyName(),
 				"{0}");
 
 			if (ReflectionHelper.CleanEventBindings(typeof(DualityApp),	invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)));
@@ -972,7 +972,7 @@ namespace Duality
 		}
 		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
 		{
-			string assemblyNameStub = args.Name.Split(',')[0];
+			string assemblyNameStub = ReflectionHelper.GetShortAssemblyName(args.Name);
 
 			// First assume we are searching for a dynamically loaded plugin assembly
 			CorePlugin plugin;
@@ -1005,7 +1005,7 @@ namespace Duality
 		}
 		private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
 		{
-			Log.Core.Write("Assembly loaded: {0}", args.LoadedAssembly.FullName.Split(',')[0]);
+			Log.Core.Write("Assembly loaded: {0}", args.LoadedAssembly.GetShortAssemblyName());
 		}
 		
 

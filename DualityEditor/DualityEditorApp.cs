@@ -902,6 +902,7 @@ namespace DualityEditor
 
 		public static void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
 		{
+			if (obj == null) return;
 			if (obj.Empty) return;
 			// For now, applying Prefabs will kill UndoRedo support since OnCopyTo is likely to detach objects
 			// and thus invalidate old UndoRedoActions. This will only affect a small subset of operations, but
@@ -912,11 +913,13 @@ namespace DualityEditor
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, params PropertyInfo[] info)
 		{
+			if (obj == null) return;
 			if (obj.Empty) return;
 			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info));
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, bool persistenceCritical, params PropertyInfo[] info)
 		{
+			if (obj == null) return;
 			if (obj.Empty) return;
 			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info, persistenceCritical));
 		}
@@ -930,13 +933,37 @@ namespace DualityEditor
 			Log.Editor.Write("Analyzing Core Plugin: {0}", plugin.AssemblyName);
 			Log.Editor.PushIndent();
 
+			// Query references to other Assemblies
+			var asmRefQuery = from AssemblyName a in plugin.PluginAssembly.GetReferencedAssemblies()
+							  select a.GetShortAssemblyName();
+			string thisAsmName = typeof(DualityEditorApp).Assembly.GetShortAssemblyName();
+			foreach (var asmName in asmRefQuery)
+			{
+				bool illegalRef = false;
+
+				// Scan for illegally referenced Assemblies
+				if (asmName == thisAsmName)
+					illegalRef = true;
+				else if (plugins.Any(p => p.PluginAssembly.GetShortAssemblyName() == asmName))
+					illegalRef = true;
+
+				// Warn about them
+				if (illegalRef)
+				{
+					Log.Editor.WriteWarning(
+						"Found illegally referenced Assembly '{0}'. " + 
+						"CorePlugins should never reference or use DualityEditor or any of its EditorPlugins. Consider moving the critical code to an EditorPlugin.",
+						asmName);
+				}
+			}
+
 			// Query Component types
 			var cmpTypeQuery = from Type t in plugin.PluginAssembly.GetExportedTypes()
 							   where typeof(Component).IsAssignableFrom(t)
 							   select t;
 			foreach (var cmpType in cmpTypeQuery)
 			{
-				// Scan for public fields
+				// Scan for public Fields
 				FieldInfo[] fields = cmpType.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 				if (fields.Length > 0)
 				{
@@ -1314,7 +1341,7 @@ namespace DualityEditor
 		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			// If this method gets called, assume we are searching for a dynamically loaded plugin assembly
-			string assemblyNameStub = args.Name.Split(',')[0];
+			string assemblyNameStub = ReflectionHelper.GetShortAssemblyName(args.Name);
 			EditorPlugin plugin = plugins.FirstOrDefault(p => assemblyNameStub == p.AssemblyName);
 			if (plugin != null)
 				return plugin.PluginAssembly;

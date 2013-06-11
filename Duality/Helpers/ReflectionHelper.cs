@@ -519,8 +519,6 @@ namespace Duality
 				else if (t == typeof(float))	return DataType.Float;
 				else if (t == typeof(double))	return DataType.Double;
 				else if (t == typeof(decimal))	return DataType.Decimal;
-
-				throw new NotSupportedException(string.Format("Primitive Type '{0}' is not supported", t));
 			}
 			else if (typeof(MemberInfo).IsAssignableFrom(t))
 			{
@@ -530,8 +528,6 @@ namespace Duality
 				else if (typeof(MethodInfo).IsAssignableFrom(t))		return DataType.MethodInfo;
 				else if (typeof(ConstructorInfo).IsAssignableFrom(t))	return DataType.ConstructorInfo;
 				else if (typeof(EventInfo).IsAssignableFrom(t))			return DataType.EventInfo;
-
-				throw new NotSupportedException(string.Format("MemberInfo Type '{0}' is not supported", t));
 			}
 			else if (typeof(Delegate).IsAssignableFrom(t))
 				return DataType.Delegate;
@@ -585,6 +581,34 @@ namespace Duality
 			return false;
 		}
 		
+		/// <summary>
+		/// Returns the short version of an Assembly name.
+		/// </summary>
+		/// <param name="assembly"></param>
+		/// <returns></returns>
+		public static string GetShortAssemblyName(this Assembly assembly)
+		{
+			return assembly.FullName.Split(',')[0];
+		}
+		/// <summary>
+		/// Returns the short version of an Assembly name.
+		/// </summary>
+		/// <param name="assemblyName"></param>
+		/// <returns></returns>
+		public static string GetShortAssemblyName(this AssemblyName assemblyName)
+		{
+			return assemblyName.FullName.Split(',')[0];
+		}
+		/// <summary>
+		/// Returns the short version of an Assembly name.
+		/// </summary>
+		/// <param name="assemblyName"></param>
+		/// <returns></returns>
+		public static string GetShortAssemblyName(string assemblyName)
+		{
+			return assemblyName.Split(',')[0];
+		}
+
 		/// <summary>
 		/// Returns a Types keyword, its "short" name. Just the types "base", no generic
 		/// type parameters or array specifications.

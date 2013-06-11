@@ -30,13 +30,25 @@ namespace EditorBase
 
 			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
-		protected override void OnShown(EventArgs e)
+		protected override void OnHandleCreated(EventArgs e)
 		{
-			base.OnShown(e);
+			base.OnHandleCreated(e);
 
 			this.logEntryList.BindToOutput(Log.LogData);
 			this.logEntryList.ScrollToEnd();
-			this.MarkAsRead();
+
+			foreach (var entry in Log.LogData.Data)
+			{
+				if (entry.Type == LogMessageType.Warning)
+					this.unseenWarnings++;
+				else if (entry.Type == LogMessageType.Error)
+					this.unseenErrors++;
+			}
+			this.UpdateTabText();
+		}
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
 
 			this.DockPanel.ActiveAutoHideContentChanged += this.DockPanel_ActiveAutoHideContentChanged;
 			Sandbox.Entering += this.Sandbox_Entering;
@@ -59,7 +71,11 @@ namespace EditorBase
 		protected override void OnDockStateChanged(EventArgs e)
 		{
 			base.OnDockStateChanged(e);
-			if (!this.DockHandler.DockState.IsAutoHide()) this.MarkAsRead();
+			if (this.DockHandler.DockState != DockState.Hidden &&
+				!this.DockHandler.DockState.IsAutoHide())
+			{
+				this.MarkAsRead();
+			}
 		}
 		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
 		{
@@ -195,22 +211,25 @@ namespace EditorBase
 			DataLogOutput.LogEntry logEntry = e.Entry.LogEntry;
 			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
 			bool pause = logEntry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.State == SandboxState.Playing && !Sandbox.IsChangingState;
+			bool unseenChanges = false;
 
 			if (isHidden)
 			{
 				if (logEntry.Type == LogMessageType.Warning)
 				{
 					this.unseenWarnings++;
+					unseenChanges = true;
 				}
 				else if (logEntry.Type == LogMessageType.Error)
 				{
 					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
 					this.unseenErrors++;
+					unseenChanges = true;
 				}
 			}
 
 			if (pause) Sandbox.Pause();
-			this.UpdateTabText();
+			if (unseenChanges) this.UpdateTabText();
 		}
 
 		private void Sandbox_Entering(object sender, EventArgs e)

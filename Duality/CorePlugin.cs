@@ -26,7 +26,7 @@ namespace Duality
 		protected CorePlugin()
 		{
 			this.assembly = this.GetType().Assembly;
-			this.asmName = this.assembly.FullName.Split(',')[0];
+			this.asmName = this.assembly.GetShortAssemblyName();
 		}
 		internal void Dispose()
 		{
