@@ -1229,11 +1229,12 @@ namespace Duality
 		/// Draws the specified text.
 		/// </summary>
 		/// <param name="text"></param>
+		/// <param name="vertices">Optional vertex cache to use for the text. If set, the texts vertices are cached and re-used for better performance.</param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
 		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
-		public void DrawText(string[] text, float x, float y, float z = 0.0f, Alignment blockAlign = Alignment.TopLeft)
+		public void DrawText(string[] text, ref VertexC1P3T2[] vertices, float x, float y, float z = 0.0f, Alignment blockAlign = Alignment.TopLeft)
 		{
 			if (text == null || text.Length == 0) return;
 
@@ -1249,7 +1250,6 @@ namespace Duality
 			if (this.CurrentState.TextInvariantScale) scale = 1.0f;
 
 			Vector2 shapeHandle = pos.Xy;
-			VertexC1P3T2[] vertices = null;
 			Font font = this.CurrentState.TextFont.Res;
 			
 			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
@@ -1268,23 +1268,35 @@ namespace Duality
 			}
 		}
 		/// <summary>
-		/// Draws the specified formatted text.
+		/// Draws the specified text.
 		/// </summary>
 		/// <param name="text"></param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, use the <see cref="FormattedText"/> overload.</param>
+		public void DrawText(string[] text, float x, float y, float z = 0.0f, Alignment blockAlign = Alignment.TopLeft)
+		{
+			VertexC1P3T2[] vertices = null;
+			this.DrawText(text, ref vertices, x, y, z, blockAlign);
+		}
+		/// <summary>
+		/// Draws the specified formatted text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="vertText">Optional vertex cache to use for the text. If set, the texts vertices are cached and re-used for better performance.</param>
+		/// <param name="vertIcon">Optional vertex cache to use for the icons. If set, the texts vertices are cached and re-used for better performance.</param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
 		/// <param name="iconMat"></param>
 		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, make use of <see cref="FormattedText"/> format tags.</param>
-		public void DrawText(FormattedText text, float x, float y, float z = 0.0f, BatchInfo iconMat = null, Alignment blockAlign = Alignment.TopLeft)
+		public void DrawText(FormattedText text, ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcon, float x, float y, float z = 0.0f, BatchInfo iconMat = null, Alignment blockAlign = Alignment.TopLeft)
 		{
 			if (text == null || text.IsEmpty) return;
 
 			if (blockAlign != Alignment.TopLeft)
-			{
-				FormattedText.Metrics metrics = text.Measure();
-				blockAlign.ApplyTo(ref x, ref y, metrics.Size.X, metrics.Size.Y);
-			}
+				blockAlign.ApplyTo(ref x, ref y, text.Size.X, text.Size.Y);
 
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
@@ -1292,9 +1304,6 @@ namespace Duality
 			if (this.CurrentState.TextInvariantScale) scale = 1.0f;
 
 			Vector2 shapeHandle = pos.Xy;
-			VertexC1P3T2[][] vertText = null;
-			VertexC1P3T2[] vertIcon = null;
-
 			text.EmitVertices(ref vertText, ref vertIcon, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
 			
 			if (text.Fonts != null)
@@ -1314,6 +1323,21 @@ namespace Duality
 			{
 				device.AddVertices(iconMat, VertexMode.Quads, vertIcon);
 			}
+		}
+		/// <summary>
+		/// Draws the specified formatted text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="iconMat"></param>
+		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, make use of <see cref="FormattedText"/> format tags.</param>
+		public void DrawText(FormattedText text, float x, float y, float z = 0.0f, BatchInfo iconMat = null, Alignment blockAlign = Alignment.TopLeft)
+		{
+			VertexC1P3T2[][] vertText = null;
+			VertexC1P3T2[] vertIcon = null;
+			this.DrawText(text, ref vertText, ref vertIcon, x, y, z, iconMat, blockAlign);
 		}
 
 		/// <summary>
@@ -1356,7 +1380,7 @@ namespace Duality
 		/// <param name="blockAlign">Specifies the alignment of the text block. To make use of individual line alignment, make use of <see cref="FormattedText"/> format tags.</param>
 		public void DrawTextBackground(FormattedText text, float x, float y, float z = 0.0f, float backAlpha = 0.65f, Alignment blockAlign = Alignment.TopLeft)
 		{
-			this.DrawTextBackground(text.Measure().Size, x, y, z, backAlpha, blockAlign);
+			this.DrawTextBackground(text.Size, x, y, z, backAlpha, blockAlign);
 		}
 		/// <summary>
 		/// Draws a simple background rectangle for a text of the specified size. Its color is automatically determined

@@ -9,6 +9,7 @@ using OpenTK;
 
 using Duality.Resources;
 using Duality.ColorFormat;
+using Duality.VertexFormat;
 
 namespace Duality
 {
@@ -269,6 +270,8 @@ namespace Duality
 
 		private	static	Dictionary<string,Counter>	counterMap			= new Dictionary<string,Counter>();
 		private static	FormattedText				textReport			= null;
+		private static  VertexC1P3T2[]				textReportIconVert	= null;
+		private static  VertexC1P3T2[][]			textReportTextVert	= null;
 		private	static	TimeSpan					textReportLast		= TimeSpan.Zero;
 		public static readonly TimeCounter	TimeUpdatePhysics			= RequestCounter<TimeCounter>(@"Duality\Frame\Update\Physics");
 		public static readonly TimeCounter	TimeFrame					= RequestCounter<TimeCounter>(@"Duality\Frame");
@@ -372,7 +375,7 @@ namespace Duality
 			canvas.PushState();
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White, null));
 			if (background) canvas.DrawTextBackground(textReport, x, y, z);
-			canvas.DrawText(textReport, x, y, z);
+			canvas.DrawText(textReport, ref textReportTextVert, ref textReportIconVert, x, y, z);
 			canvas.PopState();
 
 			EndMeasure(@"DrawTextReport");
@@ -479,9 +482,6 @@ namespace Duality
 						ColorRgba lineColor = severity >= 0.5f ? 
 							ColorRgba.Mix(ColorRgba.White, ColorRgba.Red, 2.0f * (severity - 0.5f)) :
 							ColorRgba.Mix(ColorRgba.TransparentWhite, ColorRgba.White, 0.1f + 0.9f * (2.0f * severity));
-						reportBuilder.Append(FormattedText.FormatColor(lineColor));
-						reportBuilder.Append(FormattedText.FormatColor(lineColor));
-						reportBuilder.Append(FormattedText.FormatColor(lineColor));
 						reportBuilder.Append(FormattedText.FormatColor(lineColor));
 					}
 					reportBuilder.Append((new string(' ', current.ParentDepth * 2) + current.DisplayName + ":").PadRight(1 + maxNameLen));

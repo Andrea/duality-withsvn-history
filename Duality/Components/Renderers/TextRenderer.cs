@@ -21,15 +21,19 @@ namespace Duality.Components.Renderers
 		protected	BatchInfo				customMat	= null;
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
-		[NonSerialized] protected	FormattedText.Metrics			metrics		= new FormattedText.Metrics(Vector2.Zero, new Rect[0], new Rect[0]);
-		[NonSerialized]	protected	Rect							textRect	= Rect.Empty;
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[][]	vertFont	= null;
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[]		vertIcon	= null;
 
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
-			get { return this.textRect.Transform(this.gameobj.Transform.Scale, this.gameobj.Transform.Scale).BoundingRadius; }
+			get 
+			{
+				Rect textRect = Rect.Align(this.blockAlign, 0.0f, 0.0f, 
+					MathF.Max(this.text.Size.X, this.text.MaxWidth), 
+					MathF.Min(this.text.Size.Y, this.text.MaxHeight));
+				return textRect.Transform(this.gameobj.Transform.Scale, this.gameobj.Transform.Scale).BoundingRadius;
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The text blocks alignment relative to the <see cref="GameObject"/>.
@@ -37,24 +41,16 @@ namespace Duality.Components.Renderers
 		public Alignment BlockAlign
 		{
 			get { return this.blockAlign; }
-			set
-			{
-				this.blockAlign = value;
-				this.UpdateText();
-			}
+			set { this.blockAlign = value; }
 		}
 		/// <summary>
-		/// [GET / SET] The text to display. If you change this without re-assigning it, be sure to call <see cref="UpdateText"/>.
+		/// [GET / SET] The text to display..
 		/// </summary>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public FormattedText Text
 		{
 			get { return this.text; }
-			set
-			{
-				this.text = value;
-				this.UpdateText();
-			}
+			set { this.text = value; }
 		}
 		/// <summary>
 		/// [GET / SET] A color by which the displayed text is tinted.
@@ -78,7 +74,7 @@ namespace Duality.Components.Renderers
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public FormattedText.Metrics Metrics
 		{
-			get { return this.metrics; }
+			get { return this.text.TextMetrics; }
 		}
 		/// <summary>
 		/// [GET / SET] A custom, local <see cref="Duality.Resources.BatchInfo"/> overriding the texts own <see cref="Duality.Resources.Font.Material">
@@ -95,18 +91,6 @@ namespace Duality.Components.Renderers
 		public TextRenderer() 
 		{
 			this.text.Fonts = new[] { Font.GenericMonospace10 };
-			this.UpdateText();
-		}
-
-		/// <summary>
-		/// Updates the texts <see cref="Metrics"/> and other internal data. Should be called everytime the text changes.
-		/// </summary>
-		public void UpdateText()
-		{
-			this.metrics = this.text.Measure();
-			this.textRect = Rect.Align(this.blockAlign, 0.0f, 0.0f, 
-				MathF.Max(this.metrics.Size.X, this.text.MaxWidth), 
-				MathF.Min(this.metrics.Size.Y, this.text.MaxHeight));
 		}
 
 		public override void Draw(IDrawDevice device)
@@ -120,7 +104,7 @@ namespace Duality.Components.Renderers
 
 			// Apply block alignment
 			Vector2 textOffset = Vector2.Zero;
-			this.blockAlign.ApplyTo(ref textOffset, this.metrics.Size);
+			this.blockAlign.ApplyTo(ref textOffset, this.text.Size);
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
@@ -150,10 +134,10 @@ namespace Duality.Components.Renderers
 				// Actual text size and maximum text size
 				if (showLimits)
 				{
-					Vector3 textWidth = tUnitX * this.metrics.Size.X;
-					Vector3 textHeight = tUnitY * this.metrics.Size.Y;
+					Vector3 textWidth = tUnitX * this.text.Size.X;
+					Vector3 textHeight = tUnitY * this.text.Size.Y;
 					Vector3 textMaxWidth = tUnitX * this.text.MaxWidth;
-					Vector3 textMaxHeight = tUnitY * MathF.Max(this.text.MaxHeight, this.metrics.Size.Y);
+					Vector3 textMaxHeight = tUnitY * MathF.Max(this.text.MaxHeight, this.text.Size.Y);
 
 					ColorRgba clrSize = ColorRgba.Green.WithAlpha(128);
 					ColorRgba clrMaxSize = ColorRgba.Red.WithAlpha(128);
@@ -173,9 +157,9 @@ namespace Duality.Components.Renderers
 				if (showLines)
 				{
 					ColorRgba clrLineBg = (ColorRgba.Blue + ColorRgba.Red).WithAlpha(64);
-					for (int i = 0; i < this.metrics.LineBounds.Length; i++)
+					for (int i = 0; i < this.text.TextMetrics.LineBounds.Count; i++)
 					{
-						Rect lineRect = this.metrics.LineBounds[i];
+						Rect lineRect = this.text.TextMetrics.LineBounds[i];
 						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.Quads,
 							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.TopLeft.X * tUnitX + lineRect.TopLeft.Y * tUnitY, clrLineBg),
 							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.BottomLeft.X * tUnitX + lineRect.BottomLeft.Y * tUnitY, clrLineBg),
@@ -188,9 +172,9 @@ namespace Duality.Components.Renderers
 				if (showElements)
 				{
 					ColorRgba clrElementBg = (ColorRgba.Blue + ColorRgba.Green).WithAlpha(128);
-					for (int i = 0; i < this.metrics.ElementBounds.Length; i++)
+					for (int i = 0; i < this.text.TextMetrics.ElementBounds.Count; i++)
 					{
-						Rect elemRect = this.metrics.ElementBounds[i];
+						Rect elemRect = this.text.TextMetrics.ElementBounds[i];
 						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
 							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopLeft.X * tUnitX + elemRect.TopLeft.Y * tUnitY, clrElementBg),
 							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomLeft.X * tUnitX + elemRect.BottomLeft.Y * tUnitY, clrElementBg),
@@ -229,10 +213,7 @@ namespace Duality.Components.Renderers
 		void ICmpInitializable.OnInit(InitContext context)
 		{
 			if (context == InitContext.Loaded)
-			{
 				this.text.ApplySource();
-				this.UpdateText();
-			}
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context) {}
 
@@ -245,7 +226,6 @@ namespace Duality.Components.Renderers
 			t.colorTint	= this.colorTint;
 			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
 			t.iconMat	= this.iconMat;
-			t.UpdateText();
 		}
 	}
 }

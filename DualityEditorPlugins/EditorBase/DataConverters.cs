@@ -225,7 +225,6 @@ namespace EditorBase.DataConverters
 					fonts.Add(font);
 					renderer.Text.Fonts = fonts.ToArray();
 					renderer.Text.ApplySource();
-					renderer.UpdateText();
 				}
 
 				results.Add(renderer);

@@ -28,7 +28,7 @@ namespace Duality.VertexFormat
 		/// </summary>
 		/// <typeparam name="T">The type of input vertex data to use.</typeparam>
 		/// <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
-		void UploadToVBO<T>(T[] vertexData) where T : struct, IVertexData;
+		void UploadToVBO<T>(T[] vertexData, int vertexCount) where T : struct, IVertexData;
 		/// <summary>
 		/// Resets the VBO configuration.
 		/// </summary>

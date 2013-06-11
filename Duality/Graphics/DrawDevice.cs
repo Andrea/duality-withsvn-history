@@ -313,6 +313,8 @@ namespace Duality
 		}
 		private class DrawBatch<T> : IDrawBatch where T : struct, IVertexData
 		{
+			private static T[] uploadBuffer = null;
+
 			private	T[]			vertices	= null;
 			private	int			vertexCount	= 0;
 			private	int			sortIndex	= 0;
@@ -379,6 +381,7 @@ namespace Duality
 			}
 			public void UploadToVBO(List<IDrawBatch> batches)
 			{
+				int vertexCount = 0;
 				T[] vertexData = null;
 
 				if (batches.Count == 1)
@@ -386,27 +389,32 @@ namespace Duality
 					// Only one batch? Don't bother copying data
 					DrawBatch<T> b = batches[0] as DrawBatch<T>;
 					vertexData = b.vertices;
+					vertexCount = b.vertices.Length;
 				}
 				else
 				{
 					// Check how many vertices we got
-					int totalVertexNum = batches.Sum(t => t.VertexCount);
+					vertexCount = batches.Sum(t => t.VertexCount);
+					
+					// Allocate a static / shared buffer for uploading vertices
+					if (uploadBuffer == null)
+						uploadBuffer = new T[Math.Max(vertexCount, 64)];
+					else if (uploadBuffer.Length < vertexCount)
+						Array.Resize(ref uploadBuffer, Math.Max(vertexCount, uploadBuffer.Length * 2));
 
 					// Collect vertex data in one array
 					int curVertexPos = 0;
-					vertexData = new T[totalVertexNum];
-					int[] batchBeginIndices = new int[batches.Count];
+					vertexData = uploadBuffer;
 					for (int i = 0; i < batches.Count; i++)
 					{
 						DrawBatch<T> b = batches[i] as DrawBatch<T>;
 						Array.Copy(b.vertices, 0, vertexData, curVertexPos, b.vertexCount);
-						batchBeginIndices[i] = curVertexPos;
 						curVertexPos += b.vertexCount;
 					}
 				}
 
 				// Submit vertex data to GPU
-				this.vertices[0].UploadToVBO(vertexData);
+				this.vertices[0].UploadToVBO(vertexData, vertexCount);
 			}
 			public void FinishVBO()
 			{

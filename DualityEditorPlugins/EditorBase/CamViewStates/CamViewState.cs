@@ -539,7 +539,7 @@ namespace EditorBase.CamViewStates
 					this.statusText.SourceText = this.UpdateStatusText();
 					if (!this.statusText.IsEmpty)
 					{
-						Vector2 statusTextSize = this.statusText.Measure().Size;
+						Vector2 statusTextSize = this.statusText.Size;
 						canvas.DrawTextBackground(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
 						canvas.DrawText(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
 					}

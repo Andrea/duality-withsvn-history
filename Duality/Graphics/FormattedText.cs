@@ -223,8 +223,8 @@ namespace Duality
 		public class Metrics
 		{
 			private	Vector2		size;
-			private	Rect[]		lineBounds;
-			private	Rect[]		elementBounds;
+			private	IList<Rect>	lineBounds;
+			private	IList<Rect>	elementBounds;
 
 			/// <summary>
 			/// [GET] The size of the formatted text block as whole.
@@ -238,28 +238,28 @@ namespace Duality
 			/// </summary>
 			public int LineCount
 			{
-				get { return this.lineBounds.Length; }
+				get { return this.lineBounds.Count; }
 			}
 			/// <summary>
 			/// [GET] Each lines boundary.
 			/// </summary>
-			public Rect[] LineBounds
+			public IList<Rect> LineBounds
 			{
 				get { return this.lineBounds; }
 			}
 			/// <summary>
 			/// [GET] Each formatted text elements individual boundary.
 			/// </summary>
-			public Rect[] ElementBounds
+			public IList<Rect> ElementBounds
 			{
 				get { return this.elementBounds; }
 			}
 
-			public Metrics(Vector2 size, IEnumerable<Rect> lineBounds, IEnumerable<Rect> elementBounds)
+			public Metrics(Vector2 size, List<Rect> lineBounds, List<Rect> elementBounds)
 			{
 				this.size = size;
-				this.lineBounds = lineBounds.ToArray();
-				this.elementBounds = elementBounds.ToArray();
+				this.lineBounds = lineBounds.AsReadOnly();
+				this.elementBounds = elementBounds.AsReadOnly();
 			}
 		}
 		/// <summary>
@@ -641,6 +641,7 @@ namespace Duality
 		[NonSerialized] private bool				updateVertexCache	= true;
 		[NonSerialized] private VertexC1P3T2[][]	vertTextCache		= null;
 		[NonSerialized] private VertexC1P3T2[]		vertIconsCache		= null;
+		[NonSerialized] private	Metrics				metricsCache		= null;
 
 
 		/// <summary>
@@ -742,6 +743,31 @@ namespace Duality
 					this.updateVertexCache = true;
 				}
 			}
+		}
+		/// <summary>
+		/// [GET] The text blocks metrics.
+		/// </summary>
+		public Metrics TextMetrics
+		{
+			get
+			{
+				this.ValidateVertexCache();
+				return this.metricsCache;
+			}
+		}
+		/// <summary>
+		/// [GET] The text blocks boundary size.
+		/// </summary>
+		public Vector2 Size
+		{
+			get { return this.TextMetrics.Size; }
+		}
+		/// <summary>
+		/// [GET] The number of lines in the formatted text block.
+		/// </summary>
+		public int LineCount
+		{
+			get { return this.TextMetrics.LineCount; }
 		}
 
 		/// <summary>
@@ -1078,7 +1104,14 @@ namespace Duality
 		}
 		private void ValidateVertexCache()
 		{
-			if (this.vertTextCache != null && this.vertIconsCache != null && !this.updateVertexCache) return;
+			if (this.vertTextCache != null && 
+				this.vertIconsCache != null && 
+				this.metricsCache != null && 
+				!this.updateVertexCache)
+			{
+				// No need to update.
+				return;
+			}
 			this.updateVertexCache = false;
 
 			int fontNum = this.fonts != null ? this.fonts.Length : 0;
@@ -1093,67 +1126,132 @@ namespace Duality
 					this.vertTextCache[i] = new VertexC1P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
 
 			// Rendering
-			RenderState state = new RenderState(this);
-			Element elem;
-			int[] vertTextLen = new int[fontNum];
-			int vertIconLen = 0;
-			while ((elem = state.NextElement()) != null)
 			{
-				if (elem is TextElement && state.Font != null)
+				RenderState state = new RenderState(this);
+				Element elem;
+				int[] vertTextLen = new int[fontNum];
+				int vertIconLen = 0;
+				while ((elem = state.NextElement()) != null)
 				{
-					TextElement textElem = elem as TextElement;
-					VertexC1P3T2[] textElemVert = null;
-					state.Font.EmitTextVertices(
-						state.CurrentElemText, 
-						ref textElemVert, 
-						state.CurrentElemOffset.X, 
-						state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
-						state.Color);
-					Array.Copy(textElemVert, 0, this.vertTextCache[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
-					vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + textElemVert.Length;
+					if (elem is TextElement && state.Font != null)
+					{
+						TextElement textElem = elem as TextElement;
+						VertexC1P3T2[] textElemVert = null;
+						state.Font.EmitTextVertices(
+							state.CurrentElemText, 
+							ref textElemVert, 
+							state.CurrentElemOffset.X, 
+							state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
+							state.Color);
+						Array.Copy(textElemVert, 0, this.vertTextCache[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
+						vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + textElemVert.Length;
+					}
+					else if (elem is IconElement)
+					{
+						IconElement iconElem = elem as IconElement;
+						Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+						Vector2 iconSize = icon.size;
+						Rect iconUvRect = icon.uvRect;
+
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.X = state.CurrentElemOffset.X;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Z = 0;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Color = state.Color;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].TexCoord = iconUvRect.TopLeft;
+
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Z = 0;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Color = state.Color;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].TexCoord = iconUvRect.TopRight;
+
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Z = 0;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Color = state.Color;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].TexCoord = iconUvRect.BottomRight;
+
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.X = state.CurrentElemOffset.X;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Z = 0;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Color = state.Color;
+						this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].TexCoord = iconUvRect.BottomLeft;
+
+						vertIconLen = state.CurrentElemIconVertexIndex + 4;
+					}
 				}
-				else if (elem is IconElement)
+
+				for (int i = 0; i < fontNum; i++)
 				{
-					IconElement iconElem = elem as IconElement;
-					Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
-					Vector2 iconSize = icon.size;
-					Rect iconUvRect = icon.uvRect;
-
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.X = state.CurrentElemOffset.X;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Z = 0;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Color = state.Color;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].TexCoord = iconUvRect.TopLeft;
-
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.X = state.CurrentElemOffset.X + iconSize.X;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Z = 0;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Color = state.Color;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].TexCoord = iconUvRect.TopRight;
-
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.X = state.CurrentElemOffset.X + iconSize.X;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Z = 0;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Color = state.Color;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].TexCoord = iconUvRect.BottomRight;
-
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.X = state.CurrentElemOffset.X;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Z = 0;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Color = state.Color;
-					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].TexCoord = iconUvRect.BottomLeft;
-
-					vertIconLen = state.CurrentElemIconVertexIndex + 4;
+					if (this.vertTextCache[i].Length > vertTextLen[i])
+						Array.Resize(ref this.vertTextCache[i], vertTextLen[i]);
 				}
+				if (this.vertIconsCache.Length > vertIconLen)
+					Array.Resize(ref this.vertIconsCache, vertIconLen);
 			}
 
-			for (int i = 0; i < fontNum; i++)
+			// Updating the metrics cache
 			{
-				if (this.vertTextCache[i].Length > vertTextLen[i])
-					Array.Resize(ref this.vertTextCache[i], vertTextLen[i]);
+				Vector2 size = Vector2.Zero;
+				List<Rect> lineBounds = new List<Rect>(16);
+				List<Rect> elementBounds = new List<Rect>(this.elements.Length);
+
+				RenderState state = new RenderState(this);
+				Element elem;
+				Vector2 elemSize;
+				Vector2 elemOffset;
+				int lastElemIndex = -1;
+				int lastLineIndex = 0;
+				bool elemIndexChanged = true;
+				bool lineChanged = true;
+				bool hasBounds;
+				while ((elem = state.NextElement()) != null)
+				{
+					if (elem is TextElement && state.Font != null)
+					{
+						TextElement textElem = elem as TextElement;
+						elemSize = state.Font.MeasureText(state.CurrentElemText);
+						elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - state.Font.Ascent*/);
+						//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - state.Font.Ascent;
+					}
+					else if (elem is IconElement && this.icons != null)
+					{
+						IconElement iconElem = elem as IconElement;
+						bool iconValid = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length;
+						elemSize = iconValid ? this.icons[iconElem.IconIndex].size : Vector2.Zero;
+						elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - elemSize.Y*/);
+						//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - elemSize.Y;
+					}
+					else
+					{
+						elemSize = Vector2.Zero;
+						elemOffset = Vector2.Zero;
+					}
+					hasBounds = elemSize != Vector2.Zero;
+
+					if (elemIndexChanged) elementBounds.Add(Rect.Empty);
+					if (hasBounds && elementBounds[elementBounds.Count - 1] == Rect.Empty)
+						elementBounds[elementBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+					else if (hasBounds)
+						elementBounds[elementBounds.Count - 1] = elementBounds[elementBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+				
+					if (lineChanged) lineBounds.Add(Rect.Empty);
+					if (hasBounds && lineBounds[lineBounds.Count - 1] == Rect.Empty)
+						lineBounds[lineBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+					else if (hasBounds)
+						lineBounds[lineBounds.Count - 1] = lineBounds[lineBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+
+					size.X = Math.Max(size.X, elemOffset.X + elemSize.X);
+					size.Y = Math.Max(size.Y, elemOffset.Y + elemSize.Y);
+
+					elemIndexChanged = lastElemIndex != state.CurrentElemIndex;
+					lineChanged = lastLineIndex != state.CurrentLineIndex;
+					lastElemIndex = state.CurrentElemIndex;
+					lastLineIndex = state.CurrentLineIndex;
+				}
+
+				this.metricsCache = new Metrics(size, lineBounds, elementBounds);
 			}
-			if (this.vertIconsCache.Length > vertIconLen)
-				Array.Resize(ref this.vertIconsCache, vertIconLen);
 		}
 		
 		/// <summary>
@@ -1264,73 +1362,6 @@ namespace Duality
 
 				}
 			}
-		}
-
-		/// <summary>
-		/// Measures the formatted text block.
-		/// </summary>
-		/// <returns>A <see cref="Metrics"/> object that describes this FormattedText.</returns>
-		public Metrics Measure()
-		{
-			Vector2 size = Vector2.Zero;
-			List<Rect> lineBounds = new List<Rect>();
-			List<Rect> elementBounds = new List<Rect>();
-
-			RenderState state = new RenderState(this);
-			Element elem;
-			Vector2 elemSize;
-			Vector2 elemOffset;
-			int lastElemIndex = -1;
-			int lastLineIndex = 0;
-			bool elemIndexChanged = true;
-			bool lineChanged = true;
-			bool hasBounds;
-			while ((elem = state.NextElement()) != null)
-			{
-				if (elem is TextElement && state.Font != null)
-				{
-					TextElement textElem = elem as TextElement;
-					elemSize = state.Font.MeasureText(state.CurrentElemText);
-					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - state.Font.Ascent*/);
-					//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - state.Font.Ascent;
-				}
-				else if (elem is IconElement && this.icons != null)
-				{
-					IconElement iconElem = elem as IconElement;
-					bool iconValid = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length;
-					elemSize = iconValid ? this.icons[iconElem.IconIndex].size : Vector2.Zero;
-					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - elemSize.Y*/);
-					//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - elemSize.Y;
-				}
-				else
-				{
-					elemSize = Vector2.Zero;
-					elemOffset = Vector2.Zero;
-				}
-				hasBounds = elemSize != Vector2.Zero;
-
-				if (elemIndexChanged) elementBounds.Add(Rect.Empty);
-				if (hasBounds && elementBounds[elementBounds.Count - 1] == Rect.Empty)
-					elementBounds[elementBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
-				else if (hasBounds)
-					elementBounds[elementBounds.Count - 1] = elementBounds[elementBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
-				
-				if (lineChanged) lineBounds.Add(Rect.Empty);
-				if (hasBounds && lineBounds[lineBounds.Count - 1] == Rect.Empty)
-					lineBounds[lineBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
-				else if (hasBounds)
-					lineBounds[lineBounds.Count - 1] = lineBounds[lineBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
-
-				size.X = Math.Max(size.X, elemOffset.X + elemSize.X);
-				size.Y = Math.Max(size.Y, elemOffset.Y + elemSize.Y);
-
-				elemIndexChanged = lastElemIndex != state.CurrentElemIndex;
-				lineChanged = lastLineIndex != state.CurrentLineIndex;
-				lastElemIndex = state.CurrentElemIndex;
-				lastLineIndex = state.CurrentLineIndex;
-			}
-
-			return new Metrics(size, lineBounds, elementBounds);
 		}
 	}
 }

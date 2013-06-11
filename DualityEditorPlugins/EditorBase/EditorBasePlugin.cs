@@ -563,7 +563,6 @@ namespace EditorBase
 				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
 				{
 					r.Text.ApplySource();
-					r.UpdateText();
 
 					if (changedObj == null) changedObj = new List<object>();
 					changedObj.Add(r);

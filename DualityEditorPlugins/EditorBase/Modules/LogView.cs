@@ -34,6 +34,7 @@ namespace EditorBase
 		{
 			base.OnHandleCreated(e);
 
+			Log.LogData.NewEntry += LogData_NewEntry;
 			this.logEntryList.BindToOutput(Log.LogData);
 			this.logEntryList.ScrollToEnd();
 
@@ -58,6 +59,7 @@ namespace EditorBase
 			base.OnClosed(e);
 
 			this.logEntryList.BindToOutput(null);
+			Log.LogData.NewEntry -= LogData_NewEntry;
 
 			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
 			Sandbox.Entering -= this.Sandbox_Entering;
@@ -210,7 +212,6 @@ namespace EditorBase
 		{
 			DataLogOutput.LogEntry logEntry = e.Entry.LogEntry;
 			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
-			bool pause = logEntry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.State == SandboxState.Playing && !Sandbox.IsChangingState;
 			bool unseenChanges = false;
 
 			if (isHidden)
@@ -222,14 +223,27 @@ namespace EditorBase
 				}
 				else if (logEntry.Type == LogMessageType.Error)
 				{
-					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
+					if (this.unseenErrors == 0) System.Media.SystemSounds.Hand.Play();
 					this.unseenErrors++;
 					unseenChanges = true;
 				}
 			}
 
-			if (pause) Sandbox.Pause();
 			if (unseenChanges) this.UpdateTabText();
+		}
+		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
+		{
+			if (this.InvokeRequired) return;
+			bool pause = 
+				e.Entry.Type == LogMessageType.Error && 
+				this.buttonPauseOnError.Checked && 
+				Sandbox.State == SandboxState.Playing && 
+				!Sandbox.IsChangingState;
+			if (pause)
+			{
+				System.Media.SystemSounds.Hand.Play();
+				Sandbox.Pause();
+			}
 		}
 
 		private void Sandbox_Entering(object sender, EventArgs e)
