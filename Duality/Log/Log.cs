@@ -228,6 +228,15 @@ namespace Duality
 		}
 
 		/// <summary>
+		/// Returns a string that can be used for representing a <see cref="System.Assembly"/> in log entries.
+		/// </summary>
+		/// <param name="asm"></param>
+		/// <returns></returns>
+		public static string Assembly(Assembly asm)
+		{
+			return asm.GetShortAssemblyName();
+		}
+		/// <summary>
 		/// Returns a string that can be used for representing a <see cref="System.Type"/> in log entries.
 		/// </summary>
 		/// <param name="type"></param>
@@ -245,14 +254,16 @@ namespace Duality
 		public static string MethodInfo(MethodInfo info, bool includeDeclaringType = true)
 		{
 			string declTypeName = Type(info.DeclaringType);
+			string returnTypeName = Type(info.ReturnType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
 			string[] genArgNames = info.GetGenericArguments().Select(Type).ToArray();
 			return string.Format(System.Globalization.CultureInfo.InvariantCulture,
-				"{0}{1}{3}({2})",
+				"{4} {0}{1}{3}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name,
 				paramNames.ToString(", "),
-				genArgNames.Length > 0 ? "<" + genArgNames.ToString(", ") + ">" : "");
+				genArgNames.Length > 0 ? "<" + genArgNames.ToString(", ") + ">" : "",
+				returnTypeName);
 		}
 		/// <summary>
 		/// Returns a string that can be used for representing a method or constructor in log entries.
