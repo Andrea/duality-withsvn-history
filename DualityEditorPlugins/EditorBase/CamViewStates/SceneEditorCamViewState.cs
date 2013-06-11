@@ -365,7 +365,7 @@ namespace EditorBase.CamViewStates
 
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.Objects.Components.Any(c => c is Transform || c is Renderer))
+			if (e.Objects.Components.Any(c => c is Transform || c is ICmpRenderer))
 				this.InvalidateSelectionStats();
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
