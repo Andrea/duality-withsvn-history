@@ -49,13 +49,14 @@ namespace DualityLauncher
 				//    }
 				//}
 
-				// Give the processor a rest if we have the time, don't use 100% CPU
-				if (this.frameLimiterWatch.IsRunning)
+				// Give the processor a rest if we have the time, don't use 100% CPU even without VSync
+				if (this.frameLimiterWatch.IsRunning && this.VSync == VSyncMode.Off)
 				{
-					while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d) 
+					while (this.frameLimiterWatch.Elapsed.TotalMilliseconds < Time.MsPFMult)
 					{
-						// Sleep a little
-						System.Threading.Thread.Sleep(1);
+						// Enough leftover time? Risk a millisecond sleep.
+						if (this.frameLimiterWatch.Elapsed.TotalMilliseconds < Time.MsPFMult * 0.75f)
+							System.Threading.Thread.Sleep(1);
 					}
 				}
 				this.frameLimiterWatch.Restart();
