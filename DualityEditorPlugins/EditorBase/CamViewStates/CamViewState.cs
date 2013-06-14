@@ -671,7 +671,7 @@ namespace EditorBase.CamViewStates
 				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 250.0f;
 				targetVel *= (curPos.Y - center.Y) / center.Y;
 
-				this.camAngleVel += (targetVel - this.camAngleVel) * Time.TimeMult;
+				//this.camAngleVel += (targetVel - this.camAngleVel) * Time.TimeMult;
 				this.camTransformChanged = true;
 			}
 			else if (this.camAction == CameraAction.Rotate)
@@ -679,7 +679,7 @@ namespace EditorBase.CamViewStates
 				float turnDir = 
 					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
 					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-				this.camAngleVel = turnDir;
+				//this.camAngleVel = turnDir;
 
 				this.camTransformChanged = true;
 			}
