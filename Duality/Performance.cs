@@ -404,8 +404,6 @@ namespace Duality
 		}
 		public static string GetTextReport(IEnumerable<Counter> reportCounters, ReportOptions options = ReportOptions.LastValue)
 		{
-			StringBuilder reportBuilder = new StringBuilder();
-
 			// Group Counters by Type
 			Dictionary<Type,List<Counter>> countersByType = new Dictionary<Type,List<Counter>>();
 			Type[] existingTypes = reportCounters.Select(c => c.GetType()).Distinct().ToArray();
@@ -413,6 +411,9 @@ namespace Duality
 			{
 				countersByType[type] = reportCounters.Where(c => c.GetType() == type).ToList();
 			}
+
+			// Prepare text building
+			StringBuilder reportBuilder = new StringBuilder(countersByType.Count * 256);
 
 			// Handle each group separately
 			foreach (var pair in countersByType)
@@ -426,50 +427,34 @@ namespace Duality
 					
 				if (options.HasFlag(ReportOptions.GroupHeader))
 				{
-					reportBuilder.AppendLine();
+					reportBuilder.Append(options.HasFlag(ReportOptions.FormattedText) ? FormattedText.FormatNewline : Environment.NewLine);
 					reportBuilder.AppendLine(("[ " + pair.Key.Name + " ]").PadLeft(35, '-').PadRight(50,'-'));
-					reportBuilder.AppendLine();
+					reportBuilder.Append(options.HasFlag(ReportOptions.FormattedText) ? FormattedText.FormatNewline : Environment.NewLine);
 				}
 				else if (reportBuilder.Length > 0)
 				{
-					reportBuilder.AppendLine();
+					reportBuilder.Append(options.HasFlag(ReportOptions.FormattedText) ? FormattedText.FormatNewline : Environment.NewLine);
 				}
 
 				if (options.HasFlag(ReportOptions.Header))
 				{
-					reportBuilder.Append("Name".PadRight(1 + maxNameLen));
-					reportBuilder.Append(" ");
+					reportBuilder.Append("Name");
+					reportBuilder.Append(' ', 1 + Math.Max((1 + maxNameLen) - "Name".Length, 0));
+
 					if (options.HasFlag(ReportOptions.LastValue))
-					{
-						reportBuilder.Append("Last Value".PadLeft(13));
-						reportBuilder.Append(" ");
-					}
+						reportBuilder.Append("   Last Value ");
 					if (options.HasFlag(ReportOptions.AverageValue))
-					{
-						reportBuilder.Append("Avg. Value".PadLeft(13));
-						reportBuilder.Append(" ");
-					}
+						reportBuilder.Append("   Avg. Value ");
 					if (options.HasFlag(ReportOptions.MinValue))
-					{
-						reportBuilder.Append("Min. Value".PadLeft(13));
-						reportBuilder.Append(" ");
-					}
+						reportBuilder.Append("   Min. Value ");
 					if (options.HasFlag(ReportOptions.MaxValue))
-					{
-						reportBuilder.Append("Max. Value".PadLeft(13));
-						reportBuilder.Append(" ");
-					}
+						reportBuilder.Append("   Max. Value ");
 					if (options.HasFlag(ReportOptions.SampleCount))
-					{
-						reportBuilder.Append("Samples".PadLeft(15));
-						reportBuilder.Append(" ");
-					}
+						reportBuilder.Append("        Samples ");
 					if (options.HasFlag(ReportOptions.TotalValue))
-					{
-						reportBuilder.Append("Total Value".PadLeft(15));
-						reportBuilder.Append(" ");
-					}
-					reportBuilder.AppendLine();
+						reportBuilder.Append("    Total Value ");
+
+					reportBuilder.Append(options.HasFlag(ReportOptions.FormattedText) ? FormattedText.FormatNewline : Environment.NewLine);
 				}
 				Stack<Counter> appendStack = new Stack<Counter>(rootCounters.Reverse());
 				while (appendStack.Count > 0)
@@ -484,39 +469,53 @@ namespace Duality
 							ColorRgba.Mix(ColorRgba.TransparentWhite, ColorRgba.White, 0.1f + 0.9f * (2.0f * severity));
 						reportBuilder.Append(FormattedText.FormatColor(lineColor));
 					}
-					reportBuilder.Append((new string(' ', current.ParentDepth * 2) + current.DisplayName + ":").PadRight(1 + maxNameLen));
-					reportBuilder.Append(" ");
+					reportBuilder.Append(' ', current.ParentDepth * 2);
+					reportBuilder.Append(current.DisplayName);
+					reportBuilder.Append(':');
+					reportBuilder.Append(' ', 1 + Math.Max((1 + maxNameLen) - (current.ParentDepth * 2 + current.DisplayName.Length + 1), 0));
 					if (options.HasFlag(ReportOptions.LastValue))
 					{
-						reportBuilder.Append(current.DisplayLastValue.PadLeft(13));
-						reportBuilder.Append(" ");
+						string valStr = current.DisplayLastValue;
+						reportBuilder.Append(' ', Math.Max(13 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
 					if (options.HasFlag(ReportOptions.AverageValue))
 					{
-						reportBuilder.Append(current.DisplayAverageValue.PadLeft(13));
-						reportBuilder.Append(" ");
+						string valStr = current.DisplayAverageValue;
+						reportBuilder.Append(' ', Math.Max(13 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
 					if (options.HasFlag(ReportOptions.MinValue))
 					{
-						reportBuilder.Append(current.DisplayMinValue.PadLeft(13));
-						reportBuilder.Append(" ");
+						string valStr = current.DisplayMinValue;
+						reportBuilder.Append(' ', Math.Max(13 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
 					if (options.HasFlag(ReportOptions.MaxValue))
 					{
-						reportBuilder.Append(current.DisplayMaxValue.PadLeft(13));
-						reportBuilder.Append(" ");
+						string valStr = current.DisplayMaxValue;
+						reportBuilder.Append(' ', Math.Max(13 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
 					if (options.HasFlag(ReportOptions.SampleCount))
 					{
-						reportBuilder.Append(string.Format("{0}", current.SampleCount).PadLeft(15));
-						reportBuilder.Append(" ");
+						string valStr = string.Format("{0}", current.SampleCount);
+						reportBuilder.Append(' ', Math.Max(15 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
 					if (options.HasFlag(ReportOptions.TotalValue))
 					{
-						reportBuilder.Append(current.DisplayTotalValue.PadLeft(15));
-						reportBuilder.Append(" ");
+						string valStr = current.DisplayTotalValue;
+						reportBuilder.Append(' ', Math.Max(15 - valStr.Length, 0));
+						reportBuilder.Append(valStr);
+						reportBuilder.Append(' ');
 					}
-					reportBuilder.AppendLine();
+					reportBuilder.Append(options.HasFlag(ReportOptions.FormattedText) ? FormattedText.FormatNewline : Environment.NewLine);
 
 					IEnumerable<Counter> childCounters = counters.Where(c => c.Parent == current);
 					foreach (Counter child in childCounters.Reverse())
@@ -528,14 +527,7 @@ namespace Duality
 				}
 			}
 
-			string report = reportBuilder.ToString();
-			string[] reportLines = report.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
-			report = string.Join(Environment.NewLine, reportLines.Select(l => l.TrimEnd()));
-			if (options.HasFlag(ReportOptions.FormattedText))
-			{
-				report = report.Replace(Environment.NewLine, FormattedText.FormatNewline);
-			}
-			return report;
+			return reportBuilder.ToString();;
 		}
 
 		internal static void FrameTick()

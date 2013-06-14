@@ -102,6 +102,19 @@ namespace Duality
 				get { return this.transformHandle; }
 				set { this.transformHandle = value; this.UpdateTransform(); }
 			}
+			/// <summary>
+			/// [GET] Returns whether the current transformation is an identity transformation (i.e. doesn't do anything).
+			/// </summary>
+			public bool IsTransformIdentity
+			{
+				get
+				{
+					return 
+						this.transformAngle == 0.0f &&
+						this.transformScale == Vector2.One &&
+						this.transformHandle == Vector2.Zero;
+				}
+			}
 
 
 			public State() 
@@ -171,21 +184,85 @@ namespace Duality
 			}
 			internal void TransformVertices<T>(T[] vertexData, Vector2 shapeHandle, float shapeHandleScale) where T : struct, IVertexData
 			{
-				this.UpdateTransform();
-				Vector2 transformHandle = this.transformHandle;
-				Vector2 transformScale = this.transformScale;
-				for (int i = 0; i < vertexData.Length; i++)
+				if (this.IsTransformIdentity)
 				{
-					Vector3 pos = vertexData[i].Pos;
-					pos.X -= transformHandle.X * shapeHandleScale + shapeHandle.X;
-					pos.Y -= transformHandle.Y * shapeHandleScale + shapeHandle.Y;
-					pos.X *= transformScale.X;
-					pos.Y *= transformScale.Y;
-					MathF.TransformDotVec(ref pos, ref this.curTX, ref this.curTY);
-					pos.X += shapeHandle.X;
-					pos.Y += shapeHandle.Y;
-					pos.Z += this.zOffset;
-					vertexData[i].Pos = pos;
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						Vector3 pos = vertexData[i].Pos;
+						pos.Z += this.zOffset;
+						vertexData[i].Pos = pos;
+					}
+				}
+				else
+				{
+					this.UpdateTransform();
+					Vector2 transformHandle = this.transformHandle;
+					Vector2 transformScale = this.transformScale;
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						Vector3 pos = vertexData[i].Pos;
+						pos.X -= transformHandle.X * shapeHandleScale + shapeHandle.X;
+						pos.Y -= transformHandle.Y * shapeHandleScale + shapeHandle.Y;
+						pos.X *= transformScale.X;
+						pos.Y *= transformScale.Y;
+						MathF.TransformDotVec(ref pos, ref this.curTX, ref this.curTY);
+						pos.X += shapeHandle.X;
+						pos.Y += shapeHandle.Y;
+						pos.Z += this.zOffset;
+						vertexData[i].Pos = pos;
+					}
+				}
+			}
+			internal void TransformVertices(VertexC1P3[] vertexData, Vector2 shapeHandle, float shapeHandleScale)
+			{
+				if (this.IsTransformIdentity)
+				{
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						vertexData[i].Pos.Z += this.zOffset;
+					}
+				}
+				else
+				{
+					Vector2 transformHandle = this.transformHandle;
+					Vector2 transformScale = this.transformScale;
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						vertexData[i].Pos.X -= transformHandle.X * shapeHandleScale + shapeHandle.X;
+						vertexData[i].Pos.Y -= transformHandle.Y * shapeHandleScale + shapeHandle.Y;
+						vertexData[i].Pos.X *= transformScale.X;
+						vertexData[i].Pos.Y *= transformScale.Y;
+						MathF.TransformDotVec(ref vertexData[i].Pos, ref this.curTX, ref this.curTY);
+						vertexData[i].Pos.X += shapeHandle.X;
+						vertexData[i].Pos.Y += shapeHandle.Y;
+						vertexData[i].Pos.Z += this.zOffset;
+					}
+				}
+			}
+			internal void TransformVertices(VertexC1P3T2[] vertexData, Vector2 shapeHandle, float shapeHandleScale)
+			{
+				if (this.IsTransformIdentity)
+				{
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						vertexData[i].Pos.Z += this.zOffset;
+					}
+				}
+				else
+				{
+					Vector2 transformHandle = this.transformHandle;
+					Vector2 transformScale = this.transformScale;
+					for (int i = 0; i < vertexData.Length; i++)
+					{
+						vertexData[i].Pos.X -= transformHandle.X * shapeHandleScale + shapeHandle.X;
+						vertexData[i].Pos.Y -= transformHandle.Y * shapeHandleScale + shapeHandle.Y;
+						vertexData[i].Pos.X *= transformScale.X;
+						vertexData[i].Pos.Y *= transformScale.Y;
+						MathF.TransformDotVec(ref vertexData[i].Pos, ref this.curTX, ref this.curTY);
+						vertexData[i].Pos.X += shapeHandle.X;
+						vertexData[i].Pos.Y += shapeHandle.Y;
+						vertexData[i].Pos.Z += this.zOffset;
+					}
 				}
 			}
 		}
@@ -1211,6 +1288,91 @@ namespace Duality
 			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
 			this.DrawTexturedRect(x, y, 0, mainTexSize.X, mainTexSize.Y, 0.0f, 0.0f, 1.0f, 1.0f);
+		}
+
+		/// <summary>
+		/// Draws a horizontally aligned graph.
+		/// </summary>
+		/// <param name="values">An array of value samples that will be represented by the graph.</param>
+		/// <param name="colors">An array of color values corresponding to the supplied values. Specify null, if no coloring is required.</param>
+		/// <param name="vertices">Optional vertex cache to use for the graph. If set, the graphs vertices are cached and re-used for better performance.</param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawHorizontalGraph(float[] values, ColorRgba[] colors, ref VertexC1P3[] vertices, float x, float y, float z, float w, float h)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (colors != null && colors.Length != values.Length)
+				throw new ArgumentException("The number of color samples needs to be equal to the number of value samples.", "colors");
+
+			if (h > 0.0f) h--;
+			if (h < 0.0f) h++;
+			Vector3 pos = new Vector3(x, y, z);
+			float scale = 1.0f;
+			
+			device.PreprocessCoords(ref pos, ref scale);
+
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba baseColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			float sampleXRatio = w / (float)(values.Length - 1);
+			
+			if (vertices == null || vertices.Length != values.Length)
+				vertices = new VertexC1P3[values.Length];
+			for (int i = 0; i < values.Length; i++)
+			{
+				vertices[i].Pos.X = pos.X + 0.5f + i * sampleXRatio;
+				vertices[i].Pos.Y = pos.Y + 0.5f + (1.0f - values[i]) * h;
+				vertices[i].Pos.Z = pos.Z;
+				vertices[i].Color = (colors != null) ? (baseColor * colors[i]) : baseColor;
+			}
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineStrip, vertices);
+		}
+		/// <summary>
+		/// Draws a horizontally aligned graph.
+		/// </summary>
+		/// <param name="values">An array of value samples that will be represented by the graph.</param>
+		/// <param name="colors">An array of color values corresponding to the supplied values. Specify null, if no coloring is required.</param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawHorizontalGraph(float[] values, ColorRgba[] colors, float x, float y, float z, float w, float h)
+		{
+			VertexC1P3[] vertices = null;
+			this.DrawHorizontalGraph(values, colors, ref vertices, x, y, z, w, h);
+		}
+		/// <summary>
+		/// Draws a horizontally aligned graph.
+		/// </summary>
+		/// <param name="values">An array of value samples that will be represented by the graph.</param>
+		/// <param name="colors">An array of color values corresponding to the supplied values. Specify null, if no coloring is required.</param>
+		/// <param name="vertices">Optional vertex cache to use for the graph. If set, the graphs vertices are cached and re-used for better performance.</param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawHorizontalGraph(float[] values, ColorRgba[] colors, ref VertexC1P3[] vertices, float x, float y, float w, float h)
+		{
+			this.DrawHorizontalGraph(values, colors, ref vertices, x, y, 0.0f, w, h);
+		}
+		/// <summary>
+		/// Draws a horizontally aligned graph.
+		/// </summary>
+		/// <param name="values">An array of value samples that will be represented by the graph.</param>
+		/// <param name="colors">An array of color values corresponding to the supplied values. Specify null, if no coloring is required.</param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawHorizontalGraph(float[] values, ColorRgba[] colors, float x, float y, float w, float h)
+		{
+			VertexC1P3[] vertices = null;
+			this.DrawHorizontalGraph(values, colors, ref vertices, x, y, 0.0f, w, h);
 		}
 
 		/// <summary>
