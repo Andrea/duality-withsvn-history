@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Duality
 {
@@ -180,20 +181,15 @@ namespace Duality
 
 		/// <summary>
 		/// Takes a string that is supposed to be a file name and converts it into an
-		/// actually valid file name, replacing special characters and so on.
+		/// actually valid file name, replacing invalid characters by undercores.
 		/// </summary>
-		/// <param name="fileNameWithoutExt">A string that is supposed to be a file name.</param>
+		/// <param name="fileName">A string that is supposed to be a file name.</param>
 		/// <returns>A valid file name.</returns>
-		public static string GetValidFileName(string fileNameWithoutExt)
+		public static string GetValidFileName(string fileName)
 		{
-			char[] pathChars = fileNameWithoutExt.ToCharArray();
-			for (int i = 0; i < pathChars.Length; i++)
-			{
-				if (!char.IsLetterOrDigit(pathChars[i]))
-					pathChars[i] = '_';
-			}
-			fileNameWithoutExt = new string(pathChars);
-			return fileNameWithoutExt;
+			string invalidChars = new string(Path.GetInvalidFileNameChars());
+			string invalidReStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", Regex.Escape(invalidChars));
+			return Regex.Replace(fileName, invalidReStr, "_");
 		}
 
 		/// <summary>

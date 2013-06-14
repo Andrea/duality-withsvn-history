@@ -72,6 +72,7 @@ namespace OpenTK.Platform.Windows
         bool focused;
 		bool cursor_visible = true;
         bool mouse_outside_window = true;
+        Point lastCursorPos = new Point(-1, -1);
         bool invisible_since_creation; // Set by WindowsMessage.CREATE and consumed by Visible = true (calls BringWindowToFront).
         int suppress_resize; // Used in WindowBorder and WindowState in order to avoid rapid, consecutive resize events.
 
@@ -148,6 +149,7 @@ namespace OpenTK.Platform.Windows
 
         IntPtr WindowProcedure(IntPtr handle, WindowMessage message, IntPtr wParam, IntPtr lParam)
         {
+            Point point;
             switch (message)
             {
                 #region Size / Move / Style events
@@ -269,13 +271,10 @@ namespace OpenTK.Platform.Windows
                     break;
 
                 case WindowMessage.MOUSEMOVE:
-                    Point point = new Point(
+                    point = new Point(
                         (short)((uint)lParam.ToInt32() & 0x0000FFFF),
                         (short)(((uint)lParam.ToInt32() & 0xFFFF0000) >> 16));
                     mouse.Position = point;
-					
-					if (!CursorVisible)
-						HideCursor();
 
                     if (mouse_outside_window)
                     {
@@ -283,19 +282,39 @@ namespace OpenTK.Platform.Windows
                         // re-entered the window.
                         mouse_outside_window = false;
                         EnableMouseTracking();
-
-                        MouseEnter(this, EventArgs.Empty);
                     }
+					
+					if (this.client_rectangle.Contains(lastCursorPos) && !this.client_rectangle.Contains(point))
+					{
+						if (!CursorVisible)
+							ShowCursor();
+						MouseLeave(this, EventArgs.Empty);
+					}
+					if (!this.client_rectangle.Contains(lastCursorPos) && this.client_rectangle.Contains(point))
+					{
+						if (!CursorVisible)
+							HideCursor();
+						MouseEnter(this, EventArgs.Empty);
+					}
+
+					lastCursorPos = point;
                     break;
 
                 case WindowMessage.MOUSELEAVE:
-                    mouse_outside_window = true;
-                    // Mouse tracking is disabled automatically by the OS
-					
-					if (!CursorVisible)
-						ShowCursor();
+					mouse_outside_window = true;
+					// Mouse tracking is disabled automatically by the OS
 
-                    MouseLeave(this, EventArgs.Empty);
+					Functions.GetCursorPos(out point);
+					point = this.PointToClient(point);
+
+					if (this.client_rectangle.Contains(lastCursorPos) && !this.client_rectangle.Contains(point))
+					{
+						if (!CursorVisible)
+							ShowCursor();
+						MouseLeave(this, EventArgs.Empty);
+					}
+
+					lastCursorPos = point;
                     break;
 
                 case WindowMessage.MOUSEWHEEL:

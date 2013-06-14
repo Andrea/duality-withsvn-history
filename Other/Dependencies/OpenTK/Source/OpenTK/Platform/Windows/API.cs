@@ -976,6 +976,9 @@ namespace OpenTK.Platform.Windows
         [DllImport("user32.dll")]
         public static extern bool SetCursorPos(int X, int Y);
 
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point pos);
+
         #region Async input
 
         #region GetCursorPos
