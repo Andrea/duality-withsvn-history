@@ -607,6 +607,8 @@ namespace EditorBase.CamViewStates
 
 			this.camTransformChanged = false;
 			
+
+            //Still needed for Dragging scene with the space button pressed
 			if (this.camAction == CameraAction.DragScene)
 			{
 				this.ValidateSelectionStats();
@@ -625,6 +627,8 @@ namespace EditorBase.CamViewStates
 				this.camVel += (new Vector3(targetVel) - this.camVel) * Time.TimeMult;
 				this.camTransformChanged = true;
 			}
+
+            //Still needed for zooming in/out
 			else if (this.camAction == CameraAction.Move)
 			{
 				Vector3 moveVec = new Vector3(
@@ -661,48 +665,16 @@ namespace EditorBase.CamViewStates
 				this.camVel = Vector3.Zero;
 			}
 			
-			if (this.camAction == CameraAction.RotateScene)
-			{
-				Vector2 center = new Vector2(this.ClientSize.Width, this.ClientSize.Height) * 0.5f;
-				Vector2 curPos = new Vector2(cursorPos.X, cursorPos.Y);
-				Vector2 lastPos = new Vector2(this.camActionBeginLoc.X, this.camActionBeginLoc.Y);
-				this.camActionBeginLoc = new Point((int)curPos.X, (int)curPos.Y);
+            
+            //Updates the camera. Needed.
+            if (this.camTransformChanged)
+            {
+                camObj.Transform.MoveBy(this.camVel * Time.TimeMult);
+                camObj.Transform.TurnBy(this.camAngleVel * Time.TimeMult);
 
-				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 250.0f;
-				targetVel *= (curPos.Y - center.Y) / center.Y;
-
-				//this.camAngleVel += (targetVel - this.camAngleVel) * Time.TimeMult;
-				this.camTransformChanged = true;
-			}
-			else if (this.camAction == CameraAction.Rotate)
-			{
-				float turnDir = 
-					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
-					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-				//this.camAngleVel = turnDir;
-
-				this.camTransformChanged = true;
-			}
-			else if (Math.Abs(this.camAngleVel) > 0.001f)
-			{
-				this.camAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
-				this.camTransformChanged = true;
-			}
-			else
-			{
-				this.camTransformChanged = this.camTransformChanged || (this.camAngleVel != 0.0f);
-				this.camAngleVel = 0.0f;
-			}
-
-
-			if (this.camTransformChanged)
-			{
-				camObj.Transform.MoveBy(this.camVel * Time.TimeMult);
-				camObj.Transform.TurnBy(this.camAngleVel * Time.TimeMult);
-
-				this.View.OnCamTransformChanged();
-				this.Invalidate();
-			}
+                this.View.OnCamTransformChanged();
+                this.Invalidate();
+            }
 			
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
