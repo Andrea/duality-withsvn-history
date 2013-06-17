@@ -509,21 +509,13 @@ namespace EditorBase.CamViewStates
 					{
 						// Don't draw anything.
 					}
-					else if (this.camAction == CameraAction.RotateScene)
-					{
-						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-					}
+					
 					else if (this.camAction == CameraAction.Move)
 					{
 						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
 						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
 					}
-					else if (this.camAction == CameraAction.Rotate)
-					{
-						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-					}
+					
 					canvas.PopState();
 				}
 			
@@ -561,12 +553,8 @@ namespace EditorBase.CamViewStates
 			CameraAction visibleCamAction = this.drawCamGizmoState != CameraAction.None ? this.drawCamGizmoState : this.camAction;
 			ObjectAction visibleObjectAction = this.VisibleAction;
 
-			// Draw camera action hints
-			if (visibleCamAction == CameraAction.Rotate || visibleCamAction == CameraAction.RotateScene)
-			{
-				return string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.CameraObj.Transform.Angle));
-			}
-			else if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
+			
+			if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
 			{
 				if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene)
 				{
@@ -583,7 +571,7 @@ namespace EditorBase.CamViewStates
 
 			// Draw action hints
 			if (visibleObjectAction == ObjectAction.Move)				return PluginRes.EditorBaseRes.CamView_Action_Move;
-			else if (visibleObjectAction == ObjectAction.Rotate)		return PluginRes.EditorBaseRes.CamView_Action_Rotate;
+			
 			else if (visibleObjectAction == ObjectAction.Scale)			return PluginRes.EditorBaseRes.CamView_Action_Scale;
 			else if (visibleObjectAction == ObjectAction.RectSelect)	return PluginRes.EditorBaseRes.CamView_Action_Select_Active;
 
@@ -1251,8 +1239,7 @@ namespace EditorBase.CamViewStates
 
 				if (this.camAction == CameraAction.Move && e.Button == MouseButtons.Middle)
 					this.camAction = CameraAction.None;
-				else if (this.camAction == CameraAction.Rotate && e.Button == MouseButtons.Right)
-					this.camAction = CameraAction.None;
+				
 
 				this.OnMouseUp(e);
 			}
@@ -1272,12 +1259,6 @@ namespace EditorBase.CamViewStates
 				if (e.Button == MouseButtons.Left)
 				{
 					this.camAction = CameraAction.DragScene;
-					this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
-					this.Cursor = CursorHelper.HandGrabbing;
-				}
-				else if (e.Button == MouseButtons.Right)
-				{
-					this.camAction = CameraAction.RotateScene;
 					this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
 					this.Cursor = CursorHelper.HandGrabbing;
 				}
@@ -1316,11 +1297,6 @@ namespace EditorBase.CamViewStates
 					{
 						this.camAction = CameraAction.Move;
 						this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
-					}
-					else if (e.Button == MouseButtons.Right)
-					{
-						this.camAction = CameraAction.Rotate;
-						this.camActionBeginLocSpace = new Vector3(this.CameraObj.Transform.RelativeAngle, 0.0f, 0.0f);
 					}
 				}
 
