@@ -366,10 +366,12 @@ namespace Duality.Resources
 		/// Performs a preprocessing operation for incoming vertices. Does nothing by default but may be overloaded, if needed.
 		/// </summary>
 		/// <typeparam name="T">The incoming vertex type</typeparam>
+		/// <param name="device"></param>
 		/// <param name="material"><see cref="Duality.Resources.Material"/> information for the current batch.</param>
 		/// <param name="vertexMode">The mode of incoming vertex data.</param>
-		/// <param name="vertices">Incoming vertex data.</param>
-		public virtual void PreprocessBatch<T>(IDrawDevice device, BatchInfo material, ref VertexMode vertexMode, ref T[] vertices) {}
+		/// <param name="vertexBuffer">A buffer storing incoming vertex data.</param>
+		/// <param name="vertexCount">The number of vertices to preprocess, beginning at the start of the specified buffer.</param>
+		public virtual void PreprocessBatch<T>(IDrawDevice device, BatchInfo material, ref VertexMode vertexMode, ref T[] vertexBuffer, ref int vertexCount) {}
 		/// <summary>
 		/// Sets up the appropriate OpenGL rendering state for this DrawTechnique.
 		/// </summary>

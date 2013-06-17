@@ -915,15 +915,6 @@ namespace Duality
 			if (DiscardPluginData != null)
 				DiscardPluginData(null, EventArgs.Empty);
 
-			// Clean event bindings linked to the disposed Assembly.
-			if (oldPlugins != null)
-			{
-				foreach (CorePlugin plugin in oldPlugins)
-				{
-					CleanEventBindings(plugin.PluginAssembly);
-				}
-			}
-
 			// Clean globally cached type values
 			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
@@ -934,6 +925,13 @@ namespace Duality
 				Scene.Current.Dispose();
 			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
 				ContentProvider.UnregisterContent(r.Path);
+
+			// Clean event bindings that are still linked to the disposed Assembly.
+			if (oldPlugins != null)
+			{
+				foreach (CorePlugin plugin in oldPlugins)
+					CleanEventBindings(plugin.PluginAssembly);
+			}
 		}
 		private static void CleanEventBindings(Assembly invalidAssembly)
 		{

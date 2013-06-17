@@ -65,10 +65,10 @@ namespace DynamicLighting
 				}
 			}
 		}
-		void IVertexData.UploadToVBO<T>(T[] vertexData)
+		void IVertexData.UploadToVBO<T>(T[] vertexData, int length)
 		{
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, IntPtr.Zero, IntPtr.Zero, BufferUsageHint.StreamDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * length), vertexData, BufferUsageHint.StreamDraw);
 		}
 		void IVertexData.FinishVBO(BatchInfo mat)
 		{

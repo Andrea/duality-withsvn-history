@@ -641,6 +641,7 @@ namespace Duality
 		[NonSerialized] private bool				updateVertexCache	= true;
 		[NonSerialized] private VertexC1P3T2[][]	vertTextCache		= null;
 		[NonSerialized] private VertexC1P3T2[]		vertIconsCache		= null;
+		[NonSerialized] private int[]				vertCountCache		= null;
 		[NonSerialized] private	Metrics				metricsCache		= null;
 
 
@@ -974,9 +975,13 @@ namespace Duality
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
-		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z = 0.0f)
+		/// <returns>
+		/// Returns an array of vertex counts for each emitted vertex array. 
+		/// Index 0 represents the number of emitted icon vertices, Index n represents the number of vertices emitted using Font n - 1.
+		/// </returns>
+		public int[] EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z = 0.0f)
 		{
-			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRgba.White);
+			return this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRgba.White);
 		}
 		/// <summary>
 		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
@@ -987,15 +992,19 @@ namespace Duality
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
-		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, ColorRgba clr)
+		/// <returns>
+		/// Returns an array of vertex counts for each emitted vertex array. 
+		/// Index 0 represents the number of emitted icon vertices, Index n represents the number of vertices emitted using Font n - 1.
+		/// </returns>
+		public int[] EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, ColorRgba clr)
 		{
-			this.EmitVertices(ref vertText, ref vertIcons);
+			int[] vertLen = this.EmitVertices(ref vertText, ref vertIcons);
 			
 			Vector3 offset = new Vector3(x, y, 0);
 
 			for (int i = 0; i < vertText.Length; i++)
 			{
-				for (int j = 0; j < vertText[i].Length; j++)
+				for (int j = 0; j < vertLen[i + 1]; j++)
 				{
 					Vector3 vertex = vertText[i][j].Pos;
 					vertex += offset;
@@ -1003,13 +1012,15 @@ namespace Duality
 					vertText[i][j].Color *= clr;
 				}
 			}
-			for (int i = 0; i < vertIcons.Length; i++)
+			for (int i = 0; i < vertLen[0]; i++)
 			{
 				Vector3 vertex = vertIcons[i].Pos;
 				vertex += offset;
 				vertIcons[i].Pos = vertex;
 				vertIcons[i].Color *= clr;
 			}
+
+			return vertLen;
 		}
 		/// <summary>
 		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
@@ -1023,11 +1034,15 @@ namespace Duality
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		/// <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
 		/// <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
-		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
+		/// <returns>
+		/// Returns an array of vertex counts for each emitted vertex array. 
+		/// Index 0 represents the number of emitted icon vertices, Index n represents the number of vertices emitted using Font n - 1.
+		/// </returns>
+		public int[] EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
-			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, clr, xDot, yDot);
+			return this.EmitVertices(ref vertText, ref vertIcons, x, y, z, clr, xDot, yDot);
 		}
 		/// <summary>
 		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
@@ -1041,14 +1056,18 @@ namespace Duality
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		/// <param name="xDot">Dot product base for the transformed vertices.</param>
 		/// <param name="yDot">Dot product base for the transformed vertices.</param>
-		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
+		/// <returns>
+		/// Returns an array of vertex counts for each emitted vertex array. 
+		/// Index 0 represents the number of emitted icon vertices, Index n represents the number of vertices emitted using Font n - 1.
+		/// </returns>
+		public int[] EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
 		{
-			this.EmitVertices(ref vertText, ref vertIcons);
+			int[] vertLen = this.EmitVertices(ref vertText, ref vertIcons);
 			
 			Vector3 offset = new Vector3(x, y, z);
 			for (int i = 0; i < vertText.Length; i++)
 			{
-				for (int j = 0; j < vertText[i].Length; j++)
+				for (int j = 0; j < vertLen[i + 1]; j++)
 				{
 					Vector3 vertex = vertText[i][j].Pos;
 
@@ -1059,7 +1078,7 @@ namespace Duality
 					vertText[i][j].Color *= clr;
 				}
 			}
-			for (int i = 0; i < vertIcons.Length; i++)
+			for (int i = 0; i < vertLen[0]; i++)
 			{
 				Vector3 vertex = vertIcons[i].Pos;
 
@@ -1069,30 +1088,40 @@ namespace Duality
 				vertIcons[i].Pos = vertex;
 				vertIcons[i].Color *= clr;
 			}
+
+			return vertLen;
 		}
 		/// <summary>
 		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
 		/// the corresponding Fonts <see cref="Material"/>.
 		/// </summary>
-		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertText">One set of vertices for each Font that is available to this FormattedText.</param>
 		/// <param name="vertIcons">A set of icon vertices.</param>
-		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons)
+		/// <returns>
+		/// Returns an array of vertex counts for each emitted vertex array. 
+		/// Index 0 represents the number of emitted icon vertices, Index n represents the number of vertices emitted using Font n - 1.
+		/// </returns>
+		public int[] EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons)
 		{
 			this.ValidateVertexCache();
 			
 			// Allocate memory
-			if (vertIcons == null || vertIcons.Length != this.vertIconsCache.Length) vertIcons = new VertexC1P3T2[this.vertIconsCache.Length];
+			if (vertIcons == null || vertIcons.Length < this.vertCountCache[0]) vertIcons = new VertexC1P3T2[this.vertCountCache[0]];
 			if (vertText == null || vertText.Length != this.vertTextCache.Length) vertText = new VertexC1P3T2[this.vertTextCache.Length][];
 			for (int i = 0; i < this.vertTextCache.Length; i++)
 			{
-				if (vertText[i] == null || vertText[i].Length != this.vertTextCache[i].Length)
-					vertText[i] = new VertexC1P3T2[this.vertTextCache[i].Length];
+				if (vertText[i] == null || vertText[i].Length < this.vertCountCache[i + 1])
+					vertText[i] = new VertexC1P3T2[this.vertCountCache[i + 1]];
 			}
 
 			// Copy actual data
-			Array.Copy(this.vertIconsCache, vertIcons, this.vertIconsCache.Length);
+			int[] vertLen = new int[this.vertCountCache.Length];
+			Array.Copy(this.vertCountCache, vertLen, this.vertCountCache.Length);
+			Array.Copy(this.vertIconsCache, vertIcons, vertLen[0]);
 			for (int i = 0; i < this.vertTextCache.Length; i++)
-				Array.Copy(this.vertTextCache[i], vertText[i], this.vertTextCache[i].Length);
+				Array.Copy(this.vertTextCache[i], vertText[i], vertLen[i + 1]);
+
+			return vertLen;
 		}
 
 		/// <summary>
@@ -1106,6 +1135,7 @@ namespace Duality
 		{
 			if (this.vertTextCache != null && 
 				this.vertIconsCache != null && 
+				this.vertCountCache != null &&
 				this.metricsCache != null && 
 				!this.updateVertexCache)
 			{
@@ -1116,14 +1146,27 @@ namespace Duality
 
 			int fontNum = this.fonts != null ? this.fonts.Length : 0;
 
-			// Setting up vertex buffers
-			if (this.vertIconsCache == null || this.vertIconsCache.Length != this.iconCount * 4)
-				this.vertIconsCache = new VertexC1P3T2[this.iconCount * 4];
-			if (this.vertTextCache == null || this.vertTextCache.Length != fontNum) 
-				this.vertTextCache = new VertexC1P3T2[fontNum][];
-			for (int i = 0; i < this.vertTextCache.Length; i++)
-				if (this.vertTextCache[i] == null || this.vertTextCache[i].Length != (this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0)) 
-					this.vertTextCache[i] = new VertexC1P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
+			// Setting up buffers
+			{
+				int countCacheLen = 1 + fontNum;
+				if (this.vertCountCache == null || this.vertCountCache.Length != countCacheLen)
+					this.vertCountCache = new int[countCacheLen];
+
+				int iconVertCount = this.iconCount * 4;
+				if (this.vertIconsCache == null || this.vertIconsCache.Length < iconVertCount)
+					this.vertIconsCache = new VertexC1P3T2[iconVertCount];
+				this.vertCountCache[0] = iconVertCount;
+
+				if (this.vertTextCache == null || this.vertTextCache.Length != fontNum) 
+					this.vertTextCache = new VertexC1P3T2[fontNum][];
+				for (int i = 0; i < this.vertTextCache.Length; i++)
+				{
+					int textVertCount = this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0;
+					this.vertCountCache[i + 1] = textVertCount;
+					if (this.vertTextCache[i] == null || this.vertTextCache[i].Length < textVertCount) 
+						this.vertTextCache[i] = new VertexC1P3T2[textVertCount];
+				}
+			}
 
 			// Rendering
 			{
@@ -1137,14 +1180,14 @@ namespace Duality
 					{
 						TextElement textElem = elem as TextElement;
 						VertexC1P3T2[] textElemVert = null;
-						state.Font.EmitTextVertices(
+						int count = state.Font.EmitTextVertices(
 							state.CurrentElemText, 
 							ref textElemVert, 
 							state.CurrentElemOffset.X, 
 							state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
 							state.Color);
-						Array.Copy(textElemVert, 0, this.vertTextCache[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
-						vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + textElemVert.Length;
+						Array.Copy(textElemVert, 0, this.vertTextCache[state.FontIndex], state.CurrentElemTextVertexIndex, count);
+						vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + count;
 					}
 					else if (elem is IconElement)
 					{
@@ -1181,13 +1224,9 @@ namespace Duality
 					}
 				}
 
+				this.vertCountCache[0] = vertIconLen;
 				for (int i = 0; i < fontNum; i++)
-				{
-					if (this.vertTextCache[i].Length > vertTextLen[i])
-						Array.Resize(ref this.vertTextCache[i], vertTextLen[i]);
-				}
-				if (this.vertIconsCache.Length > vertIconLen)
-					Array.Resize(ref this.vertIconsCache, vertIconLen);
+					this.vertCountCache[i + 1] = vertTextLen[i];
 			}
 
 			// Updating the metrics cache

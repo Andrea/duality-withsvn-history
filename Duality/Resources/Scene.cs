@@ -188,9 +188,10 @@ namespace Duality.Resources
 
 		private	Vector2			globalGravity	= Vector2.UnitY * 33.0f;
 		private	GameObject[]	serializeObj	= null;
-		[NonSerialized] private	GameObjectManager	objectManager	= new GameObjectManager();
-		[NonSerialized] private	List<Camera>		cameras			= new List<Camera>();
-		[NonSerialized] private	List<Component>		renderers		= new List<Component>();
+		[NonSerialized] private	GameObjectManager					objectManager		= new GameObjectManager();
+		[NonSerialized] private	List<Camera>						cameras				= new List<Camera>();
+		[NonSerialized] private	List<Component>						renderers			= new List<Component>();
+		[NonSerialized] private Dictionary<Type,List<Component>>	componentyByType	= new Dictionary<Type,List<Component>>();
 
 
 		/// <summary>
@@ -232,14 +233,6 @@ namespace Duality.Resources
 		public IEnumerable<Camera> Cameras
 		{
 			get { return this.cameras.Where(c => !c.Disposed); }
-		}
-		/// <summary>
-		/// [GET] Enumerates the Scenes <see cref="Renderer"/> objects.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public IEnumerable<ICmpRenderer> Renderers
-		{
-			get { return this.renderers.Where(c => !c.Disposed).OfType<ICmpRenderer>(); }
 		}
 		/// <summary>
 		/// [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
@@ -392,6 +385,8 @@ namespace Duality.Resources
 			this.objectManager.Flush();
 			this.cameras.FlushDisposedObj();
 			this.renderers.FlushDisposedObj();
+			foreach (var cmpList in this.componentyByType.Values)
+				cmpList.FlushDisposedObj();
 		}
 
 		/// <summary>
@@ -502,7 +497,7 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public IEnumerable<GameObject> FindGameObjects(Type hasComponentOfType)
 		{
-			return this.AllObjects.Where(o => o.GetComponent(hasComponentOfType) != null);
+			return this.FindComponents(hasComponentOfType).GameObject();
 		}
 		/// <summary>
 		/// Finds all GameObjects in the Scene which have a Component of the specified type.
@@ -511,7 +506,7 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public IEnumerable<GameObject> FindGameObjects<T>() where T : class
 		{
-			return this.AllObjects.Where(o => o.GetComponent<T>() != null);
+			return this.FindComponents<T>().OfType<Component>().GameObject();
 		}
 		/// <summary>
 		/// Finds all Components of the specified type in this Scene.
@@ -520,7 +515,7 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public IEnumerable<T> FindComponents<T>() where T : class
 		{
-			return this.AllObjects.GetComponents<T>();
+			return FindComponents(typeof(T)).OfType<T>();
 		}
 		/// <summary>
 		/// Finds all Components of the specified type in this Scene.
@@ -529,7 +524,46 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public IEnumerable<Component> FindComponents(Type type)
 		{
-			return this.AllObjects.SelectMany(g => g.GetComponents(type));
+			// Determine which by-type lists to use
+			bool multiple = false;
+			List<Component> singleResult = null;
+			List<List<Component>> query = null;
+			foreach (var pair in this.componentyByType)
+			{
+				if (type.IsAssignableFrom(pair.Key))
+				{
+					if (!multiple && singleResult == null)
+					{
+						// Select single result
+						singleResult = pair.Value;
+					}
+					else
+					{
+						// Switch to multiselect mode
+						if (!multiple)
+						{
+							query = new List<List<Component>>(this.componentyByType.Values.Count);
+							if (singleResult != null) query.Add(singleResult);
+						}
+						query.Add(pair.Value);
+						multiple = true;
+					}
+				}
+			}
+
+			// Found only one match? Return that one.
+			IEnumerable<Component> result = null;
+			if (!multiple)
+			{
+				result = singleResult as IEnumerable<Component> ?? new Component[0];
+			}
+			// Select from a multitude of results
+			else
+			{
+				result = query.SelectMany(cmpArr => cmpArr);
+			}
+
+			return result;
 		}
 		
 		/// <summary>
@@ -548,7 +582,8 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public GameObject FindGameObject(Type hasComponentOfType, bool activeOnly = true)
 		{
-			return (activeOnly ? this.ActiveObjects : this.AllObjects).Where(o => o.GetComponent(hasComponentOfType) != null).FirstOrDefault();
+			Component cmp = this.FindComponent(hasComponentOfType, activeOnly);
+			return cmp != null ? cmp.GameObj : null;
 		}
 		/// <summary>
 		/// Finds a single GameObject in the Scene that has a Component of the specified type.
@@ -557,7 +592,8 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public GameObject FindGameObject<T>(bool activeOnly = true) where T : class
 		{
-			return (activeOnly ? this.ActiveObjects : this.AllObjects).Where(o => o.GetComponent<T>() != null).FirstOrDefault();
+			Component cmp = this.FindComponent<T>(activeOnly) as Component;
+			return cmp != null ? cmp.GameObj : null;
 		}
 		/// <summary>
 		/// Finds a single Component of the specified type in this Scene.
@@ -566,8 +602,7 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public T FindComponent<T>(bool activeOnly = true) where T : class
 		{
-			var cmp = (activeOnly ? this.ActiveObjects : this.AllObjects).GetComponents<T>();
-			return (activeOnly ? cmp.Where(c => (c as Component).Active) : cmp).FirstOrDefault();
+			return FindComponent(typeof(T)) as T;
 		}
 		/// <summary>
 		/// Finds a single Component of the specified type in this Scene.
@@ -576,33 +611,63 @@ namespace Duality.Resources
 		/// <returns></returns>
 		public Component FindComponent(Type type, bool activeOnly = true)
 		{
-			var cmp = (activeOnly ? this.ActiveObjects : this.AllObjects).SelectMany(g => g.GetComponents(type));
-			return (activeOnly ? cmp.Where(c => (c as Component).Active) : cmp).FirstOrDefault();
+			foreach (var pair in this.componentyByType)
+			{
+				if (type.IsAssignableFrom(pair.Key))
+				{
+					if (activeOnly)
+					{
+						foreach (Component cmp in pair.Value)
+						{
+							if (!cmp.Active) continue;
+							return cmp;
+						}
+					}
+					else if (pair.Value.Count > 0)
+					{
+						return pair.Value[0];
+					}
+				}
+			}
+
+			return null;
 		}
 
 		private void AddToManagers(GameObject obj)
 		{
-			Camera cam = obj.Camera;
-			if (cam != null) this.cameras.Add(cam);
-
-			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
-				this.renderers.Add(r as Component);
+			foreach (Component cmp in obj.GetComponents<Component>())
+				this.AddToManagers(cmp);
 		}
 		private void AddToManagers(Component cmp)
 		{
+			// Per-Type lists
+			Type cmpType = cmp.GetType();
+			List<Component> cmpList;
+			if (!this.componentyByType.TryGetValue(cmpType, out cmpList))
+			{
+				cmpList = new List<Component>();
+				this.componentyByType[cmpType] = cmpList;
+			}
+			cmpList.Add(cmp);
+
+			// Specialized lists
 			if (cmp is Camera)			this.cameras.Add(cmp as Camera);
 			if (cmp is ICmpRenderer)	this.renderers.Add(cmp);
 		}
 		private void RemoveFromManagers(GameObject obj)
 		{
-			Camera cam = obj.Camera;
-			if (cam != null) this.cameras.Remove(cam);
-
-			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
-				this.renderers.Remove(r as Component);
+			foreach (Component cmp in obj.GetComponents<Component>())
+				this.RemoveFromManagers(cmp);
 		}
 		private void RemoveFromManagers(Component cmp)
 		{
+			// Per-Type lists
+			Type cmpType = cmp.GetType();
+			List<Component> cmpList;
+			if (this.componentyByType.TryGetValue(cmpType, out cmpList))
+				cmpList.Remove(cmp);
+
+			// Specialized lists
 			if (cmp is Camera)			this.cameras.Remove(cmp as Camera);
 			if (cmp is ICmpRenderer)	this.renderers.Remove(cmp);
 		}

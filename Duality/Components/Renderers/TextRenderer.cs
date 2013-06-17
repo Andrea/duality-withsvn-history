@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Duality.ColorFormat;
+using Duality.VertexFormat;
 using Duality.Resources;
 using Duality.EditorHints;
 
@@ -21,8 +22,8 @@ namespace Duality.Components.Renderers
 		protected	BatchInfo				customMat	= null;
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
-		[NonSerialized] protected	VertexFormat.VertexC1P3T2[][]	vertFont	= null;
-		[NonSerialized] protected	VertexFormat.VertexC1P3T2[]		vertIcon	= null;
+		[NonSerialized] protected	VertexC1P3T2[][]	vertFont	= null;
+		[NonSerialized] protected	VertexC1P3T2[]		vertIcon	= null;
 
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
@@ -142,15 +143,15 @@ namespace Duality.Components.Renderers
 					ColorRgba clrSize = ColorRgba.Green.WithAlpha(128);
 					ColorRgba clrMaxSize = ColorRgba.Red.WithAlpha(128);
 					device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp, clrSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth, clrSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth + textHeight, clrSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textHeight, clrSize));
+						new VertexC1P3(metricsOffset + lineOffset + posTemp, clrSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth, clrSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textWidth + textHeight, clrSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textHeight, clrSize));
 					device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp, clrMaxSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth, clrMaxSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth + textMaxHeight, clrMaxSize),
-						new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxHeight, clrMaxSize));
+						new VertexC1P3(metricsOffset + lineOffset + posTemp, clrMaxSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth, clrMaxSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxWidth + textMaxHeight, clrMaxSize),
+						new VertexC1P3(metricsOffset + lineOffset + posTemp + textMaxHeight, clrMaxSize));
 				}
 
 				// Individual line sizes
@@ -161,10 +162,10 @@ namespace Duality.Components.Renderers
 					{
 						Rect lineRect = this.text.TextMetrics.LineBounds[i];
 						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.Quads,
-							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.TopLeft.X * tUnitX + lineRect.TopLeft.Y * tUnitY, clrLineBg),
-							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.BottomLeft.X * tUnitX + lineRect.BottomLeft.Y * tUnitY, clrLineBg),
-							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.BottomRight.X * tUnitX + lineRect.BottomRight.Y * tUnitY, clrLineBg),
-							new VertexFormat.VertexC1P3(metricsOffset + posTemp + lineRect.TopRight.X * tUnitX + lineRect.TopRight.Y * tUnitY, clrLineBg));
+							new VertexC1P3(metricsOffset + posTemp + lineRect.TopLeft.X * tUnitX + lineRect.TopLeft.Y * tUnitY, clrLineBg),
+							new VertexC1P3(metricsOffset + posTemp + lineRect.BottomLeft.X * tUnitX + lineRect.BottomLeft.Y * tUnitY, clrLineBg),
+							new VertexC1P3(metricsOffset + posTemp + lineRect.BottomRight.X * tUnitX + lineRect.BottomRight.Y * tUnitY, clrLineBg),
+							new VertexC1P3(metricsOffset + posTemp + lineRect.TopRight.X * tUnitX + lineRect.TopRight.Y * tUnitY, clrLineBg));
 					}
 				}
 
@@ -176,16 +177,16 @@ namespace Duality.Components.Renderers
 					{
 						Rect elemRect = this.text.TextMetrics.ElementBounds[i];
 						device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White), VertexMode.LineLoop,
-							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopLeft.X * tUnitX + elemRect.TopLeft.Y * tUnitY, clrElementBg),
-							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomLeft.X * tUnitX + elemRect.BottomLeft.Y * tUnitY, clrElementBg),
-							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomRight.X * tUnitX + elemRect.BottomRight.Y * tUnitY, clrElementBg),
-							new VertexFormat.VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopRight.X * tUnitX + elemRect.TopRight.Y * tUnitY, clrElementBg));
+							new VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopLeft.X * tUnitX + elemRect.TopLeft.Y * tUnitY, clrElementBg),
+							new VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomLeft.X * tUnitX + elemRect.BottomLeft.Y * tUnitY, clrElementBg),
+							new VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.BottomRight.X * tUnitX + elemRect.BottomRight.Y * tUnitY, clrElementBg),
+							new VertexC1P3(metricsOffset + lineOffset + posTemp + elemRect.TopRight.X * tUnitX + elemRect.TopRight.Y * tUnitY, clrElementBg));
 					}
 				}
 			}
 
 			ColorRgba matColor = this.customMat != null ? this.customMat.MainColor : ColorRgba.White;
-			this.text.EmitVertices(ref this.vertFont, ref this.vertIcon, posTemp.X, posTemp.Y, posTemp.Z, this.colorTint * matColor, xDot, yDot);
+			int[] vertLen = this.text.EmitVertices(ref this.vertFont, ref this.vertIcon, posTemp.X, posTemp.Y, posTemp.Z, this.colorTint * matColor, xDot, yDot);
 			if (this.text.Fonts != null)
 			{
 				for (int i = 0; i < this.text.Fonts.Length; i++)
@@ -193,19 +194,21 @@ namespace Duality.Components.Renderers
 					if (this.text.Fonts[i] != null && this.text.Fonts[i].IsAvailable) 
 					{
 						if (this.customMat == null)
-							device.AddVertices(this.text.Fonts[i].Res.Material, VertexMode.Quads, this.vertFont[i]);
+						{
+							device.AddVertices(this.text.Fonts[i].Res.Material, VertexMode.Quads, this.vertFont[i], vertLen[i + 1]);
+						}
 						else
 						{
 							BatchInfo cm = new BatchInfo(this.customMat);
 							cm.Textures = this.text.Fonts[i].Res.Material.Textures;
-							device.AddVertices(cm, VertexMode.Quads, this.vertFont[i]);
+							device.AddVertices(cm, VertexMode.Quads, this.vertFont[i], vertLen[i + 1]);
 						}
 					}
 				}
 			}
 			if (this.text.Icons != null && this.iconMat.IsAvailable)
 			{
-				device.AddVertices(this.iconMat, VertexMode.Quads, this.vertIcon);
+				device.AddVertices(this.iconMat, VertexMode.Quads, this.vertIcon, vertLen[0]);
 			}
 		}
 

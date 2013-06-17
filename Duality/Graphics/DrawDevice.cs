@@ -286,6 +286,24 @@ namespace Duality
 		/// <param name="vertexMode">The vertices drawing mode.</param>
 		/// <param name="vertices">The vertex data to add.</param>
 		void AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData;
+		/// <summary>
+		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
+		/// </summary>
+		/// <typeparam name="T">The type of vertex data to add.</typeparam>
+		/// <param name="material">The <see cref="Duality.Resources.Material"/> to use for rendering the vertices.</param>
+		/// <param name="vertexMode">The vertices drawing mode.</param>
+		/// <param name="vertexBuffer">A vertex data buffer that stores the vertices to add.</param>
+		/// <param name="vertexCount">The number of vertices to add, from the beginning of the buffer.</param>
+		void AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, T[] vertexBuffer, int vertexCount) where T : struct, IVertexData;
+		/// <summary>
+		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
+		/// </summary>
+		/// <typeparam name="T">The type of vertex data to add.</typeparam>
+		/// <param name="material">The <see cref="Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
+		/// <param name="vertexMode">The vertices drawing mode.</param>
+		/// <param name="vertexBuffer">A vertex data buffer that stores the vertices to add.</param>
+		/// <param name="vertexCount">The number of vertices to add, from the beginning of the buffer.</param>
+		void AddVertices<T>(BatchInfo material, VertexMode vertexMode, T[] vertexBuffer, int vertexCount) where T : struct, IVertexData;
 	}
 
 	public class DrawDevice : IDrawDevice, IDisposable
@@ -307,7 +325,7 @@ namespace Duality
 
 			bool CanShareVBO(IDrawBatch other);
 			bool CanAppendJIT<T>(float invZSortAccuracy, float zSortIndex, BatchInfo material, VertexMode vertexMode) where T : struct, IVertexData;
-			void AppendJIT(object vertexData);
+			void AppendJIT(object vertexData, int length);
 			bool CanAppend(IDrawBatch other);
 			void Append(IDrawBatch other);
 		}
@@ -347,14 +365,14 @@ namespace Duality
 				get { return this.material; }
 			}
 
-			public DrawBatch(BatchInfo material, VertexMode vertexMode, T[] vertices, float zSortIndex)
+			public DrawBatch(BatchInfo material, VertexMode vertexMode, T[] vertices, int vertexCount, float zSortIndex)
 			{
 				if (vertices == null || vertices.Length == 0) throw new ArgumentException("A zero-vertex DrawBatch is invalid.");
 				
 				this.material = material;
 				this.vertexMode = vertexMode;
 				this.vertices = vertices;
-				this.vertexCount = vertices.Length;
+				this.vertexCount = Math.Min(vertexCount, vertices.Length);
 				this.zSortIndex = zSortIndex;
 
 				if (!this.material.Technique.Res.NeedsZSort)
@@ -452,19 +470,19 @@ namespace Duality
 					IsVertexModeAppendable(this.VertexMode) &&
 					material == this.material;
 			}
-			public void AppendJIT(object vertexData)
+			public void AppendJIT(object vertexData, int length)
 			{
-				this.AppendJIT((T[])vertexData);
+				this.AppendJIT((T[])vertexData, length);
 			}
-			public void AppendJIT(T[] vertexData)
+			public void AppendJIT(T[] data, int length)
 			{
-				if (this.vertexCount + vertexData.Length > this.vertices.Length)
+				if (this.vertexCount + length > this.vertices.Length)
 				{
-					int newArrSize = MathF.Max(16, this.vertexCount * 2, this.vertexCount + vertexData.Length);
+					int newArrSize = MathF.Max(16, this.vertexCount * 2, this.vertexCount + length);
 					Array.Resize<T>(ref this.vertices, newArrSize);
 				}
-				Array.Copy(vertexData, 0, this.vertices, this.vertexCount, vertexData.Length);
-				this.vertexCount += vertexData.Length;
+				Array.Copy(data, 0, this.vertices, this.vertexCount, length);
+				this.vertexCount += length;
 				
 				if (this.material.Technique.Res.NeedsZSort)
 					this.zSortIndex = CalcZSortIndex(this.vertices, this.vertexCount);
@@ -887,18 +905,28 @@ namespace Duality
 
 		public void AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData
 		{
-			this.AddVertices<T>(material.IsAvailable ? material.Res.InfoDirect : Material.Checkerboard256.Res.InfoDirect, vertexMode, vertices);
+			this.AddVertices<T>(material.IsAvailable ? material.Res.InfoDirect : Material.Checkerboard256.Res.InfoDirect, vertexMode, vertices, vertices.Length);
 		}
 		public void AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData
 		{
-			if (vertices == null || vertices.Length == 0) return;
+			this.AddVertices<T>(material, vertexMode, vertices, vertices.Length);
+		}
+		public void AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, T[] vertexBuffer, int vertexCount) where T : struct, IVertexData
+		{
+			this.AddVertices<T>(material.IsAvailable ? material.Res.InfoDirect : Material.Checkerboard256.Res.InfoDirect, vertexMode, vertexBuffer, vertexCount);
+		}
+		public void AddVertices<T>(BatchInfo material, VertexMode vertexMode, T[] vertexBuffer, int vertexCount) where T : struct, IVertexData
+		{
+			if (vertexCount == 0) return;
+			if (vertexBuffer == null || vertexBuffer.Length == 0) return;
+			if (vertexCount > vertexBuffer.Length) vertexCount = vertexBuffer.Length;
 			if (material == null) material = Material.Checkerboard256.Res.InfoDirect;
 
 			if (this.pickingIndex != 0)
 			{
 				ColorRgba clr = new ColorRgba((this.pickingIndex << 8) | 0xFF);
-				for (int i = 0; i < vertices.Length; ++i)
-					vertices[i].Color = clr;
+				for (int i = 0; i < vertexCount; ++i)
+					vertexBuffer[i].Color = clr;
 
 				material = new BatchInfo(material);
 				material.Technique = DrawTechnique.Picking;
@@ -912,8 +940,10 @@ namespace Duality
 			else if (material.Technique.Res.NeedsPreprocess)
 			{
 				material = new BatchInfo(material);
-				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertices);
-				if (vertices == null || vertices.Length == 0) return;
+				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertexBuffer, ref vertexCount);
+				if (vertexCount == 0) return;
+				if (vertexBuffer == null || vertexBuffer.Length == 0) return;
+				if (vertexCount > vertexBuffer.Length) vertexCount = vertexBuffer.Length;
 				if (material.Technique == null || !material.Technique.IsAvailable)
 					material.Technique = DrawTechnique.Invert;
 			}
@@ -921,7 +951,7 @@ namespace Duality
 			// When rendering without depth writing, use z sorting everywhere - there's no real depth buffering!
 			bool zSort = !this.DepthWrite || material.Technique.Res.NeedsZSort;
 			List<IDrawBatch> buffer = zSort ? this.drawBufferZSort : this.drawBuffer;
-			float zSortIndex = zSort ? DrawBatch<T>.CalcZSortIndex(vertices) : 0.0f;
+			float zSortIndex = zSort ? DrawBatch<T>.CalcZSortIndex(vertexBuffer, vertexCount) : 0.0f;
 
 			if (buffer.Count > 0 && buffer[buffer.Count - 1].CanAppendJIT<T>(	
 					zSort ? 1.0f / this.zSortAccuracy : 0.0f, 
@@ -929,11 +959,11 @@ namespace Duality
 					material, 
 					vertexMode))
 			{
-				buffer[buffer.Count - 1].AppendJIT(vertices);
+				buffer[buffer.Count - 1].AppendJIT(vertexBuffer, vertexCount);
 			}
 			else
 			{
-				buffer.Add(new DrawBatch<T>(material, vertexMode, vertices, zSortIndex));
+				buffer.Add(new DrawBatch<T>(material, vertexMode, vertexBuffer, vertexCount, zSortIndex));
 			}
 			++this.numRawBatches;
 		}

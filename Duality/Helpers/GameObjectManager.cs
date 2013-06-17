@@ -14,6 +14,13 @@ namespace Duality
 
 
 		/// <summary>
+		/// [GET] The number of registered objects.
+		/// </summary>
+		public int Count
+		{
+			get { return this.allObj.Count; }
+		}
+		/// <summary>
 		/// [GET] Enumerates all registered GameObjects.
 		/// </summary>
 		public IEnumerable<GameObject> AllObjects

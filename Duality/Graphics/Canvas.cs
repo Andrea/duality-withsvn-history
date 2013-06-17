@@ -1319,8 +1319,8 @@ namespace Duality
 			ColorRgba baseColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			float sampleXRatio = w / (float)(values.Length - 1);
 			
-			if (vertices == null || vertices.Length != values.Length)
-				vertices = new VertexC1P3[values.Length];
+			if (vertices == null || vertices.Length < values.Length)
+				vertices = new VertexC1P3[MathF.Max(vertices.Length * 2, values.Length, 16)];
 			for (int i = 0; i < values.Length; i++)
 			{
 				vertices[i].Pos.X = pos.X + 0.5f + i * sampleXRatio;
@@ -1329,7 +1329,7 @@ namespace Duality
 				vertices[i].Color = (colors != null) ? (baseColor * colors[i]) : baseColor;
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineStrip, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineStrip, vertices, values.Length);
 		}
 		/// <summary>
 		/// Draws a horizontally aligned graph.
@@ -1420,10 +1420,10 @@ namespace Duality
 			Vector2 size = Vector2.Zero;
 			for (int i = 0; i < text.Length; i++)
 			{
-				font.EmitTextVertices(text[i], ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
+				int vertexCount = font.EmitTextVertices(text[i], ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
 
 				this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-				device.AddVertices(customMat, VertexMode.Quads, vertices);
+				device.AddVertices(customMat, VertexMode.Quads, vertices, vertexCount);
 
 				pos.Y += font.LineSpacing * scale;
 				vertices = null;
@@ -1466,7 +1466,7 @@ namespace Duality
 			if (this.CurrentState.TextInvariantScale) scale = 1.0f;
 
 			Vector2 shapeHandle = pos.Xy;
-			text.EmitVertices(ref vertText, ref vertIcon, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
+			int[] vertLen = text.EmitVertices(ref vertText, ref vertIcon, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
 			
 			if (text.Fonts != null)
 			{
@@ -1477,13 +1477,13 @@ namespace Duality
 						this.CurrentState.TransformVertices(vertText[i], shapeHandle, scale);
 						BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
 						customMat.MainTexture = text.Fonts[i].Res.Material.MainTexture;
-						device.AddVertices(customMat, VertexMode.Quads, vertText[i]);
+						device.AddVertices(customMat, VertexMode.Quads, vertText[i], vertLen[i + 1]);
 					}
 				}
 			}
 			if (text.Icons != null && iconMat != null)
 			{
-				device.AddVertices(iconMat, VertexMode.Quads, vertIcon);
+				device.AddVertices(iconMat, VertexMode.Quads, vertIcon, vertLen[0]);
 			}
 		}
 		/// <summary>
