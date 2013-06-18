@@ -4,38 +4,104 @@
         <name>DualityEditor</name>
     </assembly>
     <members>
-        <member name="F:DualityEditor.Forms.ReloadCorePluginDialog.components">
+        <member name="M:DualityEditor.Program.Main(System.String[])">
+            <summary>
+            Der Haupteinstiegspunkt für die Anwendung.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.Convert">
+            <summary>
+            A simple conversion operation that does not affect any data.
+            Example: Retrieving Texture from Material.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateRes">
+            <summary>
+            A conversion that might create new resource data.
+            Example: Creating Material from Texture.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateObj">
+            <summary>
+            A conversion that might create new object data.
+            Example: Construct a GameObject out of a set of Resources.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.SplashScreen.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.ReloadCorePluginDialog.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.Forms.SplashScreen.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:DualityEditor.Forms.ReloadCorePluginDialog.InitializeComponent">
+        <member name="M:DualityEditor.Forms.SplashScreen.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="F:DualityEditor.Forms.AppRunningDialog.components">
+        <member name="F:DualityEditor.Forms.NewProjectDialog.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.AppRunningDialog.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.Forms.NewProjectDialog.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:DualityEditor.Forms.AppRunningDialog.InitializeComponent">
+        <member name="M:DualityEditor.Forms.NewProjectDialog.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Controls.EnumComboBox.FillEnumMembers">
+            <summary>
+            Adds items to the checklistbox based on the members of the enum
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.ColorPickerDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.ColorPickerDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.ColorPickerDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
+            <summary>
+            Represents an item in the checklistbox
+            </summary>
+        </member>
+        <member name="T:DualityEditor.Properties.Resources">
+            <summary>
+              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.Properties.Resources.ResourceManager">
+            <summary>
+              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.Properties.Resources.Culture">
+            <summary>
+              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
             </summary>
         </member>
         <member name="M:DualityEditor.EditorPlugin.LoadPlugin">
@@ -75,77 +141,21 @@
             The Plugins ID. This should be unique.
             </summary>
         </member>
-        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.Convert">
+        <member name="F:DualityEditor.Forms.MainForm.components">
             <summary>
-            A simple conversion operation that does not affect any data.
-            Example: Retrieving Texture from Material.
+            Erforderliche Designervariable.
             </summary>
         </member>
-        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateRes">
+        <member name="M:DualityEditor.Forms.MainForm.Dispose(System.Boolean)">
             <summary>
-            A conversion that might create new resource data.
-            Example: Creating Material from Texture.
+            Verwendete Ressourcen bereinigen.
             </summary>
+            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
         </member>
-        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateObj">
+        <member name="M:DualityEditor.Forms.MainForm.InitializeComponent">
             <summary>
-            A conversion that might create new object data.
-            Example: Construct a GameObject out of a set of Resources.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.EnumComboBox.FillEnumMembers">
-            <summary>
-            Adds items to the checklistbox based on the members of the enum
-            </summary>
-        </member>
-        <member name="T:DualityEditor.Properties.Resources">
-            <summary>
-              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
-            </summary>
-        </member>
-        <member name="P:DualityEditor.Properties.Resources.ResourceManager">
-            <summary>
-              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
-            </summary>
-        </member>
-        <member name="P:DualityEditor.Properties.Resources.Culture">
-            <summary>
-              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
-              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.ProcessingBigTaskDialog.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.NewProjectDialog.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.NewProjectDialog.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DualityEditor.Forms.NewProjectDialog.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
+            Erforderliche Methode für die Designerunterstützung.
+            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
         <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
@@ -209,44 +219,45 @@
             Rename the object(s)
             </summary>
         </member>
-        <member name="F:DualityEditor.Forms.MainForm.components">
+        <member name="T:DualityEditor.RecycleBin">
             <summary>
-            Erforderliche Designervariable.
+            Send files directly to the recycle bin.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.MainForm.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.RecycleBin.Send(System.String,DualityEditor.NativeMethods.FileOperationFlags)">
             <summary>
-            Verwendete Ressourcen bereinigen.
+            Send file to recycle bin
             </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
+            <param name="path">Location of directory or file to recycle</param>
+            <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
         </member>
-        <member name="M:DualityEditor.Forms.MainForm.InitializeComponent">
+        <member name="M:DualityEditor.RecycleBin.Send(System.String)">
             <summary>
-            Erforderliche Methode für die Designerunterstützung.
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
             </summary>
+            <param name="path">Location of directory or file to recycle</param>
         </member>
-        <member name="F:DualityEditor.Forms.ColorPickerDialog.components">
+        <member name="M:DualityEditor.RecycleBin.SendSilent(System.String)">
+            <summary>
+            Send file silently to recycle bin.  Surpress dialog, surpress errors, delete if too large.
+            </summary>
+            <param name="path">Location of directory or file to recycle</param>
+        </member>
+        <member name="F:DualityEditor.Forms.AppRunningDialog.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.ColorPickerDialog.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.Forms.AppRunningDialog.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:DualityEditor.Forms.ColorPickerDialog.InitializeComponent">
+        <member name="M:DualityEditor.Forms.AppRunningDialog.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.EditorRes.GeneralResCache">
-            <summary>
-            Since directly accessing code generated from .resx files will result in a deserialization on
-            each Resource access, this class allows cached Resource access.
             </summary>
         </member>
         <member name="T:DualityEditor.EditorRes.GeneralRes">
@@ -759,11 +770,6 @@
               Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} GameObjects ähnelt.
             </summary>
         </member>
-        <member name="M:DualityEditor.Program.Main(System.String[])">
-            <summary>
-            Der Haupteinstiegspunkt für die Anwendung.
-            </summary>
-        </member>
         <member name="F:DualityEditor.Forms.AboutBox.components">
             <summary>
             Erforderliche Designervariable.
@@ -780,51 +786,45 @@
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
-        <member name="F:DualityEditor.Forms.SplashScreen.components">
+        <member name="F:DualityEditor.Forms.ReloadCorePluginDialog.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.SplashScreen.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.Forms.ReloadCorePluginDialog.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:DualityEditor.Forms.SplashScreen.InitializeComponent">
+        <member name="M:DualityEditor.Forms.ReloadCorePluginDialog.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
+        <member name="F:DualityEditor.Forms.ProcessingBigTaskDialog.components">
             <summary>
-            Represents an item in the checklistbox
+            Required designer variable.
             </summary>
         </member>
-        <member name="T:DualityEditor.RecycleBin">
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.Dispose(System.Boolean)">
             <summary>
-            Send files directly to the recycle bin.
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="M:DualityEditor.RecycleBin.Send(System.String,DualityEditor.NativeMethods.FileOperationFlags)">
+        <member name="T:DualityEditor.EditorRes.GeneralResCache">
             <summary>
-            Send file to recycle bin
+            Since directly accessing code generated from .resx files will result in a deserialization on
+            each Resource access, this class allows cached Resource access.
             </summary>
-            <param name="path">Location of directory or file to recycle</param>
-            <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-        </member>
-        <member name="M:DualityEditor.RecycleBin.Send(System.String)">
-            <summary>
-            Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
-            </summary>
-            <param name="path">Location of directory or file to recycle</param>
-        </member>
-        <member name="M:DualityEditor.RecycleBin.SendSilent(System.String)">
-            <summary>
-            Send file silently to recycle bin.  Surpress dialog, surpress errors, delete if too large.
-            </summary>
-            <param name="path">Location of directory or file to recycle</param>
         </member>
     </members>
 </doc>
