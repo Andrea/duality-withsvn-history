@@ -138,21 +138,21 @@ namespace Duality
 			set { targetMode = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to mouse user input.
+		/// [GET] Provides access to mouse user input.
 		/// </summary>
 		public static MouseInput Mouse
 		{
 			get { return mouse; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to keyboard user input
+		/// [GET] Provides access to keyboard user input
 		/// </summary>
 		public static KeyboardInput Keyboard
 		{
 			get { return keyboard; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to extended user input via joystick or gamepad.
+		/// [GET] Provides access to extended user input via joystick or gamepad.
 		/// </summary>
 		public static JoystickInputCollection Joysticks
 		{
@@ -540,6 +540,67 @@ namespace Duality
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
+		}
+
+		/// <summary>
+		/// Assigns a new input source for mouse input.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void SetInputSource(IMouseInputSource source)
+		{
+			mouse.Source = source;
+		}
+		/// <summary>
+		/// Assigns a new input source for keyboard input.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void SetInputSource(IKeyboardInputSource source)
+		{
+			keyboard.Source = source;
+		}
+		/// <summary>
+		/// Adds an extended user input source.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void AddInputSource(IJoystickInputSource source)
+		{
+			foreach (JoystickInput registeredInput in joysticks)
+			{
+				if (registeredInput.Description == source.Description &&
+					registeredInput.Source == null)
+				{
+					registeredInput.Source = source;
+					return;
+				}
+			}
+
+			JoystickInput newInput = new JoystickInput();
+			newInput.Source = source;
+			joysticks.Add(newInput);
+		}
+		/// <summary>
+		/// Adds a set of extended user input sources.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void AddInputSource(IEnumerable<IJoystickInputSource> source)
+		{
+			foreach (IJoystickInputSource s in source)
+				AddInputSource(s);
+		}
+		/// <summary>
+		/// Removed an extended user input source.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void RemoveInputSource(IJoystickInputSource source)
+		{
+			foreach (JoystickInput registeredInput in joysticks)
+			{
+				if (registeredInput.Source == source)
+				{
+					registeredInput.Source = null;
+					return;
+				}
+			}
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using OpenTK.Input;
+﻿using System;
+using OpenTK.Input;
 
 namespace Duality
 {
@@ -6,6 +7,22 @@ namespace Duality
 	{
 		private	JoystickDevice	device;
 		
+		public event EventHandler<JoystickButtonEventArgs> ButtonUp
+		{
+			add { this.device.ButtonUp += value; }
+			remove { this.device.ButtonUp -= value; }
+		}
+		public event EventHandler<JoystickButtonEventArgs> ButtonDown
+		{
+			add { this.device.ButtonDown += value; }
+			remove { this.device.ButtonDown -= value; }
+		}
+		public event EventHandler<JoystickMoveEventArgs> Move
+		{
+			add { this.device.Move += value; }
+			remove { this.device.Move -= value; }
+		}
+
 		public string Description
 		{
 			get { return this.device.Description; }
@@ -14,9 +31,6 @@ namespace Duality
 		{
 			get { return true; }
 		}
-
-		public int AxisCount { get { return device.Axis.Count; } }
-
 		public bool this[JoystickButton button]
 		{
 			get { return this.device.Button[button]; }
@@ -26,15 +40,9 @@ namespace Duality
 			get { return this.device.Axis[axis]; }
 		}
 
-        public int ButtonCount
-        {
-            get { return device.Button.Count; }
-        }
-		
 		public OpenTKJoystickInputSource(JoystickDevice device)
 		{
 			this.device = device;
 		}
-
 	}
 }

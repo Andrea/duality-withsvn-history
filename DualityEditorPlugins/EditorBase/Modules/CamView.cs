@@ -161,6 +161,8 @@ namespace EditorBase
 		private	bool		inputKeyFocus		= false;
 		private	int			inputKeyRepeatCount	= 0;
 		private	BitArray	inputKeyPressed		= new BitArray((int)Key.LastKey + 1, false);
+		private	event		EventHandler						inputLostFocus	= null;
+		private	event		EventHandler						inputGotFocus	= null;
 
 		public event EventHandler PerspectiveChanged	= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
@@ -1130,6 +1132,16 @@ namespace EditorBase
 		bool IKeyboardInputSource.this[Key key]
 		{
 			get { return this.inputKeyPressed[(int)key]; }
+		}
+		event EventHandler IKeyboardInputSource.LostFocus
+		{
+			add { this.inputLostFocus += value; }
+			remove { this.inputLostFocus -= value; }
+		}
+		event EventHandler IKeyboardInputSource.GotFocus
+		{
+			add { this.inputGotFocus += value; }
+			remove { this.inputGotFocus -= value; }
 		}
 	}
 }

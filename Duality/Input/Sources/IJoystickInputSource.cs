@@ -9,24 +9,13 @@ namespace Duality
 	public interface IJoystickInputSource
 	{
 		/// <summary>
-		/// [GET] A string containing a unique description for this instance.
+		/// [GET] A text description of this input device.
 		/// </summary>
 		string Description { get; }
 		/// <summary>
 		/// [GET] Returns whether this input is currently available.
 		/// </summary>
 		bool IsAvailable { get; }
-        /// <summary>
-        /// Return the ammount of buttons currently available.
-        /// </summary>
-        /// <returns></returns>
-        int ButtonCount { get; }
-		/// <summary>
-		/// Return the ammount of buttons currently available.
-		/// </summary>
-		/// <returns></returns>
-		int AxisCount { get; }
-
 		/// <summary>
 		/// [GET] Returns whether the specified device button is currently pressed.
 		/// </summary>
@@ -39,6 +28,18 @@ namespace Duality
 		/// <param name="axis"></param>
 		/// <returns></returns>
 		float this[JoystickAxis axis] { get; }
-        
+
+		/// <summary>
+		/// Fired once when a device button is no longer pressed.
+		/// </summary>
+		event EventHandler<JoystickButtonEventArgs> ButtonUp;
+		/// <summary>
+		/// Fired once when a device button is pressed.
+		/// </summary>
+		event EventHandler<JoystickButtonEventArgs> ButtonDown;
+		/// <summary>
+		/// Fired whenever a device axis changes its value.
+		/// </summary>
+		event EventHandler<JoystickMoveEventArgs> Move;
 	}
 }
