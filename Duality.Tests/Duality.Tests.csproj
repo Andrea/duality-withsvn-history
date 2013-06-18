@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Helpers\GuardTests.cs" />
     <Compile Include="Log\LogTests.cs" />
+    <Compile Include="Messaging\MessagingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransformTests.cs" />
   </ItemGroup>

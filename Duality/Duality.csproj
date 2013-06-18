@@ -58,6 +58,7 @@
     <Compile Include="Cloning\Surrogates\BitmapSurrogate.cs" />
     <Compile Include="Cloning\Surrogates\DelegateSurrogate.cs" />
     <Compile Include="Cloning\Surrogates\DictionarySurrogate.cs" />
+    <Compile Include="Components\GameMessage.cs" />
     <Compile Include="Components\ICmpInterfaces.cs" />
     <Compile Include="Components\GraphicsHelpers.cs" />
     <Compile Include="Components\Physics\Joints\FixedMouseJointInfo.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Helpers\DualityMetaData.cs" />
     <Compile Include="Helpers\DualityUserData.cs" />
     <Compile Include="Helpers\ExtMethodsBitmap.cs" />
+    <Compile Include="Helpers\ExtMethodsGameObject.cs" />
     <Compile Include="Helpers\Guard.cs" />
     <Compile Include="Helpers\IManageableObject.cs" />
     <Compile Include="Helpers\InitState.cs" />

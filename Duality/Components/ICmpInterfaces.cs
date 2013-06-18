@@ -123,6 +123,16 @@ namespace Duality
 		/// <param name="args"></param>
 		void OnCollisionSolve(Component sender, CollisionEventArgs args);
 	}
+	
+	/// <summary>
+	/// Implement this interface in <see cref="Component">Components</see> that want to accept and
+	/// respond to messages.
+	/// </summary>
+	public interface ICmpHandlesMessages
+	{
+		void HandleMessage(Component sender, GameMessage msg);
+	}
+
 	/// <summary>
 	/// Provides detailed information about a collision event.
 	/// </summary>
