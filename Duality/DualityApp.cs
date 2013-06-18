@@ -81,9 +81,9 @@ namespace Duality
 		private	static	GraphicsMode				targetMode			= null;
 		private	static	HashSet<GraphicsMode>		availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
 		private	static	GraphicsMode				defaultMode			= null;
-		private	static	StaticMouseInput			mouse				= new StaticMouseInput();
-		private	static	StaticKeyboardInput			keyboard			= new StaticKeyboardInput();
-		private	static	List<StaticJoystickInput>	joysticks			= new List<StaticJoystickInput>();
+		private	static	MouseInput					mouse				= new MouseInput();
+		private	static	KeyboardInput				keyboard			= new KeyboardInput();
+		private	static	List<JoystickInput>			joysticks			= new List<JoystickInput>();
 		private	static	SoundDevice					sound				= null;
 		private	static	ExecutionEnvironment		environment			= ExecutionEnvironment.Unknown;
 		private	static	ExecutionContext			execContext			= ExecutionContext.Terminated;
@@ -138,42 +138,25 @@ namespace Duality
 			set { targetMode = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to mouse user input.
+		/// [GET] Provides access to mouse user input.
 		/// </summary>
-		public static IMouseInput Mouse
+		public static MouseInput Mouse
 		{
 			get { return mouse; }
-			set { mouse.RealInput = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to keyboard user input
+		/// [GET] Provides access to keyboard user input
 		/// </summary>
-		public static IKeyboardInput Keyboard
+		public static KeyboardInput Keyboard
 		{
 			get { return keyboard; }
-			set { keyboard.RealInput = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to extended user input via joystick or gamepad.
+		/// [GET] Provides access to extended user input via joystick or gamepad.
 		/// </summary>
-		public static IEnumerable<IJoystickInput> Joysticks
+		public static IEnumerable<JoystickInput> Joysticks
 		{
-			get { return joysticks.Where(j => j.RealInput != null); }
-			set
-			{
-				int index = 0;
-				foreach (IJoystickInput joy in value)
-				{
-					if (index >= joysticks.Count)
-						joysticks.Add(new StaticJoystickInput());
-					joysticks[index].RealInput = joy;
-					++index;
-				}
-				for (; index < joysticks.Count; ++index)
-				{
-					joysticks[index].RealInput = null;
-				}
-			}
+			get { return joysticks; }
 		}
 		/// <summary>
 		/// [GET] Provides access to the main <see cref="SoundDevice"/>.
@@ -231,12 +214,19 @@ namespace Duality
 		{
 			get
 			{
-				string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-				path = Path.Combine(path, "Duality");
-				path = Path.Combine(path, "AppData");
-				path = Path.Combine(path, PathHelper.GetValidFileName(appData.AppName));
-				path = Path.Combine(path, "userdata.dat");
-				return path;
+				if (AppData.LocalUserData)
+				{
+					return "userdata.dat";
+				}
+				else
+				{
+					return Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+						"Duality", 
+						"AppData", 
+						PathHelper.GetValidFileName(appData.AppName), 
+						"userdata.dat");
+				}
 			}
 		}
 		/// <summary>
@@ -401,18 +391,14 @@ namespace Duality
 			InitPlugins();
 		}
 		/// <summary>
-		/// Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
-		/// attemp performing any Duality operations after it has been terminated.
+		/// Terminates this DualityApp. This does not end the current Process, but will instruct the engine to
+		/// leave main loop and message processing as soon as possible.
 		/// </summary>
-		/// <param name="unexpected">
-		/// If true, this is handled as an unexpected termination, such as because of an exception that
-		/// from which the application can't recover.
-		/// </param>
 		public static void Terminate()
 		{
 			Terminate(false);
 		}
-		internal static void Terminate(bool unexpected)
+		private static void Terminate(bool unexpected)
 		{
 			if (!initialized) return;
 
@@ -544,9 +530,71 @@ namespace Duality
 		}
 		
 		/// <summary>
+		/// Assigns a new input source for mouse input.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void SetInputSource(IMouseInputSource source)
+		{
+			mouse.Source = source;
+		}
+		/// <summary>
+		/// Assigns a new input source for keyboard input.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void SetInputSource(IKeyboardInputSource source)
+		{
+			keyboard.Source = source;
+		}
+		/// <summary>
+		/// Adds an extended user input source.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void AddInputSource(IJoystickInputSource source)
+		{
+			foreach (JoystickInput registeredInput in joysticks)
+			{
+				if (registeredInput.Description == source.Description &&
+					registeredInput.Source == null)
+				{
+					registeredInput.Source = source;
+					return;
+				}
+			}
+
+			JoystickInput newInput = new JoystickInput();
+			newInput.Source = source;
+			joysticks.Add(newInput);
+		}
+		/// <summary>
+		/// Adds a set of extended user input sources.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void AddInputSource(IEnumerable<IJoystickInputSource> source)
+		{
+			foreach (IJoystickInputSource s in source)
+				AddInputSource(s);
+		}
+		/// <summary>
+		/// Removed an extended user input source.
+		/// </summary>
+		/// <param name="source"></param>
+		public static void RemoveInputSource(IJoystickInputSource source)
+		{
+			foreach (JoystickInput registeredInput in joysticks)
+			{
+				if (registeredInput.Source == source)
+				{
+					registeredInput.Source = null;
+					return;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Loads all <see cref="Resource">Resources</see> that are located in this DualityApp's data directory and
 		/// saves them again. All loaded content is discarded both before and after this operation. You usually don't
-		/// need this.
+		/// need this, but it can be useful for migrating persistent game content between different versions through
+		/// serialization.
 		/// </summary>
 		public static void LoadSaveAll()
 		{
@@ -667,6 +715,8 @@ namespace Duality
 			try
 			{
 				string path = AppDataPath;
+				string dirName = Path.GetDirectoryName(path);
+				if (!string.IsNullOrEmpty(dirName) && !Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 				using (FileStream str = File.Open(path, FileMode.Create))
 				{
 					using (var formatter = Formatter.Create(str, FormattingMethod.Xml))
@@ -690,7 +740,8 @@ namespace Duality
 			try
 			{
 				string path = UserDataPath;
-				if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+				string dirName = Path.GetDirectoryName(path);
+				if (!string.IsNullOrEmpty(dirName) && !Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 				if (execContext == ExecutionContext.Editor) path = "defaultuserdata.dat";
 
 				using (FileStream str = File.Open(path, FileMode.Create))
@@ -716,7 +767,8 @@ namespace Duality
 			try
 			{
 				string path = MetaDataPath;
-				if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+				string dirName = Path.GetDirectoryName(path);
+				if (!string.IsNullOrEmpty(dirName) && !Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 
 				using (FileStream str = File.Open(path, FileMode.Create))
 				{
@@ -953,7 +1005,7 @@ namespace Duality
 			if (ReflectionHelper.CleanEventBindings(Log.LogData,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(Log)) + ".LogData");
 			if (ReflectionHelper.CleanEventBindings(keyboard,			invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Keyboard");
 			if (ReflectionHelper.CleanEventBindings(mouse,				invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Mouse");
-			foreach (StaticJoystickInput joystick in joysticks)
+			foreach (JoystickInput joystick in joysticks)
 			{
 				if (ReflectionHelper.CleanEventBindings(joystick,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Joysticks");
 			}

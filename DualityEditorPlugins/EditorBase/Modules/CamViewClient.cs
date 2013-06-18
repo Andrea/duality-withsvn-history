@@ -127,7 +127,8 @@ namespace EditorBase
 			this.UpdateTargetResolution();
 			if (this.view.ContainsFocus)
 			{
-				Sandbox.SetEngineInput(this.view, this.view);
+				DualityApp.SetInputSource(this.view as IMouseInputSource);
+				DualityApp.SetInputSource(this.view as IKeyboardInputSource);
 				if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
 				{
 					if (this.CameraObj.GetComponent<SoundListener>() != null)

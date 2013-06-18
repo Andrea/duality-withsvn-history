@@ -26,7 +26,7 @@ namespace Duality
 		private	static	float		lastDelta	= 0.0f;
 		private	static	float		timeMult	= 0.0f;
 		private	static	float		timeScale	= 1.0f;
-		private	static	bool		timeFreeze	= false;
+		private	static	int			timeFreeze	= 0;
 		private	static	int			frameCount	= 0;
 		private	static	int			fps			= 0;
 		private	static	int			fps_frames	= 0;
@@ -98,14 +98,15 @@ namespace Duality
 		/// </summary>
 		public static void Freeze()
 		{
-			timeFreeze = true;
+			timeFreeze++;
 		}
 		/// <summary>
 		/// Unfreezes game time. TimeMult resumes to its normal value and GameTimer starts running again.
 		/// </summary>
 		public static void Resume()
 		{
-			timeFreeze = false;
+			if (timeFreeze == 0) return;
+			timeFreeze--;
 		}
 
 		internal static void FrameTick(bool forceFixedStep = false)
@@ -122,7 +123,7 @@ namespace Duality
 			lastDelta = forceFixedStep ? MsPFMult : MathF.Min((float)(mainTimer - frameBegin), MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
 			frameBegin = mainTimer;
 
-			if (!timeFreeze)
+			if (timeFreeze == 0)
 			{
 				if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 					gameTimer += TimeSpan.FromMilliseconds(lastDelta * timeScale);

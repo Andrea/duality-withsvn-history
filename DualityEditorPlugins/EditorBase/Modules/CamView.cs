@@ -31,7 +31,7 @@ using MouseWheelEventArgs = OpenTK.Input.MouseWheelEventArgs;
 
 namespace EditorBase
 {
-	public partial class CamView : DockContent, IHelpProvider, IMouseInput, IKeyboardInput
+	public partial class CamView : DockContent, IHelpProvider, IMouseInputSource, IKeyboardInputSource
 	{
 		public class CameraChangedEventArgs : EventArgs
 		{
@@ -158,12 +158,16 @@ namespace EditorBase
 		private	event	EventHandler<MouseButtonEventArgs>	inputMouseDown			= null;
 		private	event	EventHandler<MouseButtonEventArgs>	inputMouseUp			= null;
 		private	event	EventHandler<MouseMoveEventArgs>	inputMouseMove			= null;
+		private	event	EventHandler						inputMouseLeave			= null;
+		private	event	EventHandler						inputMouseEnter			= null;
 		private	event	EventHandler<MouseWheelEventArgs>	inputMouseWheelChanged	= null;
 
 		private	bool		inputKeyRepeat	= false;
 		private	BitArray	inputKeyPressed	= new BitArray((int)Key.LastKey + 1, false);
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyDown	= null;
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
+		private	event		EventHandler						inputLostFocus	= null;
+		private	event		EventHandler						inputGotFocus	= null;
 
 		public event EventHandler PerspectiveChanged	= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
@@ -351,6 +355,7 @@ namespace EditorBase
 				this.glControl.MouseWheel -= this.glControl_MouseWheel;
 				this.glControl.MouseMove -= this.glControl_MouseMove;
 				this.glControl.GotFocus -= this.glControl_GotFocus;
+				this.glControl.LostFocus -= this.glControl_LostFocus;
 				this.glControl.PreviewKeyDown -= glControl_PreviewKeyDown;
 				this.glControl.KeyDown -= this.glControl_KeyDown;
 				this.glControl.KeyUp -= this.glControl_KeyUp;
@@ -374,6 +379,7 @@ namespace EditorBase
 			this.glControl.MouseWheel += this.glControl_MouseWheel;
 			this.glControl.MouseMove += this.glControl_MouseMove;
 			this.glControl.GotFocus += this.glControl_GotFocus;
+			this.glControl.LostFocus += this.glControl_LostFocus;
 			this.glControl.PreviewKeyDown += glControl_PreviewKeyDown;
 			this.glControl.KeyDown += this.glControl_KeyDown;
 			this.glControl.KeyUp += this.glControl_KeyUp;
@@ -729,6 +735,11 @@ namespace EditorBase
 		}
 		private void glControl_MouseLeave(object sender, EventArgs e)
 		{
+			if (this.activeState.EngineUserInput)
+			{
+				if (this.inputMouseLeave != null) this.inputMouseLeave(this, EventArgs.Empty);
+			}
+
 			this.RemoveFocusHook();
 
 			if (this.activeLayers.Any(l => l.MouseTracking))
@@ -736,6 +747,11 @@ namespace EditorBase
 		}
 		private void glControl_MouseEnter(object sender, EventArgs e)
 		{
+			if (this.activeState.EngineUserInput)
+			{
+				if (this.inputMouseEnter != null) this.inputMouseEnter(this, EventArgs.Empty);
+			}
+
 			this.InstallFocusHook();
 
 			if (this.activeLayers.Any(l => l.MouseTracking))
@@ -789,8 +805,22 @@ namespace EditorBase
 			this.RemoveFocusHook();
 			this.inputMouseCapture = true;
 
+			if (this.activeState.EngineUserInput)
+			{
+				if (this.inputGotFocus != null)
+					this.inputGotFocus(this, EventArgs.Empty);
+			}
+
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
 				this.activeState.SelectObjects(this.activeState.SelectedObjects);
+		}
+		private void glControl_LostFocus(object sender, EventArgs e)
+		{
+			if (this.activeState.EngineUserInput)
+			{
+				if (this.inputLostFocus != null)
+					this.inputLostFocus(this, EventArgs.Empty);
+			}
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
@@ -1067,7 +1097,7 @@ namespace EditorBase
 			return result;
 		}
 
-		int IMouseInput.X
+		int IMouseInputSource.X
 		{
 			get { return this.inputMouseX; }
 			set
@@ -1078,7 +1108,7 @@ namespace EditorBase
 				}
 			}
 		}
-		int IMouseInput.Y
+		int IMouseInputSource.Y
 		{
 			get { return this.inputMouseY; }
 			set
@@ -1089,53 +1119,73 @@ namespace EditorBase
 				}
 			}
 		}
-		int IMouseInput.Wheel
+		int IMouseInputSource.Wheel
 		{
 			get { return this.inputMouseWheel; }
 		}
-		bool IMouseInput.this[MouseButton btn]
+		bool IMouseInputSource.this[MouseButton btn]
 		{
 			get { return (this.inputMouseButtons & (1 << (int)btn)) != 0; }
 		}
-		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonUp
+		event EventHandler<MouseButtonEventArgs> IMouseInputSource.ButtonUp
 		{
 			add { this.inputMouseUp += value; }
 			remove { this.inputMouseUp -= value; }
 		}
-		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonDown
+		event EventHandler<MouseButtonEventArgs> IMouseInputSource.ButtonDown
 		{
 			add { this.inputMouseDown += value; }
 			remove { this.inputMouseDown -= value; }
 		}
-		event EventHandler<MouseMoveEventArgs> IMouseInput.Move
+		event EventHandler<MouseMoveEventArgs> IMouseInputSource.Move
 		{
 			add { this.inputMouseMove += value; }
 			remove { this.inputMouseMove -= value; }
 		}
-		event EventHandler<MouseWheelEventArgs> IMouseInput.WheelChanged
+		event EventHandler IMouseInputSource.Leave
+		{
+			add { this.inputMouseLeave += value; }
+			remove { this.inputMouseLeave -= value; }
+		}
+		event EventHandler IMouseInputSource.Enter
+		{
+			add { this.inputMouseEnter += value; }
+			remove { this.inputMouseEnter -= value; }
+		}
+		event EventHandler<MouseWheelEventArgs> IMouseInputSource.WheelChanged
 		{
 			add { this.inputMouseWheelChanged += value; }
 			remove { this.inputMouseWheelChanged -= value; }
 		}
 
-		bool IKeyboardInput.KeyRepeat
+		bool IKeyboardInputSource.KeyRepeat
 		{
 			get { return this.inputKeyRepeat; }
 			set { this.inputKeyRepeat = value; }
 		}
-		bool IKeyboardInput.this[Key key]
+		bool IKeyboardInputSource.this[Key key]
 		{
 			get { return this.inputKeyPressed[(int)key]; }
 		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyUp
+		event EventHandler<KeyboardKeyEventArgs> IKeyboardInputSource.KeyUp
 		{
 			add { this.inputKeyUp += value; }
 			remove { this.inputKeyUp -= value; }
 		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyDown
+		event EventHandler<KeyboardKeyEventArgs> IKeyboardInputSource.KeyDown
 		{
 			add { this.inputKeyDown += value; }
 			remove { this.inputKeyDown -= value; }
+		}
+		event EventHandler IKeyboardInputSource.LostFocus
+		{
+			add { this.inputLostFocus += value; }
+			remove { this.inputLostFocus -= value; }
+		}
+		event EventHandler IKeyboardInputSource.GotFocus
+		{
+			add { this.inputGotFocus += value; }
+			remove { this.inputGotFocus -= value; }
 		}
 	}
 }

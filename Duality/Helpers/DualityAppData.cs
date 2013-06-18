@@ -22,6 +22,7 @@ namespace Duality
 		private	float				soundDopplerFactor	= 1.0f;
 		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
 		private	bool				physicsFixedTime	= false;
+		private	bool				localUserData		= false;
 		private	object				customData			= null;
 
 		/// <summary>
@@ -99,6 +100,14 @@ namespace Duality
 		{
 			get { return this.physicsFixedTime; }
 			set { this.physicsFixedTime = value; }
+		}
+		/// <summary>
+		/// [GET / SET] If true, user data is saved locally in the game folder instead of the current user account.
+		/// </summary>
+		public bool LocalUserData
+		{
+			get { return this.localUserData; }
+			set { this.localUserData = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Use this property to store custom application data.

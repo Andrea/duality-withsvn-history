@@ -168,11 +168,6 @@ namespace DualityEditor
 		{
 			sceneFreeze--;
 		}
-		public static void SetEngineInput(IMouseInput mouse, IKeyboardInput keyboard)
-		{
-			DualityApp.Mouse = mouse;
-			DualityApp.Keyboard = keyboard;
-		}
 
 		internal static bool TakeSingleStep()
 		{

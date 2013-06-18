@@ -4,6 +4,7 @@ using System.Linq;
 
 using Duality.EditorHints;
 using Duality.ColorFormat;
+using Duality.VertexFormat;
 using Duality.Resources;
 
 using OpenTK;
@@ -54,17 +55,17 @@ namespace Duality.Components.Renderers
 
 		private	int			animFirstFrame		= 0;
 		private	int			animFrameCount		= 0;
-		private	float		animDuration		= 0.0f;
+		private	float		animDuration		= 5.0f;
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
 		private	float		animTime			= 0.0f;
+		private	bool		animPaused			= false;
 		private	List<int>	customFrameSequence	= null;
 
 		[NonSerialized] private int		curAnimFrame		= 0;
 		[NonSerialized] private int		nextAnimFrame		= 0;
 		[NonSerialized] private float	curAnimFrameFade	= 0.0f;
 
-		[NonSerialized]
-		private	VertexFormat.VertexC1P3T4A1[]	verticesSmooth	= null;
+		[NonSerialized] private	VertexC1P3T4A1[]	verticesSmooth	= null;
 
 
 		/// <summary>
@@ -100,7 +101,15 @@ namespace Duality.Components.Renderers
 		public float AnimDuration
 		{
 			get { return this.animDuration; }
-			set { this.animDuration = MathF.Max(0.0f, value); }
+			set
+			{
+				float lastDuration = this.animDuration;
+
+				this.animDuration = MathF.Max(0.0f, value);
+
+				if (lastDuration != 0.0f && this.animDuration != 0.0f)
+					this.animTime *= this.animDuration / lastDuration;
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The animations current play time, i.e. the current state of the animation.
@@ -110,6 +119,14 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.animTime; }
 			set { this.animTime = MathF.Max(0.0f, value); }
+		}
+		/// <summary>
+		/// [GET / SET] If true, the animation is paused and won't advance over time. <see cref="AnimTime"/> will stay constant until resumed.
+		/// </summary>
+		public bool AnimPaused
+		{
+			get { return this.animPaused; }
+			set { this.animPaused = value; }
 		}
 		/// <summary>
 		/// [GET / SET] The animations loop behaviour.
@@ -148,11 +165,11 @@ namespace Duality.Components.Renderers
 						return false;
 					case LoopMode.Loop:
 					case LoopMode.PingPong:
-						return true;
+						return !this.animPaused;
 					case LoopMode.Once:
-						return this.animTime < this.animDuration;
+						return !this.animPaused && this.animTime < this.animDuration;
 					case LoopMode.Queue:
-						return this.customFrameSequence != null && this.customFrameSequence.Count > 1;
+						return !this.animPaused && this.customFrameSequence != null && this.customFrameSequence.Count > 1;
 					default:
 						return false;
 				}
@@ -280,6 +297,7 @@ namespace Duality.Components.Renderers
 		void ICmpUpdatable.OnUpdate()
 		{
 			if (!this.IsAnimationRunning) return;
+			if (this.animPaused) return;
 
 			int actualFrameBegin = this.customFrameSequence != null ? 0 : this.animFirstFrame;
 			int actualFrameCount = this.customFrameSequence != null ? this.customFrameSequence.Count : this.animFrameCount;

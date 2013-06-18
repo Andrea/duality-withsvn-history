@@ -134,9 +134,9 @@ namespace DualityLauncher
 				ContentProvider.InitDefaultContent();
 
 				// Input setup
-				DualityApp.Mouse = new OpenTKMouseInput(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY);
-				DualityApp.Keyboard = new OpenTKKeyboardInput(launcherWindow.Keyboard);
-				DualityApp.Joysticks = launcherWindow.Joysticks.Select(j => new OpenTKJoystickInput(j));
+				DualityApp.SetInputSource(new OpenTKMouseInputSource(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY));
+				DualityApp.SetInputSource(new OpenTKKeyboardInputSource(launcherWindow.Keyboard));
+				DualityApp.AddInputSource(launcherWindow.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
 
 				// Load the starting Scene
 				Scene.Current = DualityApp.AppData.StartScene.Res;

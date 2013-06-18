@@ -197,10 +197,12 @@ namespace DualityEditor
 			DualityApp.PluginReady += DualityApp_PluginReady;
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new[] {"logfile", "logfile_editor"});
 			InitMainGLContext();
-			// Initialize Joystick support in the editor
-			mainJoystickDriver = new OpenTK.Platform.Windows.WinMMJoystick();
-			if (mainJoystickDriver != null && mainJoystickDriver.Joysticks != null)
-				DualityApp.Joysticks = mainJoystickDriver.Joysticks.Select(j => new OpenTKJoystickInput(j));
+			{
+				// Initialize Joystick support in the editor
+				mainJoystickDriver = new OpenTK.Platform.Windows.WinMMJoystick();
+				if (mainJoystickDriver != null && mainJoystickDriver.Joysticks != null)
+					DualityApp.AddInputSource(mainJoystickDriver.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
+			}
 			ContentProvider.InitDefaultContent();
 			LoadPlugins();
 			LoadUserData();
@@ -615,7 +617,8 @@ namespace DualityEditor
 		public static void SaveResources()
 		{
 			bool anySaved = false;
-			foreach (Resource res in UnsavedResources.ToArray()) // The Property does some safety checks
+			Resource[] resToSave = UnsavedResources.ToArray(); // The Property does some safety checks
+			foreach (Resource res in resToSave)
 			{
 				res.Save();
 				anySaved = true;

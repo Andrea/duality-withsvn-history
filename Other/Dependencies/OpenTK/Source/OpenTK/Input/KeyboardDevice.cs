@@ -144,6 +144,24 @@ namespace OpenTK.Input
 
         #endregion
 
+        #region GotFocus
+
+        /// <summary>
+        /// Occurs when the keyboard becomes available to this application.
+        /// </summary>
+        public event EventHandler GotFocus;
+
+        #endregion
+
+        #region LostFocus
+
+        /// <summary>
+        /// Occurs when the keyboard is no longer available to this application.
+        /// </summary>
+        public event EventHandler LostFocus;
+
+        #endregion
+
         #endregion
 
         #region --- IInputDevice Members ---
@@ -202,6 +220,18 @@ namespace OpenTK.Input
         }
 
         #endregion
+
+		internal void NotifyGotFocus()
+		{
+			if (this.GotFocus != null)
+				this.GotFocus(this, EventArgs.Empty);
+		}
+
+		internal void NotifyLostFocus()
+		{
+			if (this.LostFocus != null)
+				this.LostFocus(this, EventArgs.Empty);
+		}
 
         #endregion
     }

@@ -288,12 +288,14 @@ namespace OpenTK.Platform.Windows
 					{
 						if (!CursorVisible)
 							ShowCursor();
+						mouse.NotifyLeave();
 						MouseLeave(this, EventArgs.Empty);
 					}
 					if (!this.client_rectangle.Contains(lastCursorPos) && this.client_rectangle.Contains(point))
 					{
 						if (!CursorVisible)
 							HideCursor();
+						mouse.NotifyEnter();
 						MouseEnter(this, EventArgs.Empty);
 					}
 
@@ -311,6 +313,7 @@ namespace OpenTK.Platform.Windows
 					{
 						if (!CursorVisible)
 							ShowCursor();
+						mouse.NotifyLeave();
 						MouseLeave(this, EventArgs.Empty);
 					}
 
@@ -450,7 +453,12 @@ namespace OpenTK.Platform.Windows
 
                 case WindowMessage.KILLFOCUS:
                     keyboard.ClearKeys();
+					keyboard.NotifyLostFocus();
                     break;
+
+				case WindowMessage.SETFOCUS:
+					keyboard.NotifyGotFocus();
+					break;
 
                 #endregion
 
