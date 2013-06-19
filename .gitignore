@@ -60,3 +60,11 @@ Ankh.NoLoad
 
 /DualityEditorPlugins/EditorBase/bin/*
 /DualityEditorPlugins/EditorBase/obj/*
+
+
+# Others
+[Bb]in
+[Oo]bj
+sql
+TestResults
+*.Cache
