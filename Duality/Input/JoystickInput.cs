@@ -52,6 +52,7 @@ namespace Duality
 		private State lastState = new State();
 		private string description = null;
 		private bool isDummy = false;
+		private	bool					isDummy			= false;
 
 
 		/// <summary>
@@ -199,7 +200,7 @@ namespace Duality
 		{
 			return !this.currentState.ButtonPressed[(int)button] && this.lastState.ButtonPressed[(int)button];
 		}
-
+		
 		/// <summary>
 		/// Returns the specified axis value.
 		/// </summary>
