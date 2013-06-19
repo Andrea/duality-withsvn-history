@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
+
+using OpenTK;
 using OpenTK.Input;
 
 namespace Duality
@@ -51,11 +53,11 @@ namespace Duality
 
 		
 		/// <summary>
-		/// [SET] The mouse inputs data source.
+		/// [GET / SET] The mouse inputs data source.
 		/// </summary>
 		public IMouseInputSource Source
 		{
-			internal get { return this.source; }
+			get { return this.source; }
 			set { this.source = value; }
 		}
 		/// <summary>
@@ -89,6 +91,13 @@ namespace Duality
 			set { if (this.source != null) this.source.Y = value; }
 		}
 		/// <summary>
+		/// [GET] The current viewport-local cursor position.
+		/// </summary>
+		public Vector2 Pos
+		{
+			get { return new Vector2(this.currentState.X, this.currentState.Y); }
+		}
+		/// <summary>
 		/// [GET] Returns the X position change since last frame.
 		/// </summary>
 		public int XSpeed
@@ -103,6 +112,13 @@ namespace Duality
 			get { return this.currentState.Y - this.lastState.Y; }
 		}
 		/// <summary>
+		/// [GET] The viewport-local cursor position change since last frame.
+		/// </summary>
+		public Vector2 Vel
+		{
+			get { return new Vector2(this.currentState.X - this.lastState.X, this.currentState.Y - this.lastState.Y); }
+		}
+		/// <summary>
 		/// [GET] The current mouse wheel value
 		/// </summary>
 		public int Wheel
@@ -115,6 +131,20 @@ namespace Duality
 		public float WheelPrecise
 		{
 			get { return this.currentState.Wheel; }
+		}
+		/// <summary>
+		/// [GET] Returns the change of the mouse wheel value since last frame.
+		/// </summary>
+		public int WheelSpeed
+		{
+			get { return MathF.RoundToInt(this.currentState.Wheel - this.lastState.Wheel); }
+		}
+		/// <summary>
+		/// [GET] Returns the (precise, high resolution) change of the mouse wheel value since last frame.
+		/// </summary>
+		public float WheelSpeedPrecise
+		{
+			get { return this.currentState.Wheel - this.lastState.Wheel; }
 		}
 		/// <summary>
 		/// [GET] Returns whether a specific <see cref="MouseButton"/> is currently pressed.

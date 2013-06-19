@@ -46,11 +46,11 @@ namespace Duality
 
 
 		/// <summary>
-		/// [SET] The keyboard inputs data source.
+		/// [GET / SET] The keyboard inputs data source.
 		/// </summary>
 		public IKeyboardInputSource Source
 		{
-			internal get { return this.source; }
+			get { return this.source; }
 			set
 			{
 				if (this.source != value)

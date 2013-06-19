@@ -45,14 +45,18 @@ namespace Duality
 		private	State					currentState	= new State();
 		private	State					lastState		= new State();
 		private	string					description		= null;
+		private	bool					isDummy			= false;
 
 
-		internal IJoystickInputSource Source
+		/// <summary>
+		/// [GET / SET] The extended user inputs data source.
+		/// </summary>
+		public IJoystickInputSource Source
 		{
 			get { return this.source; }
 			set
 			{
-				if (this.source != value)
+				if (this.source != value && !this.isDummy)
 				{
 					this.source = value;
 					if (this.source != null)
@@ -109,7 +113,10 @@ namespace Duality
 		public event EventHandler<JoystickMoveEventArgs> Move;
 		
 
-		internal JoystickInput() {}
+		internal JoystickInput(bool dummy = false)
+		{
+			this.isDummy = dummy;
+		}
 		internal void Update()
 		{
 			// Memorize last state
@@ -182,7 +189,16 @@ namespace Duality
 		{
 			return !this.currentState.ButtonPressed[(int)button] && this.lastState.ButtonPressed[(int)button];
 		}
-
+		
+		/// <summary>
+		/// Returns the specified axis value.
+		/// </summary>
+		/// <param name="axis"></param>
+		/// <returns></returns>
+		public float AxisValue(JoystickAxis axis)
+		{
+			return this.currentState.AxisValue[(int)axis];
+		}
 		/// <summary>
 		/// Returns the specified axis value change since last frame.
 		/// </summary>

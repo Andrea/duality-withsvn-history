@@ -13,7 +13,9 @@ namespace Duality
 	public sealed class JoystickInputCollection : IList<JoystickInput>, ICollection<JoystickInput>, IList, ICollection, IEnumerable<JoystickInput>, IEnumerable
 	{
 		private List<JoystickInput> input = new List<JoystickInput>();
+		private JoystickInput dummyInput = new JoystickInput(true);
 		
+
 		/// <summary>
 		/// [GET] Returns how many joystick inputs are known. Not all of them are necessarily available.
 		/// </summary>
@@ -22,6 +24,7 @@ namespace Duality
 			get { return input.Count; }
 		}
 		
+
 		/// <summary>
 		/// [GET] Returns a specific input by index.
 		/// </summary>
@@ -29,7 +32,7 @@ namespace Duality
 		/// <returns></returns>
 		public JoystickInput this[int index]
 		{
-			get { return this.input[index]; }
+			get { return (index >= 0 && index < this.input.Count) ? this.input[index] : this.dummyInput; }
 		}
 		/// <summary>
 		/// [GET] Returns a specific input by its <see cref="JoystickInput.Description"/>.
@@ -38,9 +41,20 @@ namespace Duality
 		/// <returns></returns>
 		public JoystickInput this[string desc]
 		{
-			get { return this.input.FirstOrDefault(j => j.Description == desc); }
+			get { return this.input.FirstOrDefault(j => j.Description == desc) ?? this.dummyInput; }
 		}
 
+
+		/// <summary>
+		/// Removes all extended user input sources.
+		/// </summary>
+		public void ClearSources()
+		{
+			foreach (JoystickInput registeredInput in this.input)
+			{
+				registeredInput.Source = null;
+			}
+		}
 		/// <summary>
 		/// Adds a new extended user input source.
 		/// </summary>
@@ -77,16 +91,18 @@ namespace Duality
 		/// a new matching input source is registered.
 		/// </summary>
 		/// <param name="source"></param>
-		public void RemoveSource(IJoystickInputSource source)
+		/// <returns>Returns true, if the source was successfully removed.</returns>
+		public bool RemoveSource(IJoystickInputSource source)
 		{
-			foreach (JoystickInput registeredInput in input)
+			foreach (JoystickInput registeredInput in this.input)
 			{
 				if (registeredInput.Source == source)
 				{
 					registeredInput.Source = null;
-					return;
+					return true;
 				}
 			}
+			return false;
 		}
 		/// <summary>
 		/// Removes a set of previously registered extended user input sources. 
@@ -95,10 +111,16 @@ namespace Duality
 		/// a new matching input source is registered.
 		/// </summary>
 		/// <param name="source"></param>
-		public void RemoveSource(IEnumerable<IJoystickInputSource> source)
+		/// <returns>Returns true, if all sources were successfully removed.</returns>
+		public bool RemoveSource(IEnumerable<IJoystickInputSource> source)
 		{
+			bool allTrue = true;
 			foreach (IJoystickInputSource s in source)
-				RemoveSource(s);
+			{
+				if (!RemoveSource(s))
+					allTrue = false;
+			}
+			return allTrue;
 		}
 
 		/// <summary>
