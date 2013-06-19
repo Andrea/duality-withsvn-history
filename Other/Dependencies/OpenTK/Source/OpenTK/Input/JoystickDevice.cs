@@ -199,7 +199,7 @@ namespace OpenTK.Input
         /// </summary>
         /// <param name="button">The index of the joystick button for the event.</param>
         /// <param name="pressed">The current state of the button.</param>
-        internal JoystickButtonEventArgs(JoystickButton button, bool pressed)
+        public JoystickButtonEventArgs(JoystickButton button, bool pressed)
         {
             this.button = button;
             this.pressed = pressed;

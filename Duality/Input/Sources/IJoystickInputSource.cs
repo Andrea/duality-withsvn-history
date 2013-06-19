@@ -9,7 +9,7 @@ namespace Duality
 	public interface IJoystickInputSource
 	{
 		/// <summary>
-		/// [GET] A text description of this input device.
+		/// [GET] A string containing a unique description for this instance.
 		/// </summary>
 		string Description { get; }
 		/// <summary>
@@ -28,18 +28,5 @@ namespace Duality
 		/// <param name="axis"></param>
 		/// <returns></returns>
 		float this[JoystickAxis axis] { get; }
-
-		/// <summary>
-		/// Fired once when a device button is no longer pressed.
-		/// </summary>
-		event EventHandler<JoystickButtonEventArgs> ButtonUp;
-		/// <summary>
-		/// Fired once when a device button is pressed.
-		/// </summary>
-		event EventHandler<JoystickButtonEventArgs> ButtonDown;
-		/// <summary>
-		/// Fired whenever a device axis changes its value.
-		/// </summary>
-		event EventHandler<JoystickMoveEventArgs> Move;
 	}
 }

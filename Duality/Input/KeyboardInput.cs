@@ -8,35 +8,58 @@ namespace Duality
 	/// </summary>
 	public sealed class KeyboardInput : IUserInput
 	{
-		private	IKeyboardInputSource	realInput	= null;
-		private bool					keyRepeat	= false;
-		private	bool					gotFocus	= false;
-
-
-		internal IKeyboardInputSource Source
+		private class State
 		{
-			get { return this.realInput; }
+			public bool		KeyRepeat		= true;
+			public int		KeyRepeatCount	= 0;
+			public bool		HasFocus		= false;
+			public bool[]	KeyPressed		= new bool[(int)Key.LastKey + 1];
+
+			public State() {}
+			public State(State baseState)
+			{
+				baseState.CopyTo(this);
+			}
+			public void CopyTo(State other)
+			{
+				other.KeyRepeat			= this.KeyRepeat;
+				other.KeyRepeatCount	= this.KeyRepeatCount;
+				other.HasFocus			= this.HasFocus;
+				this.KeyPressed.CopyTo(other.KeyPressed, 0);
+			}
+			public void UpdateFromSource(IKeyboardInputSource source)
+			{
+				if (source == null) return;
+				this.HasFocus = source.HasFocus;
+				this.KeyRepeat = source.KeyRepeat;
+				this.KeyRepeatCount = source.KeyRepeatCounter;
+				for (int i = 0; i < this.KeyPressed.Length; i++)
+				{
+					this.KeyPressed[i] = source[(Key)i];
+				}
+			}
+		}
+
+		private	IKeyboardInputSource	source			= null;
+		private	State					currentState	= new State();
+		private	State					lastState		= new State();
+
+
+		/// <summary>
+		/// [SET] The keyboard inputs data source.
+		/// </summary>
+		public IKeyboardInputSource Source
+		{
+			internal get { return this.source; }
 			set
 			{
-				if (this.realInput != value)
+				if (this.source != value)
 				{
-					if (this.realInput != null)
-					{
-						this.realInput.KeyUp		-= this.realInput_KeyUp;
-						this.realInput.KeyDown		-= this.realInput_KeyDown;
-						this.realInput.LostFocus	-= this.realInput_LostFocus;
-						this.realInput.GotFocus		-= this.realInput_GotFocus;
-					}
+					this.source = value;
 
-					this.realInput = value;
-
-					if (this.realInput != null)
+					if (this.source != null)
 					{
-						this.realInput.KeyUp		+= this.realInput_KeyUp;
-						this.realInput.KeyDown		+= this.realInput_KeyDown;
-						this.realInput.LostFocus	+= this.realInput_LostFocus;
-						this.realInput.GotFocus		+= this.realInput_GotFocus;
-						this.realInput.KeyRepeat = this.keyRepeat;
+						this.source.KeyRepeat = this.currentState.KeyRepeat;
 					}
 				}
 			}
@@ -53,18 +76,18 @@ namespace Duality
 		/// </summary>
 		public bool IsAvailable
 		{
-			get { return this.realInput != null && this.gotFocus; }
+			get { return this.source != null && this.currentState.HasFocus; }
 		}
 		/// <summary>
 		/// [GET / SET] Whether a key that is pressed and hold down should fire the <see cref="KeyDown"/> event repeatedly.
 		/// </summary>
 		public bool KeyRepeat
 		{
-			get { return this.keyRepeat; }
+			get { return this.currentState.KeyRepeat; }
 			set 
 			{
-				this.keyRepeat = value;
-				if (this.realInput != null) this.realInput.KeyRepeat = this.keyRepeat;
+				this.currentState.KeyRepeat = value;
+				if (this.source != null) this.source.KeyRepeat = this.currentState.KeyRepeat;
 			}
 		}
 		/// <summary>
@@ -74,7 +97,7 @@ namespace Duality
 		/// <returns></returns>
 		public bool this[Key key]
 		{
-			get { return this.realInput != null ? this.realInput[key] : false; }
+			get { return this.currentState.KeyPressed[(int)key]; }
 		}
 
 		/// <summary>
@@ -96,28 +119,79 @@ namespace Duality
 		
 
 		internal KeyboardInput() {}
+		internal void Update()
+		{
+			// Memorize last state
+			this.currentState.CopyTo(this.lastState);
 
-		private void realInput_KeyUp(object sender, KeyboardKeyEventArgs e)
-		{
-			if (this.KeyUp != null)
-				this.KeyUp(this, e);
+			// Obtain new state
+			this.currentState.UpdateFromSource(this.source);
+
+			// Fire events
+			if (this.currentState.HasFocus && !this.lastState.HasFocus)
+			{
+				if (this.GotFocus != null)
+					this.GotFocus(this, EventArgs.Empty);
+			}
+			if (!this.currentState.HasFocus && this.lastState.HasFocus)
+			{
+				if (this.LostFocus != null)
+					this.LostFocus(this, EventArgs.Empty);
+			}
+			bool anyKeyDown = false;
+			for (int i = 0; i < this.currentState.KeyPressed.Length; i++)
+			{
+				if (this.currentState.KeyPressed[i] && !this.lastState.KeyPressed[i])
+				{
+					anyKeyDown = true;
+					if (this.KeyDown != null)
+						this.KeyDown(this, new KeyboardKeyEventArgs((Key)i));
+				}
+				if (!this.currentState.KeyPressed[i] && this.lastState.KeyPressed[i])
+				{
+					if (this.KeyUp != null)
+						this.KeyUp(this, new KeyboardKeyEventArgs((Key)i));
+				}
+			}
+			if (!anyKeyDown && this.currentState.KeyRepeatCount != this.lastState.KeyRepeatCount && this.currentState.KeyRepeat)
+			{
+				for (int i = 0; i < this.currentState.KeyPressed.Length; i++)
+				{
+					if (this.currentState.KeyPressed[i])
+					{
+						if (this.KeyDown != null)
+							this.KeyDown(this, new KeyboardKeyEventArgs((Key)i));
+					}
+				}
+			}
 		}
-		private void realInput_KeyDown(object sender, KeyboardKeyEventArgs e)
+
+		/// <summary>
+		/// Returns whether the specified key is currently pressed.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public bool KeyPressed(Key key)
 		{
-			if (this.KeyDown != null)
-				this.KeyDown(this, e);
+			return this.currentState.KeyPressed[(int)key];
 		}
-		private void realInput_LostFocus(object sender, EventArgs e)
+		/// <summary>
+		/// Returns whether the specified key was hit this frame.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public bool KeyHit(Key key)
 		{
-			this.gotFocus = false;
-			if (this.LostFocus != null)
-				this.LostFocus(this, e);
+			return this.currentState.KeyPressed[(int)key] && !this.lastState.KeyPressed[(int)key];
 		}
-		private void realInput_GotFocus(object sender, EventArgs e)
+		/// <summary>
+		/// Returns whether the specified key was released this frame.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		public bool KeyReleased(Key key)
 		{
-			this.gotFocus = true;
-			if (this.GotFocus != null)
-				this.GotFocus(this, e);
+			return !this.currentState.KeyPressed[(int)key] && this.lastState.KeyPressed[(int)key];
 		}
 	}
 }

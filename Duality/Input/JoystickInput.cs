@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using OpenTK.Input;
+
 
 namespace Duality
 {
@@ -8,38 +12,58 @@ namespace Duality
 	/// </summary>
 	public sealed class JoystickInput : IUserInput
 	{
-		private	IJoystickInputSource	realInput	= null;
-		private	string					description	= null;
+		private class State
+		{
+			public float[]	AxisValue		= new float[(int)JoystickAxis.Axis9 + 1];
+			public bool[]	ButtonPressed	= new bool[(int)JoystickButton.Button15 + 1];
+
+			public State() {}
+			public State(State baseState)
+			{
+				baseState.CopyTo(this);
+			}
+			public void CopyTo(State other)
+			{
+				this.AxisValue.CopyTo(other.AxisValue, 0);
+				this.ButtonPressed.CopyTo(other.ButtonPressed, 0);
+			}
+			public void UpdateFromSource(IJoystickInputSource source)
+			{
+				if (source == null) return;
+				for (int i = 0; i < this.ButtonPressed.Length; i++)
+				{
+					this.ButtonPressed[i] = source[(JoystickButton)i];
+				}
+				for (int i = 0; i < this.AxisValue.Length; i++)
+				{
+					this.AxisValue[i] = source[(JoystickAxis)i];
+				}
+			}
+		}
+
+		private	IJoystickInputSource	source			= null;
+		private	State					currentState	= new State();
+		private	State					lastState		= new State();
+		private	string					description		= null;
 
 
 		internal IJoystickInputSource Source
 		{
-			get { return this.realInput; }
+			get { return this.source; }
 			set
 			{
-				if (this.realInput != value)
+				if (this.source != value)
 				{
-					if (this.realInput != null)
+					this.source = value;
+					if (this.source != null)
 					{
-						this.realInput.ButtonUp		-= this.realInput_ButtonUp;
-						this.realInput.ButtonDown	-= this.realInput_ButtonDown;
-						this.realInput.Move			-= this.realInput_Move;
-					}
-
-					this.realInput = value;
-
-					if (this.realInput != null)
-					{
-						this.description = this.realInput.Description;
-						this.realInput.ButtonUp		+= this.realInput_ButtonUp;
-						this.realInput.ButtonDown	+= this.realInput_ButtonDown;
-						this.realInput.Move			+= this.realInput_Move;
+						this.description = this.source.Description;
 					}
 				}
 			}
 		}
 		/// <summary>
-		/// [GET] A text description of this input.
+		/// [GET] A string containing a unique description for this instance.
 		/// </summary>
 		public string Description
 		{
@@ -50,7 +74,7 @@ namespace Duality
 		/// </summary>
 		public bool IsAvailable
 		{
-			get { return this.realInput != null && this.realInput.IsAvailable; }
+			get { return this.source != null && this.source.IsAvailable; }
 		}
 		/// <summary>
 		/// [GET] Returns whether the specified device button is currently pressed.
@@ -59,7 +83,7 @@ namespace Duality
 		/// <returns></returns>
 		public bool this[JoystickButton button]
 		{
-			get { return this.realInput[button]; }
+			get { return this.currentState.ButtonPressed[(int)button]; }
 		}
 		/// <summary>
 		/// [GET] Returns the specified device axis current value.
@@ -68,7 +92,7 @@ namespace Duality
 		/// <returns></returns>
 		public float this[JoystickAxis axis]
 		{
-			get { return this.realInput[axis]; }
+			get { return this.currentState.AxisValue[(int)axis]; }
 		}
 
 		/// <summary>
@@ -86,21 +110,87 @@ namespace Duality
 		
 
 		internal JoystickInput() {}
+		internal void Update()
+		{
+			// Memorize last state
+			this.currentState.CopyTo(this.lastState);
 
-		private void realInput_ButtonUp(object sender, JoystickButtonEventArgs e)
-		{
-			if (this.ButtonUp != null)
-				this.ButtonUp(this, e);
+			// Obtain new state
+			this.currentState.UpdateFromSource(this.source);
+
+			// Fire events
+			for (int i = 0; i < this.currentState.ButtonPressed.Length; i++)
+			{
+				if (this.currentState.ButtonPressed[i] && !this.lastState.ButtonPressed[i])
+				{
+					if (this.ButtonDown != null)
+					{
+						this.ButtonDown(this, new JoystickButtonEventArgs(
+							(JoystickButton)i, 
+							this.currentState.ButtonPressed[i]));
+					}
+				}
+				if (!this.currentState.ButtonPressed[i] && this.lastState.ButtonPressed[i])
+				{
+					if (this.ButtonUp != null)
+					{
+						this.ButtonUp(this, new JoystickButtonEventArgs(
+							(JoystickButton)i, 
+							this.currentState.ButtonPressed[i]));
+					}
+				}
+			}
+			for (int i = 0; i < this.currentState.AxisValue.Length; i++)
+			{
+				if (this.currentState.AxisValue[i] != this.lastState.AxisValue[i])
+				{
+					if (this.Move != null)
+					{
+						this.Move(this, new JoystickMoveEventArgs(
+							(JoystickAxis)i,
+							this.currentState.AxisValue[i],
+							this.currentState.AxisValue[i] - this.lastState.AxisValue[i]));
+					}
+				}
+			}
 		}
-		private void realInput_ButtonDown(object sender, JoystickButtonEventArgs e)
+		
+		/// <summary>
+		/// Returns whether the specified button is currently pressed.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonPressed(JoystickButton button)
 		{
-			if (this.ButtonDown != null)
-				this.ButtonDown(this, e);
+			return this.currentState.ButtonPressed[(int)button];
 		}
-		private void realInput_Move(object sender, JoystickMoveEventArgs e)
+		/// <summary>
+		/// Returns whether the specified button was hit this frame.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonHit(JoystickButton button)
 		{
-			if (this.Move != null)
-				this.Move(this, e);
+			return this.currentState.ButtonPressed[(int)button] && !this.lastState.ButtonPressed[(int)button];
+		}
+		/// <summary>
+		/// Returns whether the specified button was released this frame.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonReleased(JoystickButton button)
+		{
+			return !this.currentState.ButtonPressed[(int)button] && this.lastState.ButtonPressed[(int)button];
+		}
+
+		/// <summary>
+		/// Returns the specified axis value change since last frame.
+		/// </summary>
+		/// <param name="axis"></param>
+		/// <returns></returns>
+		public float AxisSpeed(JoystickAxis axis)
+		{
+			return this.currentState.AxisValue[(int)axis] - this.lastState.AxisValue[(int)axis];
 		}
 	}
 }

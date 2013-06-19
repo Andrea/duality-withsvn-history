@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using OpenTK.Input;
 
 namespace Duality
@@ -8,40 +9,54 @@ namespace Duality
 	/// </summary>
 	public sealed class MouseInput : IUserInput
 	{
-		private	IMouseInputSource	realInput			= null;
-		private	bool				cursorInViewport	= false;
-
-
-		internal IMouseInputSource Source
+		private class State
 		{
-			get { return this.realInput; }
-			set
+			public int X				= -1;
+			public int Y				= -1;
+			public float Wheel			= 0.0f;
+			public bool CursorInView	= false;
+			public bool[] ButtonPressed	= new bool[(int)MouseButton.LastButton + 1];
+
+			public State() {}
+			public State(State baseState)
 			{
-				if (this.realInput != value)
+				baseState.CopyTo(this);
+			}
+			public void CopyTo(State other)
+			{
+				other.X				= this.X;
+				other.Y				= this.Y;
+				other.Wheel			= this.Wheel;
+				other.CursorInView	= this.CursorInView;
+				this.ButtonPressed.CopyTo(other.ButtonPressed, 0);
+			}
+			public void UpdateFromSource(IMouseInputSource source)
+			{
+				if (source == null) return;
+				this.X = source.X;
+				this.Y = source.Y;
+				this.Wheel = source.Wheel;
+				this.CursorInView = source.CursorInView;
+				for (int i = 0; i < this.ButtonPressed.Length; i++)
 				{
-					if (this.realInput != null)
-					{
-						this.realInput.ButtonUp		-= this.realInput_ButtonUp;
-						this.realInput.ButtonDown	-= this.realInput_ButtonDown;
-						this.realInput.Move			-= this.realInput_Move;
-						this.realInput.Leave		-= this.realInput_Leave;
-						this.realInput.Enter		-= this.realInput_Enter;
-						this.realInput.WheelChanged -= this.realInput_WheelChanged;
-					}
-
-					this.realInput = value;
-
-					if (this.realInput != null)
-					{
-						this.realInput.ButtonUp		+= this.realInput_ButtonUp;
-						this.realInput.ButtonDown	+= this.realInput_ButtonDown;
-						this.realInput.Move			+= this.realInput_Move;
-						this.realInput.Leave		+= this.realInput_Leave;
-						this.realInput.Enter		+= this.realInput_Enter;
-						this.realInput.WheelChanged += this.realInput_WheelChanged;
-					}
+					this.ButtonPressed[i] = source[(MouseButton)i];
 				}
 			}
+		}
+
+
+		private	IMouseInputSource	source			= null;
+		private	State				currentState	= new State();
+		private	State				lastState		= new State();
+
+		
+		/// <summary>
+		/// [SET] The mouse inputs data source.
+		/// </summary>
+		public IMouseInputSource Source
+		{
+			internal get { return this.source; }
+			set { this.source = value; }
 		}
 		/// <summary>
 		/// [GET] A text description of this input.
@@ -55,30 +70,51 @@ namespace Duality
 		/// </summary>
 		public bool IsAvailable
 		{
-			get { return this.realInput != null && this.cursorInViewport; }
+			get { return this.source != null && this.currentState.CursorInView; }
 		}
 		/// <summary>
 		/// [GET / SET] The current viewport-local cursor X position.
 		/// </summary>
 		public int X
 		{
-			get { return this.realInput != null ? this.realInput.X : 0; }
-			set { if (this.realInput != null) this.realInput.X = value; }
+			get { return this.currentState.X; }
+			set { if (this.source != null) this.source.X = value; }
 		}
 		/// <summary>
 		/// [GET / SET] The current viewport-local cursor Y position.
 		/// </summary>
 		public int Y
 		{
-			get { return this.realInput != null ? this.realInput.Y : 0; }
-			set { if (this.realInput != null) this.realInput.Y = value; }
+			get { return this.currentState.Y; }
+			set { if (this.source != null) this.source.Y = value; }
+		}
+		/// <summary>
+		/// [GET] Returns the X position change since last frame.
+		/// </summary>
+		public int XSpeed
+		{
+			get { return this.currentState.X - this.lastState.X; }
+		}
+		/// <summary>
+		/// [GET] Returns the Y position change since last frame.
+		/// </summary>
+		public int YSpeed
+		{
+			get { return this.currentState.Y - this.lastState.Y; }
 		}
 		/// <summary>
 		/// [GET] The current mouse wheel value
 		/// </summary>
 		public int Wheel
 		{
-			get { return this.realInput != null ? this.realInput.Wheel : 0; }
+			get { return MathF.RoundToInt(this.currentState.Wheel); }
+		}
+		/// <summary>
+		/// [GET] The current (precise, high resolution) mouse wheel value
+		/// </summary>
+		public float WheelPrecise
+		{
+			get { return this.currentState.Wheel; }
 		}
 		/// <summary>
 		/// [GET] Returns whether a specific <see cref="MouseButton"/> is currently pressed.
@@ -87,7 +123,7 @@ namespace Duality
 		/// <returns></returns>
 		public bool this[MouseButton btn]
 		{
-			get { return this.realInput != null ? this.realInput[btn] : false; }
+			get { return this.currentState.ButtonPressed[(int)btn]; }
 		}
 
 		/// <summary>
@@ -117,39 +153,103 @@ namespace Duality
 
 		
 		internal MouseInput() {}
+		internal void Update()
+		{
+			// Memorize last state
+			this.currentState.CopyTo(this.lastState);
 
-		private void realInput_ButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			if (this.ButtonUp != null)
-				this.ButtonUp(this, e);
+			// Obtain new state
+			this.currentState.UpdateFromSource(this.source);
+
+			// Fire events
+			if (this.currentState.CursorInView && !this.lastState.CursorInView)
+			{
+				if (this.Enter != null)
+					this.Enter(this, EventArgs.Empty);
+			}
+			if (!this.currentState.CursorInView && this.lastState.CursorInView)
+			{
+				if (this.Leave != null)
+					this.Leave(this, EventArgs.Empty);
+			}
+			if (this.currentState.CursorInView)
+			{
+				if (this.currentState.X != this.lastState.X || this.currentState.Y != this.lastState.Y)
+				{
+					if (this.Move != null)
+					{
+						this.Move(this, new MouseMoveEventArgs(
+							this.currentState.X, 
+							this.currentState.Y, 
+							this.currentState.X - this.lastState.X, 
+							this.currentState.Y - this.lastState.Y));
+					}
+				}
+				if (this.currentState.Wheel != this.lastState.Wheel)
+				{
+					if (this.WheelChanged != null)
+					{
+						this.WheelChanged(this, new MouseWheelEventArgs(
+							this.currentState.X,
+							this.currentState.Y,
+							MathF.RoundToInt(this.currentState.Wheel),
+							MathF.RoundToInt(this.currentState.Wheel - this.lastState.Wheel)));
+					}
+				}
+				for (int i = 0; i < this.currentState.ButtonPressed.Length; i++)
+				{
+					if (this.currentState.ButtonPressed[i] && !this.lastState.ButtonPressed[i])
+					{
+						if (this.ButtonDown != null)
+						{
+							this.ButtonDown(this, new MouseButtonEventArgs(
+								this.currentState.X, 
+								this.currentState.Y, 
+								(MouseButton)i, 
+								this.currentState.ButtonPressed[i]));
+						}
+					}
+					if (!this.currentState.ButtonPressed[i] && this.lastState.ButtonPressed[i])
+					{
+						if (this.ButtonUp != null)
+						{
+							this.ButtonUp(this, new MouseButtonEventArgs(
+								this.currentState.X, 
+								this.currentState.Y, 
+								(MouseButton)i, 
+								this.currentState.ButtonPressed[i]));
+						}
+					}
+				}
+			}
 		}
-		private void realInput_ButtonDown(object sender, MouseButtonEventArgs e)
+		
+		/// <summary>
+		/// Returns whether the specified button is currently pressed.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonPressed(MouseButton button)
 		{
-			if (this.ButtonDown != null)
-				this.ButtonDown(this, e);
+			return this.currentState.ButtonPressed[(int)button];
 		}
-		private void realInput_Move(object sender, MouseMoveEventArgs e)
+		/// <summary>
+		/// Returns whether the specified button was hit this frame.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonHit(MouseButton button)
 		{
-			if (!this.cursorInViewport) return;
-			if (this.Move != null)
-				this.Move(this, e);
+			return this.currentState.ButtonPressed[(int)button] && !this.lastState.ButtonPressed[(int)button];
 		}
-		private void realInput_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// Returns whether the specified button was released this frame.
+		/// </summary>
+		/// <param name="button"></param>
+		/// <returns></returns>
+		public bool ButtonReleased(MouseButton button)
 		{
-			this.cursorInViewport = false;
-			if (this.Leave != null)
-				this.Leave(this, e);
-		}
-		private void realInput_Enter(object sender, EventArgs e)
-		{
-			this.cursorInViewport = true;
-			if (this.Enter != null)
-				this.Enter(this, e);
-		}
-		private void realInput_WheelChanged(object sender, MouseWheelEventArgs e)
-		{
-			if (this.WheelChanged != null)
-				this.WheelChanged(this, e);
+			return !this.currentState.ButtonPressed[(int)button] && this.lastState.ButtonPressed[(int)button];
 		}
 	}
 }

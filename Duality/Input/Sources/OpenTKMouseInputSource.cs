@@ -10,38 +10,8 @@ namespace Duality
 		private	MouseDevice	device;
 		private CursorPosSetter cursorPosSetterX;
 		private CursorPosSetter cursorPosSetterY;
+		private bool cursorInView;
 		
-		public event EventHandler<MouseButtonEventArgs> ButtonUp
-		{
-			add { this.device.ButtonUp += value; }
-			remove { this.device.ButtonUp -= value; }
-		}
-		public event EventHandler<MouseButtonEventArgs> ButtonDown
-		{
-			add { this.device.ButtonDown += value; }
-			remove { this.device.ButtonDown -= value; }
-		}
-		public event EventHandler<MouseMoveEventArgs> Move
-		{
-			add { this.device.Move += value; }
-			remove { this.device.Move -= value; }
-		}
-		public event EventHandler Leave
-		{
-			add { this.device.Leave += value; }
-			remove { this.device.Leave -= value; }
-		}
-		public event EventHandler Enter
-		{
-			add { this.device.Enter += value; }
-			remove { this.device.Enter -= value; }
-		}
-		public event EventHandler<MouseWheelEventArgs> WheelChanged
-		{
-			add { this.device.WheelChanged += value; }
-			remove { this.device.WheelChanged -= value; }
-		}
-
 		public int X
 		{
 			get { return this.device.X; }
@@ -52,9 +22,13 @@ namespace Duality
 			get { return this.device.Y; }
 			set { if (this.cursorPosSetterY != null) this.cursorPosSetterY(value); }
 		}
-		public int Wheel
+		public float Wheel
 		{
-			get { return this.device.Wheel; }
+			get { return this.device.WheelPrecise; }
+		}
+		public bool CursorInView
+		{
+			get { return this.cursorInView; }
 		}
 		public bool this[MouseButton key]
 		{
@@ -66,6 +40,18 @@ namespace Duality
 			this.device = device;
 			this.cursorPosSetterX = cursorPosSetterX;
 			this.cursorPosSetterY = cursorPosSetterY;
+
+			this.device.Enter += this.device_Enter;
+			this.device.Leave += this.device_Leave;
+		}
+
+		private void device_Enter(object sender, EventArgs e)
+		{
+			this.cursorInView = true;
+		}
+		private void device_Leave(object sender, EventArgs e)
+		{
+			this.cursorInView = false;
 		}
 	}
 }

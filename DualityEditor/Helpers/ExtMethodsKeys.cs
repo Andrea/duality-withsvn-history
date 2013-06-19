@@ -12,12 +12,9 @@ namespace DualityEditor
 {
 	public static class ExtMethodsKeys
 	{
-		private	static ReflectionHelper.Setter<KeyboardKeyEventArgs,Key>	keySetter;
 		private	static Dictionary<int,int>	mapToOpenTK;
 		static ExtMethodsKeys()
 		{
-			keySetter = typeof(KeyboardKeyEventArgs).GetField("key", ReflectionHelper.BindInstanceAll).BuildFieldSetter<KeyboardKeyEventArgs,Key>();
-
 			mapToOpenTK = new Dictionary<int,int>();
 			Dictionary<Keys,string> keysNames = new Dictionary<Keys,string>();
 			foreach (Keys k in Enum.GetValues(typeof(Keys)).Cast<Keys>())
@@ -68,12 +65,6 @@ namespace DualityEditor
 			}
 		}
 
-		public static KeyboardKeyEventArgs ToEventArgs(this Key key)
-		{
-			KeyboardKeyEventArgs args = new KeyboardKeyEventArgs();
-			keySetter(args, key);
-			return args;
-		}
 		public static Key ToOpenTKSingle(this Keys buttons)
 		{
 			int k;

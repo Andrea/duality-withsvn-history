@@ -153,21 +153,14 @@ namespace EditorBase
 		private	bool	inputMouseCapture	= false;
 		private	int		inputMouseX			= 0;
 		private	int		inputMouseY			= 0;
-		private	int		inputMouseWheel		= 0;
+		private	float	inputMouseWheel		= 0.0f;
 		private	int		inputMouseButtons	= 0;
-		private	event	EventHandler<MouseButtonEventArgs>	inputMouseDown			= null;
-		private	event	EventHandler<MouseButtonEventArgs>	inputMouseUp			= null;
-		private	event	EventHandler<MouseMoveEventArgs>	inputMouseMove			= null;
-		private	event	EventHandler						inputMouseLeave			= null;
-		private	event	EventHandler						inputMouseEnter			= null;
-		private	event	EventHandler<MouseWheelEventArgs>	inputMouseWheelChanged	= null;
+		private	bool	inputMouseInView	= false;
 
-		private	bool		inputKeyRepeat	= false;
-		private	BitArray	inputKeyPressed	= new BitArray((int)Key.LastKey + 1, false);
-		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyDown	= null;
-		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
-		private	event		EventHandler						inputLostFocus	= null;
-		private	event		EventHandler						inputGotFocus	= null;
+		private	bool		inputKeyRepeat		= false;
+		private	bool		inputKeyFocus		= false;
+		private	int			inputKeyRepeatCount	= 0;
+		private	BitArray	inputKeyPressed		= new BitArray((int)Key.LastKey + 1, false);
 
 		public event EventHandler PerspectiveChanged	= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
@@ -737,7 +730,7 @@ namespace EditorBase
 		{
 			if (this.activeState.EngineUserInput)
 			{
-				if (this.inputMouseLeave != null) this.inputMouseLeave(this, EventArgs.Empty);
+				this.inputMouseInView = false;
 			}
 
 			this.RemoveFocusHook();
@@ -749,7 +742,7 @@ namespace EditorBase
 		{
 			if (this.activeState.EngineUserInput)
 			{
-				if (this.inputMouseEnter != null) this.inputMouseEnter(this, EventArgs.Empty);
+				this.inputMouseInView = true;
 			}
 
 			this.InstallFocusHook();
@@ -764,7 +757,6 @@ namespace EditorBase
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons |= e.Button.ToOpenTK();
-				if (this.inputMouseDown != null) this.inputMouseDown(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, true));
 			}
 		}
 		private void glControl_MouseUp(object sender, MouseEventArgs e)
@@ -773,7 +765,6 @@ namespace EditorBase
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons &= ~e.Button.ToOpenTK();
-				if (this.inputMouseUp != null) this.inputMouseUp(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, false));
 			}
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
@@ -782,8 +773,7 @@ namespace EditorBase
 
 			if (this.activeState.EngineUserInput)
 			{
-				this.inputMouseWheel += e.Delta;
-				if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
+				this.inputMouseWheel += e.Delta / 120.0f;
 			}
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
@@ -794,7 +784,6 @@ namespace EditorBase
 				int lastY = this.inputMouseY;
 				this.inputMouseX = e.X;
 				this.inputMouseY = e.Y;
-				if (this.inputMouseMove != null) this.inputMouseMove(this, new MouseMoveEventArgs(e.X, e.Y, e.X - lastX, e.Y - lastY));
 			}
 
 			if (this.activeLayers.Any(l => l.MouseTracking))
@@ -807,8 +796,7 @@ namespace EditorBase
 
 			if (this.activeState.EngineUserInput)
 			{
-				if (this.inputGotFocus != null)
-					this.inputGotFocus(this, EventArgs.Empty);
+				this.inputKeyFocus = true;
 			}
 
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
@@ -818,8 +806,7 @@ namespace EditorBase
 		{
 			if (this.activeState.EngineUserInput)
 			{
-				if (this.inputLostFocus != null)
-					this.inputLostFocus(this, EventArgs.Empty);
+				this.inputKeyFocus = false;
 			}
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -859,11 +846,7 @@ namespace EditorBase
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				bool wasPressed = this.inputKeyPressed[(int)inputKey];
 				this.inputKeyPressed = this.inputKeyPressed.Or(e.KeyCode.ToOpenTK());
-				if (this.inputKeyDown != null)
-				{
-					if (this.inputKeyRepeat || !wasPressed)
-						this.inputKeyDown(this, inputKey.ToEventArgs());
-				}
+				this.inputKeyRepeatCount++;
 			}
 		}
 		private void glControl_KeyUp(object sender, KeyEventArgs e)
@@ -872,7 +855,6 @@ namespace EditorBase
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());
-				if (this.inputKeyUp != null) this.inputKeyUp(this, inputKey.ToEventArgs());
 			}
 		}
 		private void glControl_Resize(object sender, EventArgs e)
@@ -1119,43 +1101,17 @@ namespace EditorBase
 				}
 			}
 		}
-		int IMouseInputSource.Wheel
+		float IMouseInputSource.Wheel
 		{
 			get { return this.inputMouseWheel; }
+		}
+		bool IMouseInputSource.CursorInView
+		{
+			get { return this.inputMouseInView; }
 		}
 		bool IMouseInputSource.this[MouseButton btn]
 		{
 			get { return (this.inputMouseButtons & (1 << (int)btn)) != 0; }
-		}
-		event EventHandler<MouseButtonEventArgs> IMouseInputSource.ButtonUp
-		{
-			add { this.inputMouseUp += value; }
-			remove { this.inputMouseUp -= value; }
-		}
-		event EventHandler<MouseButtonEventArgs> IMouseInputSource.ButtonDown
-		{
-			add { this.inputMouseDown += value; }
-			remove { this.inputMouseDown -= value; }
-		}
-		event EventHandler<MouseMoveEventArgs> IMouseInputSource.Move
-		{
-			add { this.inputMouseMove += value; }
-			remove { this.inputMouseMove -= value; }
-		}
-		event EventHandler IMouseInputSource.Leave
-		{
-			add { this.inputMouseLeave += value; }
-			remove { this.inputMouseLeave -= value; }
-		}
-		event EventHandler IMouseInputSource.Enter
-		{
-			add { this.inputMouseEnter += value; }
-			remove { this.inputMouseEnter -= value; }
-		}
-		event EventHandler<MouseWheelEventArgs> IMouseInputSource.WheelChanged
-		{
-			add { this.inputMouseWheelChanged += value; }
-			remove { this.inputMouseWheelChanged -= value; }
 		}
 
 		bool IKeyboardInputSource.KeyRepeat
@@ -1163,29 +1119,17 @@ namespace EditorBase
 			get { return this.inputKeyRepeat; }
 			set { this.inputKeyRepeat = value; }
 		}
+		int IKeyboardInputSource.KeyRepeatCounter
+		{
+			get { return this.inputKeyRepeatCount; }
+		}
+		bool IKeyboardInputSource.HasFocus
+		{
+			get { return this.inputKeyFocus; }
+		}
 		bool IKeyboardInputSource.this[Key key]
 		{
 			get { return this.inputKeyPressed[(int)key]; }
-		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInputSource.KeyUp
-		{
-			add { this.inputKeyUp += value; }
-			remove { this.inputKeyUp -= value; }
-		}
-		event EventHandler<KeyboardKeyEventArgs> IKeyboardInputSource.KeyDown
-		{
-			add { this.inputKeyDown += value; }
-			remove { this.inputKeyDown -= value; }
-		}
-		event EventHandler IKeyboardInputSource.LostFocus
-		{
-			add { this.inputLostFocus += value; }
-			remove { this.inputLostFocus -= value; }
-		}
-		event EventHandler IKeyboardInputSource.GotFocus
-		{
-			add { this.inputGotFocus += value; }
-			remove { this.inputGotFocus -= value; }
 		}
 	}
 }

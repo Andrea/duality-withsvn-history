@@ -105,6 +105,7 @@
     <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
     <Compile Include="Input\IUserInput.cs" />
+    <Compile Include="Input\JoystickInputCollection.cs" />
     <Compile Include="Input\Sources\IKeyboardInputSource.cs" />
     <Compile Include="Input\Sources\IMouseInputSource.cs" />
     <Compile Include="Input\Sources\IJoystickInputSource.cs" />

@@ -83,7 +83,7 @@ namespace Duality
 		private	static	GraphicsMode				defaultMode			= null;
 		private	static	MouseInput					mouse				= new MouseInput();
 		private	static	KeyboardInput				keyboard			= new KeyboardInput();
-		private	static	List<JoystickInput>			joysticks			= new List<JoystickInput>();
+		private	static	JoystickInputCollection		joysticks			= new JoystickInputCollection();
 		private	static	SoundDevice					sound				= null;
 		private	static	ExecutionEnvironment		environment			= ExecutionEnvironment.Unknown;
 		private	static	ExecutionContext			execContext			= ExecutionContext.Terminated;
@@ -154,7 +154,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] Provides access to extended user input via joystick or gamepad.
 		/// </summary>
-		public static IEnumerable<JoystickInput> Joysticks
+		public static JoystickInputCollection Joysticks
 		{
 			get { return joysticks; }
 		}
@@ -451,6 +451,7 @@ namespace Duality
 			Time.FrameTick();
 			Performance.FrameTick();
 			OnBeforeUpdate();
+			UpdateUserInput();
 			Scene.Current.Update();
 			sound.Update();
 			OnAfterUpdate();
@@ -462,6 +463,16 @@ namespace Duality
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
+		}
+		/// <summary>
+		/// Updates all input devices and fires input events, when necessary. You don't usually need to call this manually, 
+		/// since it is automatically called each frame.
+		/// </summary>
+		public static void UpdateUserInput()
+		{
+			mouse.Update();
+			keyboard.Update();
+			joysticks.Update();
 		}
 		/// <summary>
 		/// Performs a single render cycle.
@@ -503,6 +514,8 @@ namespace Duality
 			OnBeforeUpdate();
 			if (execContext == ExecutionContext.Game)
 			{
+				if (!freezeScene)	UpdateUserInput();
+
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
 
@@ -527,67 +540,6 @@ namespace Duality
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
-		}
-		
-		/// <summary>
-		/// Assigns a new input source for mouse input.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void SetInputSource(IMouseInputSource source)
-		{
-			mouse.Source = source;
-		}
-		/// <summary>
-		/// Assigns a new input source for keyboard input.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void SetInputSource(IKeyboardInputSource source)
-		{
-			keyboard.Source = source;
-		}
-		/// <summary>
-		/// Adds an extended user input source.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void AddInputSource(IJoystickInputSource source)
-		{
-			foreach (JoystickInput registeredInput in joysticks)
-			{
-				if (registeredInput.Description == source.Description &&
-					registeredInput.Source == null)
-				{
-					registeredInput.Source = source;
-					return;
-				}
-			}
-
-			JoystickInput newInput = new JoystickInput();
-			newInput.Source = source;
-			joysticks.Add(newInput);
-		}
-		/// <summary>
-		/// Adds a set of extended user input sources.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void AddInputSource(IEnumerable<IJoystickInputSource> source)
-		{
-			foreach (IJoystickInputSource s in source)
-				AddInputSource(s);
-		}
-		/// <summary>
-		/// Removed an extended user input source.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void RemoveInputSource(IJoystickInputSource source)
-		{
-			foreach (JoystickInput registeredInput in joysticks)
-			{
-				if (registeredInput.Source == source)
-				{
-					registeredInput.Source = null;
-					return;
-				}
-			}
 		}
 
 		/// <summary>
@@ -977,7 +929,13 @@ namespace Duality
 				Scene.Current.Dispose();
 			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
 				ContentProvider.UnregisterContent(r.Path);
-
+			
+			// Clean input sources that a disposed Assembly forgot to unregister.
+			if (oldPlugins != null)
+			{
+				foreach (CorePlugin plugin in oldPlugins)
+					CleanInputSources(plugin.PluginAssembly);
+			}
 			// Clean event bindings that are still linked to the disposed Assembly.
 			if (oldPlugins != null)
 			{
@@ -1008,6 +966,35 @@ namespace Duality
 			foreach (JoystickInput joystick in joysticks)
 			{
 				if (ReflectionHelper.CleanEventBindings(joystick,		invalidAssembly))	Log.Core.WriteWarning(warningText, Log.Type(typeof(DualityApp)) + ".Joysticks");
+			}
+		}
+		private static void CleanInputSources(Assembly invalidAssembly)
+		{
+			string warningText = string.Format(
+				"Found leaked input source '{1}' defined in invalid Assembly '{0}'. " +
+				"This is a common problem when registering input sources from within a CorePlugin " +
+				"without properly unregistering them later. Please make sure that all sources are " +
+				"unregistered in CorePlugin::OnDisposePlugin().",
+				invalidAssembly.GetShortAssemblyName(),
+				"{0}");
+
+			if (mouse.Source != null && mouse.Source.GetType().Assembly == invalidAssembly)
+			{
+				mouse.Source = null;
+				Log.Core.WriteWarning(warningText, Log.Type(mouse.Source.GetType()));
+			}
+			if (keyboard.Source != null && keyboard.Source.GetType().Assembly == invalidAssembly)
+			{
+				keyboard.Source = null;
+				Log.Core.WriteWarning(warningText, Log.Type(keyboard.Source.GetType()));
+			}
+			foreach (JoystickInput joystick in joysticks.ToArray())
+			{
+				if (joystick.Source != null && joystick.Source.GetType().Assembly == invalidAssembly)
+				{
+					joysticks.RemoveSource(joystick.Source);
+					Log.Core.WriteWarning(warningText, Log.Type(joystick.Source.GetType()));
+				}
 			}
 		}
 

@@ -201,7 +201,7 @@ namespace DualityEditor
 				// Initialize Joystick support in the editor
 				mainJoystickDriver = new OpenTK.Platform.Windows.WinMMJoystick();
 				if (mainJoystickDriver != null && mainJoystickDriver.Joysticks != null)
-					DualityApp.AddInputSource(mainJoystickDriver.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
+					DualityApp.Joysticks.AddSource(mainJoystickDriver.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
 			}
 			ContentProvider.InitDefaultContent();
 			LoadPlugins();

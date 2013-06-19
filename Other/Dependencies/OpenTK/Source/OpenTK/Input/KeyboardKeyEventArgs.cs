@@ -62,7 +62,16 @@ namespace OpenTK.Input
         /// <param name="args">An existing KeyboardEventArgs instance to clone.</param>
         public KeyboardKeyEventArgs(KeyboardKeyEventArgs args)
         {
-            Key = args.Key;
+            this.key = args.Key;
+        }
+
+        /// <summary>
+        /// Constructs a new KeyboardEventArgs instance.
+        /// </summary>
+		/// <param name="key">The affected key.</param>
+        public KeyboardKeyEventArgs(Key key)
+        {
+            this.key = key;
         }
 
         #endregion
