@@ -1133,15 +1133,5 @@ namespace EditorBase
 		{
 			get { return this.inputKeyPressed[(int)key]; }
 		}
-		event EventHandler IKeyboardInputSource.LostFocus
-		{
-			add { this.inputLostFocus += value; }
-			remove { this.inputLostFocus -= value; }
-		}
-		event EventHandler IKeyboardInputSource.GotFocus
-		{
-			add { this.inputGotFocus += value; }
-			remove { this.inputGotFocus -= value; }
-		}
 	}
 }

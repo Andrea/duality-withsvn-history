@@ -574,35 +574,6 @@ namespace Duality
 				}
 			}
 
-			JoystickInput newInput = new JoystickInput();
-			newInput.Source = source;
-			joysticks.Add(newInput);
-		}
-		/// <summary>
-		/// Adds a set of extended user input sources.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void AddInputSource(IEnumerable<IJoystickInputSource> source)
-		{
-			foreach (IJoystickInputSource s in source)
-				AddInputSource(s);
-		}
-		/// <summary>
-		/// Removed an extended user input source.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void RemoveInputSource(IJoystickInputSource source)
-		{
-			foreach (JoystickInput registeredInput in joysticks)
-			{
-				if (registeredInput.Source == source)
-				{
-					registeredInput.Source = null;
-					return;
-				}
-			}
-		}
-
 		/// <summary>
 		/// Loads all <see cref="Resource">Resources</see> that are located in this DualityApp's data directory and
 		/// saves them again. All loaded content is discarded both before and after this operation. You usually don't

@@ -1,4 +1,7 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using OpenTK.Input;
 
 
@@ -115,6 +118,10 @@ namespace Duality
 		/// </summary>
 		public event EventHandler<JoystickMoveEventArgs> Move;
 
+		internal void Update()
+		{
+			// Memorize last state
+			this.currentState.CopyTo(this.lastState);
 
 		internal JoystickInput(bool dummy = false)
 		{
