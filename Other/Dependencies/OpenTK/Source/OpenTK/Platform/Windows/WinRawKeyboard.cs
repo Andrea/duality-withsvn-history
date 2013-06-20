@@ -104,6 +104,18 @@ namespace OpenTK.Platform.Windows
                         string deviceDesc = (string)regkey.GetValue("DeviceDesc");
                         string deviceClass = (string)regkey.GetValue("Class");
 
+                        //Support for no Class regkey in Windows 8
+                        if(String.IsNullOrEmpty(deviceClass))
+                        {
+                            string deviceGUID = (string)regkey.GetValue("ClassGUID");
+
+                            if (deviceGUID != null)
+                            {
+                                RegistryKey GUIDKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\" + deviceGUID);
+                                deviceClass = (string) GUIDKey.GetValue("Class");
+                            }
+                        }
+
                         if (String.IsNullOrEmpty(deviceDesc))
                         {
                             Debug.Print("[Warning] Failed to retrieve device description, skipping this device.");
