@@ -35,6 +35,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -48,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\GuardTests.cs" />
+    <Compile Include="Input\JoystickInputTests.cs" />
     <Compile Include="Log\LogTests.cs" />
     <Compile Include="Messaging\MessagingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

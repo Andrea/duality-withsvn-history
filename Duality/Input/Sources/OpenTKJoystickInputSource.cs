@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK.Input;
+﻿using OpenTK.Input;
 
 namespace Duality
 {
@@ -15,6 +14,9 @@ namespace Duality
 		{
 			get { return true; }
 		}
+
+		public int AxisCount { get { return device.Axis.Count; } }
+
 		public bool this[JoystickButton button]
 		{
 			get { return this.device.Button[button]; }
@@ -24,9 +26,15 @@ namespace Duality
 			get { return this.device.Axis[axis]; }
 		}
 
+        public int ButtonCount
+        {
+            get { return device.Button.Count; }
+        }
+		
 		public OpenTKJoystickInputSource(JoystickDevice device)
 		{
 			this.device = device;
 		}
+
 	}
 }

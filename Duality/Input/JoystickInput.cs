@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using OpenTK.Input;
 
 
 namespace Duality
 {
+
 	/// <summary>
 	/// Provides access to extended user input such as joysticks or gamepads.
 	/// </summary>
@@ -14,10 +12,11 @@ namespace Duality
 	{
 		private class State
 		{
-			public float[]	AxisValue		= new float[(int)JoystickAxis.Axis9 + 1];
-			public bool[]	ButtonPressed	= new bool[(int)JoystickButton.Button15 + 1];
+			public float[] AxisValue = new float[(int)JoystickAxis.Axis9 + 1];
+			public bool[] ButtonPressed = new bool[(int)JoystickButton.Button15 + 1];
 
-			public State() {}
+			public State() { }
+
 			public State(State baseState)
 			{
 				baseState.CopyTo(this);
@@ -27,25 +26,29 @@ namespace Duality
 				this.AxisValue.CopyTo(other.AxisValue, 0);
 				this.ButtonPressed.CopyTo(other.ButtonPressed, 0);
 			}
+
 			public void UpdateFromSource(IJoystickInputSource source)
 			{
-				if (source == null) return;
-				for (int i = 0; i < this.ButtonPressed.Length; i++)
+				if (source == null)
+					return;
+				for (int i = 0; i < ButtonPressed.Length; i++)
 				{
-					this.ButtonPressed[i] = source[(JoystickButton)i];
+					if (i < source.ButtonCount)
+						ButtonPressed[i] = source[(JoystickButton)i];
 				}
-				for (int i = 0; i < this.AxisValue.Length; i++)
+				for (int i = 0; i < AxisValue.Length; i++)
 				{
-					this.AxisValue[i] = source[(JoystickAxis)i];
+					if (i < source.AxisCount)
+						AxisValue[i] = source[(JoystickAxis)i];
 				}
 			}
 		}
 
-		private	IJoystickInputSource	source			= null;
-		private	State					currentState	= new State();
-		private	State					lastState		= new State();
-		private	string					description		= null;
-		private	bool					isDummy			= false;
+		private IJoystickInputSource source = null;
+		private State currentState = new State();
+		private State lastState = new State();
+		private string description = null;
+		private bool isDummy = false;
 
 
 		/// <summary>
@@ -111,7 +114,7 @@ namespace Duality
 		/// Fired whenever a device axis changes its value.
 		/// </summary>
 		public event EventHandler<JoystickMoveEventArgs> Move;
-		
+
 
 		internal JoystickInput(bool dummy = false)
 		{
@@ -133,7 +136,7 @@ namespace Duality
 					if (this.ButtonDown != null)
 					{
 						this.ButtonDown(this, new JoystickButtonEventArgs(
-							(JoystickButton)i, 
+							(JoystickButton)i,
 							this.currentState.ButtonPressed[i]));
 					}
 				}
@@ -142,7 +145,7 @@ namespace Duality
 					if (this.ButtonUp != null)
 					{
 						this.ButtonUp(this, new JoystickButtonEventArgs(
-							(JoystickButton)i, 
+							(JoystickButton)i,
 							this.currentState.ButtonPressed[i]));
 					}
 				}
@@ -161,7 +164,7 @@ namespace Duality
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Returns whether the specified button is currently pressed.
 		/// </summary>
@@ -189,7 +192,7 @@ namespace Duality
 		{
 			return !this.currentState.ButtonPressed[(int)button] && this.lastState.ButtonPressed[(int)button];
 		}
-		
+
 		/// <summary>
 		/// Returns the specified axis value.
 		/// </summary>

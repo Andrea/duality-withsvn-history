@@ -16,6 +16,17 @@ namespace Duality
 		/// [GET] Returns whether this input is currently available.
 		/// </summary>
 		bool IsAvailable { get; }
+        /// <summary>
+        /// Return the ammount of buttons currently available.
+        /// </summary>
+        /// <returns></returns>
+        int ButtonCount { get; }
+		/// <summary>
+		/// Return the ammount of buttons currently available.
+		/// </summary>
+		/// <returns></returns>
+		int AxisCount { get; }
+
 		/// <summary>
 		/// [GET] Returns whether the specified device button is currently pressed.
 		/// </summary>
@@ -28,5 +39,6 @@ namespace Duality
 		/// <param name="axis"></param>
 		/// <returns></returns>
 		float this[JoystickAxis axis] { get; }
+        
 	}
 }
