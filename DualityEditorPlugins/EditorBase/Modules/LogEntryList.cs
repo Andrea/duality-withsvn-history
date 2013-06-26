@@ -545,7 +545,7 @@ namespace EditorBase
 		}
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
-			base.OnMouseWheel(e);
+			base.OnMouseWheel(new MouseEventArgs(e.Button, e.Clicks, e.X, e.Y, Math.Sign(e.Delta) * Math.Max(Math.Abs(e.Delta) / 8, 1)));
 			this.UpdateScrolledToEnd();
 			this.UpdateHoveredEntry(this.PointToClient(Cursor.Position));
 		}

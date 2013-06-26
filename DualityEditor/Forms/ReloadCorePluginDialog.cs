@@ -22,6 +22,7 @@ namespace DualityEditor.Forms
 			private	float			progress	= 0.0f;
 			private	Exception		error		= null;
 			private	List<string>	reloadSched	= null;
+			private	List<string>	reloadDone	= null;
 			private	bool			recoverMode	= false;
 			private	bool			shutdown	= false;
 			private	Scene			tempScene	= null;
@@ -46,6 +47,11 @@ namespace DualityEditor.Forms
 			{
 				get { return this.reloadSched; }
 				set { this.reloadSched = value; }
+			}
+			public List<string> ReloadDone
+			{
+				get { return this.reloadDone; }
+				set { this.reloadDone = value; }
 			}
 			public bool RecoverMode
 			{
@@ -100,7 +106,11 @@ namespace DualityEditor.Forms
 			get { return this.state; }
 			set
 			{
-				if (this.state == ReloaderState.ReloadPlugins) return;
+				// Ignore other commands while reloading.
+				if (this.state == ReloaderState.ReloadPlugins)
+					return;
+				if (value == ReloaderState.ReloadPlugins && this.Visible)
+					return;
 
 				this.state = value;
 				if (this.state == ReloaderState.Idle)
@@ -161,6 +171,7 @@ namespace DualityEditor.Forms
 
 			this.workerInterface = new WorkerInterface();
 			this.workerInterface.MainForm = this.owner;
+			this.workerInterface.ReloadDone = new List<string>();
 			if (this.state != ReloaderState.RecoverFromRestart)
 				this.workerInterface.ReloadSched = new List<string>(this.reloadSchedule);
 			else
@@ -179,22 +190,32 @@ namespace DualityEditor.Forms
 			this.owner.SetTaskbarProgress(0.0f);
 			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
 			this.owner.SetTaskbarOverlayIcon(null, null);
-			this.reloadSchedule.Clear();
+			if (this.workerInterface.ReloadDone != null)
+			{
+				foreach (string done in this.workerInterface.ReloadDone)
+					this.reloadSchedule.Remove(done);
+			}
+			else
+			{
+				this.reloadSchedule.Clear();
+			}
 
 			//this.owner.MainContextControl.MakeCurrent();
 			this.state = ReloaderState.Idle;
 			this.OnAfterEndReload();
+
+			// If some change messages were late, begin secondary reload.
+			if (this.reloadSchedule.Count > 0)
+				this.State = ReloaderState.WaitForPlugins;
 		}
 
 		private void progressTimer_Tick(object sender, EventArgs e)
 		{
-			if (this.state == ReloaderState.WaitForPlugins)
+            if (this.state == ReloaderState.WaitForPlugins)
 			{
 				this.waitTime += this.progressTimer.Interval;
-				if (this.waitTime > 1000)
-				{
-					this.State = ReloaderState.ReloadPlugins;
-				}
+				if (this.waitTime > 1500)
+                    this.State = ReloaderState.ReloadPlugins;
 			}
 			else if (this.state == ReloaderState.ReloadPlugins)
 			{
@@ -322,16 +343,18 @@ namespace DualityEditor.Forms
 					int count = workInterface.ReloadSched.Count;
 					while (workInterface.ReloadSched.Count > 0)
 					{
-						workInterface.MainForm.Invoke((Action<string>)DualityApp.ReloadPlugin, workInterface.ReloadSched[0]);
+						string curPath = workInterface.ReloadSched[0];
+						workInterface.MainForm.Invoke((Action<string>)DualityApp.ReloadPlugin, curPath);
 						workInterface.Progress += 0.15f / (float)count;
 						Thread.Sleep(20);
 
-						string xmlDocFile = workInterface.ReloadSched[0].Replace(".dll", ".xml");
+						string xmlDocFile = curPath.Replace(".dll", ".xml");
 						if (File.Exists(xmlDocFile))
 						{
 							workInterface.MainForm.Invoke((Action<string>)HelpSystem.LoadXmlCodeDoc, xmlDocFile);
 						}
 						workInterface.ReloadSched.RemoveAt(0);
+						workInterface.ReloadDone.Add(curPath);
 						workInterface.Progress += 0.05f / (float)count;
 					}
 					Log.Editor.PopIndent();

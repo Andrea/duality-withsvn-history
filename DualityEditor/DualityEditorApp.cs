@@ -1292,7 +1292,7 @@ namespace DualityEditor
 				Log.Editor.PushIndent();
 				corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.RecoverFromRestart;
 			}
-			else if (corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.WaitForPlugins)
+			else if (corePluginReloader.ReloadSchedule.Count > 0)
 			{
 				corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.ReloadPlugins;
 			}
@@ -1331,11 +1331,14 @@ namespace DualityEditor
 
 		private static void FileEventManager_PluginChanged(object sender, FileSystemEventArgs e)
 		{
-			string pluginStr = Path.Combine("Plugins", e.Name);
-			if (!corePluginReloader.ReloadSchedule.Contains(pluginStr))
-				corePluginReloader.ReloadSchedule.Add(pluginStr);
+            Log.Editor.Write("FileEventManager_PluginChanged: {0}, {1}", e.FullPath, e.Name);
+            string pluginStr = Path.Combine("Plugins", e.Name);
+            if (!corePluginReloader.ReloadSchedule.Contains(pluginStr))
+            {
+                corePluginReloader.ReloadSchedule.Add(pluginStr);
+                DualityApp.AppData.Version++;
+            }
 			corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.WaitForPlugins;
-			DualityApp.AppData.Version++;
 		}
 		private static void DualityApp_PluginReady(object sender, CorePluginEventArgs e)
 		{
