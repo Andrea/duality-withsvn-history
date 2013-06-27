@@ -52,6 +52,8 @@ namespace Duality
 		private State lastState = new State();
 		private string description = null;
 		private bool isDummy = false;
+		private	int						axisCount		= 0;
+		private	int						buttonCount		= 0;
 		private	bool					isDummy			= false;
 
 
@@ -69,6 +71,8 @@ namespace Duality
 					if (this.source != null)
 					{
 						this.description = this.source.Description;
+						this.axisCount = this.source.AxisCount;
+						this.buttonCount = this.source.ButtonCount;
 					}
 				}
 			}
@@ -87,6 +91,21 @@ namespace Duality
 		{
 			get { return this.source != null && this.source.IsAvailable; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of axes.
+		/// </summary>
+		public int AxisCount
+		{
+			get { return this.axisCount; }
+		}
+		/// <summary>
+		/// [GET] Returns the number of buttons.
+		/// </summary>
+		public int ButtonCount
+		{
+			get { return this.buttonCount; }
+		}
+
 		/// <summary>
 		/// [GET] Returns whether the specified device button is currently pressed.
 		/// </summary>

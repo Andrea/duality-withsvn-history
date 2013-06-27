@@ -15,6 +15,14 @@ namespace Duality
 		{
 			get { return true; }
 		}
+		public int AxisCount
+		{
+			get { return this.device.Axis.Count; }
+		}
+		public int ButtonCount
+		{
+			get { return this.device.Button.Count; }
+		}
 		public bool this[JoystickButton button]
 		{
 			get { return this.device.Button[button]; }
