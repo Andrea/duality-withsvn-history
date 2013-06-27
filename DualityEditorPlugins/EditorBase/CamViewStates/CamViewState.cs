@@ -12,11 +12,7 @@ using Duality.ColorFormat;
 using Duality.VertexFormat;
 
 using DualityEditor;
-using DualityEditor.Forms;
-
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
-
 using EditorBase.PluginRes;
 using EditorBase.UndoRedoActions;
 
@@ -462,6 +458,7 @@ namespace EditorBase.CamViewStates
 
 			canvas.PopState();
 		}
+
 		protected virtual void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
 			// Gather general data
@@ -499,58 +496,47 @@ namespace EditorBase.CamViewStates
 
 			// Collect the states overlay drawcalls
 			canvas.PushState();
-			{
-				// Draw camera movement indicators
-				if (this.camAction != CameraAction.None)
-				{
-					canvas.PushState();
-					canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
-					if (this.camAction == CameraAction.DragScene)
-					{
-						// Don't draw anything.
-					}
-					else if (this.camAction == CameraAction.RotateScene)
-					{
-						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-					}
-					else if (this.camAction == CameraAction.Move)
-					{
-						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
-					}
-					else if (this.camAction == CameraAction.Rotate)
-					{
-						canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-					}
-					canvas.PopState();
-				}
-			
-				// Draw current action text
-				if (!this.actionText.IsEmpty)
-				{
-					canvas.DrawTextBackground(this.actionText, actionTextPos.X, actionTextPos.Y);
-					canvas.DrawText(this.actionText, actionTextPos.X, actionTextPos.Y);
-				}
-
-				// Update / Draw current status text
-				{
-					this.statusText.SourceText = this.UpdateStatusText();
-					if (!this.statusText.IsEmpty)
-					{
-						Vector2 statusTextSize = this.statusText.Size;
-						canvas.DrawTextBackground(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
-						canvas.DrawText(this.statusText, 10, this.ClientSize.Height - statusTextSize.Y - 10);
-					}
-				}
-
-				// Draw rect selection
-				if (this.action == ObjectAction.RectSelect)
-					canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
-			}
+			DrawTexts(canvas, cursorPos ,actionTextPos);
 			canvas.PopState();
 		}
+
+		private void DrawTexts(Canvas canvas, Point cursorPos, Vector2 actionTextPos)
+		{
+			// Draw camera movement indicators
+			if (camAction != CameraAction.None)
+			{
+				canvas.PushState();
+				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
+				if (camAction == CameraAction.Move)
+				{
+					canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
+				}
+				canvas.PopState();
+			}
+
+			// Draw current action text
+			if (!actionText.IsEmpty)
+			{
+				canvas.DrawTextBackground(this.actionText, actionTextPos.X, actionTextPos.Y);
+				canvas.DrawText(this.actionText, actionTextPos.X, actionTextPos.Y);
+			}
+
+			// Update / Draw current status text
+			statusText.SourceText = UpdateStatusText();
+			if (!statusText.IsEmpty)
+			{
+				Vector2 statusTextSize = statusText.Size;
+				canvas.DrawTextBackground(statusText, 10, ClientSize.Height - statusTextSize.Y - 10);
+				canvas.DrawText(statusText, 10, ClientSize.Height - statusTextSize.Y - 10);
+			}
+
+			// Draw rect selection
+			if (action == ObjectAction.RectSelect)
+				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X,
+				                cursorPos.Y - this.actionBeginLoc.Y);
+		}
+
 		protected virtual void OnCollectStateBackgroundDrawcalls(Canvas canvas)
 		{
 			// Collect the views overlay layer drawcalls
@@ -561,12 +547,8 @@ namespace EditorBase.CamViewStates
 			CameraAction visibleCamAction = this.drawCamGizmoState != CameraAction.None ? this.drawCamGizmoState : this.camAction;
 			ObjectAction visibleObjectAction = this.VisibleAction;
 
-			// Draw camera action hints
-			if (visibleCamAction == CameraAction.Rotate || visibleCamAction == CameraAction.RotateScene)
-			{
-				return string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.CameraObj.Transform.Angle));
-			}
-			else if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
+			
+			if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
 			{
 				if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene)
 				{
@@ -583,7 +565,7 @@ namespace EditorBase.CamViewStates
 
 			// Draw action hints
 			if (visibleObjectAction == ObjectAction.Move)				return PluginRes.EditorBaseRes.CamView_Action_Move;
-			else if (visibleObjectAction == ObjectAction.Rotate)		return PluginRes.EditorBaseRes.CamView_Action_Rotate;
+			
 			else if (visibleObjectAction == ObjectAction.Scale)			return PluginRes.EditorBaseRes.CamView_Action_Scale;
 			else if (visibleObjectAction == ObjectAction.RectSelect)	return PluginRes.EditorBaseRes.CamView_Action_Select_Active;
 
@@ -607,6 +589,8 @@ namespace EditorBase.CamViewStates
 
 			this.camTransformChanged = false;
 			
+
+            //Still needed for Dragging scene with the space button pressed
 			if (this.camAction == CameraAction.DragScene)
 			{
 				this.ValidateSelectionStats();
@@ -625,6 +609,8 @@ namespace EditorBase.CamViewStates
 				this.camVel += (new Vector3(targetVel) - this.camVel) * Time.TimeMult;
 				this.camTransformChanged = true;
 			}
+
+            //Still needed for zooming in/out
 			else if (this.camAction == CameraAction.Move)
 			{
 				Vector3 moveVec = new Vector3(
@@ -661,48 +647,16 @@ namespace EditorBase.CamViewStates
 				this.camVel = Vector3.Zero;
 			}
 			
-			if (this.camAction == CameraAction.RotateScene)
-			{
-				Vector2 center = new Vector2(this.ClientSize.Width, this.ClientSize.Height) * 0.5f;
-				Vector2 curPos = new Vector2(cursorPos.X, cursorPos.Y);
-				Vector2 lastPos = new Vector2(this.camActionBeginLoc.X, this.camActionBeginLoc.Y);
-				this.camActionBeginLoc = new Point((int)curPos.X, (int)curPos.Y);
+            
+            //Updates the camera. Needed.
+            if (this.camTransformChanged)
+            {
+                camObj.Transform.MoveBy(this.camVel * Time.TimeMult);
+                camObj.Transform.TurnBy(this.camAngleVel * Time.TimeMult);
 
-				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 250.0f;
-				targetVel *= (curPos.Y - center.Y) / center.Y;
-
-				this.camAngleVel += (targetVel - this.camAngleVel) * Time.TimeMult;
-				this.camTransformChanged = true;
-			}
-			else if (this.camAction == CameraAction.Rotate)
-			{
-				float turnDir = 
-					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
-					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-				this.camAngleVel = turnDir;
-
-				this.camTransformChanged = true;
-			}
-			else if (Math.Abs(this.camAngleVel) > 0.001f)
-			{
-				this.camAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
-				this.camTransformChanged = true;
-			}
-			else
-			{
-				this.camTransformChanged = this.camTransformChanged || (this.camAngleVel != 0.0f);
-				this.camAngleVel = 0.0f;
-			}
-
-
-			if (this.camTransformChanged)
-			{
-				camObj.Transform.MoveBy(this.camVel * Time.TimeMult);
-				camObj.Transform.TurnBy(this.camAngleVel * Time.TimeMult);
-
-				this.View.OnCamTransformChanged();
-				this.Invalidate();
-			}
+                this.View.OnCamTransformChanged();
+                this.Invalidate();
+            }
 			
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
@@ -1275,8 +1229,7 @@ namespace EditorBase.CamViewStates
 
 				if (this.camAction == CameraAction.Move && e.Button == MouseButtons.Middle)
 					this.camAction = CameraAction.None;
-				else if (this.camAction == CameraAction.Rotate && e.Button == MouseButtons.Right)
-					this.camAction = CameraAction.None;
+				
 
 				this.OnMouseUp(e);
 			}
@@ -1296,12 +1249,6 @@ namespace EditorBase.CamViewStates
 				if (e.Button == MouseButtons.Left)
 				{
 					this.camAction = CameraAction.DragScene;
-					this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
-					this.Cursor = CursorHelper.HandGrabbing;
-				}
-				else if (e.Button == MouseButtons.Right)
-				{
-					this.camAction = CameraAction.RotateScene;
 					this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
 					this.Cursor = CursorHelper.HandGrabbing;
 				}
@@ -1340,11 +1287,6 @@ namespace EditorBase.CamViewStates
 					{
 						this.camAction = CameraAction.Move;
 						this.camActionBeginLocSpace = this.CameraObj.Transform.RelativePos;
-					}
-					else if (e.Button == MouseButtons.Right)
-					{
-						this.camAction = CameraAction.Rotate;
-						this.camActionBeginLocSpace = new Vector3(this.CameraObj.Transform.RelativeAngle, 0.0f, 0.0f);
 					}
 				}
 
