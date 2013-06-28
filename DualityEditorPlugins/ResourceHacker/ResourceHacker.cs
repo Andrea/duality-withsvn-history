@@ -260,7 +260,7 @@ namespace ResourceHacker
 					catch (EndOfStreamException) {}
 					catch (Exception e)
 					{
-						Log.Editor.WriteError("Can't load file {0} because an error occured in the process: \n{1}",
+						Log.Editor.WriteError("Can't load file {0} because an error occurred in the process: \n{1}",
 							this.filePath,
 							Log.Exception(e));
 						return;

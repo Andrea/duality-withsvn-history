@@ -27,7 +27,7 @@ namespace Duality.Serialization.MetaFormat
 					catch (EndOfStreamException) {}
 					catch (Exception e)
 					{
-						Log.Editor.WriteError("Can't perform meta format action on {0} because an error occured in the process: \n{1}",
+						Log.Editor.WriteError("Can't perform meta format action on {0} because an error occurred in the process: \n{1}",
 							filePath,
 							Log.Exception(e));
 						return data;

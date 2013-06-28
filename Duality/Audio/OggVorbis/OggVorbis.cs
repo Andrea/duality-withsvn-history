@@ -55,7 +55,7 @@ namespace Duality.OggVorbis
 				if (err != NativeMethods.ErrorCode.None)
 				{
 					throw new ApplicationException(
-						String.Format("An OggVorbis error occured: {0}", err));
+						String.Format("An OggVorbis error occurred: {0}", err));
 				}
 				vFPtr = (IntPtr)vorbisFile;
 			}
@@ -71,7 +71,7 @@ namespace Duality.OggVorbis
 				if (err != NativeMethods.ErrorCode.None)
 				{
 					throw new ApplicationException(
-						String.Format("An OggVorbis error occured: {0}", err));
+						String.Format("An OggVorbis error occurred: {0}", err));
 				}
 				vFPtr = (IntPtr)vorbisFile;
 			}

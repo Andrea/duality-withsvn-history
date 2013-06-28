@@ -413,7 +413,7 @@ namespace Duality
 		/// </summary>
 		Warning,
 		/// <summary>
-		/// An error message. It informs about an unexpected and/or critical error that has occured.
+		/// An error message. It informs about an unexpected and/or critical error that has occurred.
 		/// </summary>
 		Error
 	}

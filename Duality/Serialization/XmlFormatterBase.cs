@@ -185,7 +185,7 @@ namespace Duality.Serialization
 		{
 			if (!this.CanRead) throw new InvalidOperationException("Can't read object from a write-only serializer.");
 			if (this.reader.ReadState == ReadState.EndOfFile) throw new EndOfStreamException("No more data to read.");
-			if (this.reader.ReadState == ReadState.Error) throw new EndOfStreamException("An XML Error occured.");
+			if (this.reader.ReadState == ReadState.Error) throw new EndOfStreamException("An XML Error occurred.");
 			if (this.reader.ReadState == ReadState.Initial)
 			{
 				this.reader.Read();

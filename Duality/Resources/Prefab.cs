@@ -55,6 +55,7 @@ namespace Duality.Resources
 		/// <param name="obj">The object to inject as Prefab root object.</param>
 		public void Inject(GameObject obj)
 		{
+			// Dispose old content
 			if (obj == null)
 			{
 				if (this.objTree != null)
@@ -63,19 +64,27 @@ namespace Duality.Resources
 					this.objTree = null;
 				}
 			}
+			// Inject new content
 			else
 			{
 				obj.OnSaving(true);
-				this.objTree = obj.Clone();
+				if (this.objTree != null)
+					obj.CopyTo(this.objTree);
+				else
+					this.objTree = obj.Clone();
 				obj.OnSaved(true);
 
 				this.objTree.Parent = null;
-				this.objTree.prefabLink = null;
+				this.objTree.BreakPrefabLink();
 
 				// Prevent recursion
 				foreach (GameObject child in this.objTree.ChildrenDeep)
+				{
 					if (child.PrefabLink != null && child.PrefabLink.Prefab == this)
+					{
 						child.BreakPrefabLink();
+					}
+				}
 			}
 		}
 		/// <summary>

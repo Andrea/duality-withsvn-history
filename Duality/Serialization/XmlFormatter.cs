@@ -369,7 +369,7 @@ namespace Duality.Serialization
 			{
 				result = null;
 				this.SerializationLog.WriteError(
-					"An error occured in deserializing MemberInfo object Id {0} of type '{1}': {2}",
+					"An error occurred in deserializing MemberInfo object Id {0} of type '{1}': {2}",
 					objId,
 					Log.Type(dataType.ToActualType()),
 					Log.Exception(e));

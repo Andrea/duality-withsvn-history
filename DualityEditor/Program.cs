@@ -38,7 +38,7 @@ namespace DualityEditor
 		{
 			try
 			{
-				Duality.Log.Editor.WriteError("An error occured: {0}", Duality.Log.Exception(e.Exception));
+				Duality.Log.Editor.WriteError("An error occurred: {0}", Duality.Log.Exception(e.Exception));
 			}
 			catch (Exception) { /* Assure we're not causing any further exception by logging... */ }
 		}

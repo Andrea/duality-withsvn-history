@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogView));
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -162,6 +161,7 @@
 			// 
 			this.buttonEditor.Checked = true;
 			this.buttonEditor.CheckOnClick = true;
+			this.buttonEditor.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.buttonEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonEditor.Image = global::EditorBase.Properties.Resources.log_editor;
 			this.buttonEditor.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -227,7 +227,7 @@
 			this.textBoxEntry.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(92)))), ((int)(((byte)(92)))));
 			this.textBoxEntry.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.textBoxEntry.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.textBoxEntry.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBoxEntry.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBoxEntry.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.textBoxEntry.Location = new System.Drawing.Point(0, 0);
 			this.textBoxEntry.Multiline = true;
@@ -267,13 +267,14 @@
 			this.logEntryList.AutoScroll = true;
 			this.logEntryList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
 			this.logEntryList.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
-			this.logEntryList.DisplayFilter = ((EditorBase.LogEntryList.MessageFilter)((((((EditorBase.LogEntryList.MessageFilter.SourceCore | EditorBase.LogEntryList.MessageFilter.SourceEditor) 
-            | EditorBase.LogEntryList.MessageFilter.SourceGame) 
-            | EditorBase.LogEntryList.MessageFilter.TypeMessage) 
-            | EditorBase.LogEntryList.MessageFilter.TypeWarning) 
-            | EditorBase.LogEntryList.MessageFilter.TypeError)));
+			this.logEntryList.DisplayFilter = ((EditorBase.LogEntryList.MessageFilter)((((((EditorBase.LogEntryList.MessageFilter.SourceCore | EditorBase.LogEntryList.MessageFilter.SourceEditor)
+						| EditorBase.LogEntryList.MessageFilter.SourceGame)
+						| EditorBase.LogEntryList.MessageFilter.TypeMessage)
+						| EditorBase.LogEntryList.MessageFilter.TypeWarning)
+						| EditorBase.LogEntryList.MessageFilter.TypeError)));
 			this.logEntryList.DisplayMinTime = new System.DateTime(((long)(0)));
 			this.logEntryList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.logEntryList.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.logEntryList.Location = new System.Drawing.Point(0, 0);
 			this.logEntryList.Name = "logEntryList";
 			this.logEntryList.ScrollOffset = 0;

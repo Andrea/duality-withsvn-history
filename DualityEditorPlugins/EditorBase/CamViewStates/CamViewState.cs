@@ -1198,7 +1198,7 @@ namespace EditorBase.CamViewStates
 			}
 			catch (Exception exception)
 			{
-				Log.Editor.WriteError("An error occured during CamView {1} rendering. The current DrawDevice state may be compromised. Exception: {0}", Log.Exception(exception), this.CameraComponent.ToString());
+				Log.Editor.WriteError("An error occurred during CamView {1} rendering. The current DrawDevice state may be compromised. Exception: {0}", Log.Exception(exception), this.CameraComponent.ToString());
 			}
 			
 			DualityEditorApp.GLSwapBuffers(this.LocalGLControl);

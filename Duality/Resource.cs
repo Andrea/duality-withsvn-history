@@ -382,7 +382,7 @@ namespace Duality
 			}
 			catch (Exception e)
 			{
-				Log.Core.WriteError("Can't load {0} from Stream '{1}', because an error occured: \n{2}",
+				Log.Core.WriteError("Can't load {0} from Stream '{1}', because an error occurred: \n{2}",
 					Log.Type(typeof(T)),
 					(str is FileStream) ? (str as FileStream).Name : str.ToString(),
 					Log.Exception(e));

@@ -236,7 +236,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception exception)
 					{
-						Log.Editor.WriteError("An error occured after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
+						Log.Editor.WriteError("An error occurred after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
 					}
 					this.Close();
 				}
@@ -250,7 +250,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception exception)
 					{
-						Log.Editor.WriteError("An error occured after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
+						Log.Editor.WriteError("An error occurred after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
 					}
 					this.Close();
 				}

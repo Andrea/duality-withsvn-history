@@ -23,7 +23,7 @@ namespace Duality
 	[Serializable]
 	public sealed class GameObject : IManageableObject, ICloneable, Serialization.IUniqueIdentifyable
 	{
-		internal	PrefabLink					prefabLink	= null;
+		private		PrefabLink					prefabLink	= null;
 		private		Guid						identifier	= Guid.NewGuid();
 		private		GameObject					parent		= null;
 		private		List<GameObject>			children	= null;
@@ -134,7 +134,8 @@ namespace Duality
 		public Guid Id
 		{
 			get { return this.identifier; }
-		}								//	G
+			internal set { this.identifier = value; }
+		}								//	G[S]
 		/// <summary>
 		/// [GET] Returns the number of parents this object has when travelling upwards the scene graph hierarchy.
 		/// </summary>
@@ -211,7 +212,7 @@ namespace Duality
 		public PrefabLink PrefabLink
 		{
 			get { return this.prefabLink; }
-			private set { this.prefabLink = value; }
+			internal set { this.prefabLink = value; }
 		}					//	G[S]
 		/// <summary>
 		/// [GET] The <see cref="Duality.Resources.PrefabLink"/> that connects this object or one or its parent GameObjects to a <see cref="Duality.Resources.Prefab"/>.

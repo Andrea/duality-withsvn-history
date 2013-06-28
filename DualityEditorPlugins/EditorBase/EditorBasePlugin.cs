@@ -487,7 +487,7 @@ namespace EditorBase
 			}
 			catch (Exception exception)
 			{
-				Log.Editor.WriteError("An error occured instanciating Prefab {1}: {0}", 
+				Log.Editor.WriteError("An error occurred instanciating Prefab {1}: {0}", 
 					Log.Exception(exception),
 					prefab != null ? prefab.Path : "null");
 			}
@@ -501,7 +501,7 @@ namespace EditorBase
 			}
 			catch (Exception exception)
 			{
-				Log.Editor.WriteError("An error occured while switching from Scene {1} to Scene {2}: {0}", 
+				Log.Editor.WriteError("An error occurred while switching from Scene {1} to Scene {2}: {0}", 
 					Log.Exception(exception),
 					lastPath,
 					scene != null ? scene.Path : "null");

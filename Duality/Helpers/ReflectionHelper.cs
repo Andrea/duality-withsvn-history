@@ -575,7 +575,7 @@ namespace Duality
 				}
 				catch (Exception e)
 				{
-					Log.Core.WriteError("An error occured while trying to perform a serialization fallback: {0}", Log.Exception(e));
+					Log.Core.WriteError("An error occurred while trying to perform a serialization fallback: {0}", Log.Exception(e));
 				}
 			}
 			return false;

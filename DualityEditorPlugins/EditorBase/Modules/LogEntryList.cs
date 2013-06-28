@@ -36,7 +36,9 @@ namespace EditorBase
 		}
 		public class ViewEntry
 		{
-			private	DataLogOutput.LogEntry	log	= null;
+			private LogEntryList			parent		= null;
+			private	DataLogOutput.LogEntry	log			= null;
+			private	int						msgLines	= 1;
 			
 			public DataLogOutput.LogEntry LogEntry
 			{
@@ -44,7 +46,7 @@ namespace EditorBase
 			}
 			public int Height
 			{
-				get { return 20; }
+				get { return Math.Max(20, 7 + this.msgLines * this.parent.Font.Height); }
 			}
 			public Image TypeIcon
 			{
@@ -65,9 +67,11 @@ namespace EditorBase
 				}
 			}
 
-			public ViewEntry(DataLogOutput.LogEntry log)
+			public ViewEntry(LogEntryList parent, DataLogOutput.LogEntry log)
 			{
+				this.parent = parent;
 				this.log = log;
+				this.msgLines = log.Message.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Length;
 			}
 
 			public bool Matches(DateTime minTime, MessageFilter filter)
@@ -246,7 +250,7 @@ namespace EditorBase
 		}
 		public ViewEntry AddEntry(DataLogOutput.LogEntry entry)
 		{
-			ViewEntry viewEntry = new ViewEntry(entry);
+			ViewEntry viewEntry = new ViewEntry(this, entry);
 			this.entryList.Add(viewEntry);
 
 			if (this.NewEntry != null)
@@ -259,7 +263,7 @@ namespace EditorBase
 		{
 			foreach (DataLogOutput.LogEntry entry in entries)
 			{
-				ViewEntry viewEntry = new ViewEntry(entry);
+				ViewEntry viewEntry = new ViewEntry(this, entry);
 				this.entryList.Add(viewEntry);
 
 				if (this.NewEntry != null)
@@ -277,7 +281,7 @@ namespace EditorBase
 
 			this.entryList.Clear();
 			foreach (var entry in dualityLog.Data)
-				this.entryList.Add(new ViewEntry(entry));
+				this.entryList.Add(new ViewEntry(this, entry));
 
 			this.OnContentChanged();
 		}
@@ -352,7 +356,7 @@ namespace EditorBase
 		}
 		private void UpdateScrolledToEnd()
 		{
-			this.scrolledToEnd = -this.AutoScrollPosition.Y + this.ClientRectangle.Height >= this.AutoScrollMinSize.Height - 5;
+			this.scrolledToEnd = -this.AutoScrollPosition.Y + this.ClientRectangle.Height >= this.AutoScrollMinSize.Height - 20;
 		}
 		private void UpdateHoveredEntry(Point mouseLoc)
 		{
@@ -479,6 +483,7 @@ namespace EditorBase
 						sourceIconRect.X + sourceIconRect.Width / 2 - sourceIcon.Width / 2,
 						sourceIconRect.Y + sourceIconRect.Height / 2 - sourceIcon.Height / 2);
 					e.Graphics.DrawString(entry.LogEntry.Message, this.Font, foregroundBrush, textRect, messageFormat);
+					int timeStampWidth = this.Font.Height * 6;
 					if (showTimestamp)
 					{
 						e.Graphics.DrawString(
@@ -487,7 +492,7 @@ namespace EditorBase
 								entry.LogEntry.Timestamp.Minute,
 								entry.LogEntry.Timestamp.Second), 
 							this.Font, foregroundBrushAlpha, 
-							new Rectangle(timeTextRect.Right - 50, timeTextRect.Y, 50, timeTextRect.Height), 
+							new Rectangle(timeTextRect.Right - timeStampWidth, timeTextRect.Y, timeStampWidth, timeTextRect.Height), 
 							messageFormatTimestamp);
 					}
 					if (showFramestamp)
@@ -495,7 +500,7 @@ namespace EditorBase
 						e.Graphics.DrawString(
 							string.Format("#{0}", entry.LogEntry.FrameIndex), 
 							this.Font, foregroundBrushAlpha, 
-							new Rectangle(timeTextRect.X + 5, timeTextRect.Y, timeTextRect.Width - (showTimestamp ? 50 + 10 : 0), timeTextRect.Height), 
+							new Rectangle(timeTextRect.X + 5, timeTextRect.Y, timeTextRect.Width - (showTimestamp ? timeStampWidth + 10 : 0), timeTextRect.Height), 
 							messageFormatTimestamp);
 					}
 
@@ -545,7 +550,8 @@ namespace EditorBase
 		}
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
-			base.OnMouseWheel(new MouseEventArgs(e.Button, e.Clicks, e.X, e.Y, Math.Sign(e.Delta) * Math.Max(Math.Abs(e.Delta) / 8, 1)));
+			int wheelDivisor = Math.Max(1, 800 / this.ClientSize.Height);
+			base.OnMouseWheel(new MouseEventArgs(e.Button, e.Clicks, e.X, e.Y, Math.Sign(e.Delta) * Math.Max(Math.Abs(e.Delta) / wheelDivisor, 1)));
 			this.UpdateScrolledToEnd();
 			this.UpdateHoveredEntry(this.PointToClient(Cursor.Position));
 		}

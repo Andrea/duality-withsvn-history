@@ -321,30 +321,26 @@ namespace DualityEditor
 				{
 					Log.Editor.Write("Loading '{0}'...", dllPath);
 					Log.Editor.PushIndent();
-					Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
-					Type[] exportedTypes = pluginAssembly.GetExportedTypes();
 					try
 					{
-						// Initialize plugin objects
-						for (int j = 0; j < exportedTypes.Length; j++)
+						Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
+						Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(EditorPlugin).IsAssignableFrom(t));
+						if (pluginType == null)
 						{
-							if (typeof(EditorPlugin).IsAssignableFrom(exportedTypes[j]))
-							{
-								Log.Editor.Write("Instantiating class '{0}'...", exportedTypes[j].Name);
-								EditorPlugin plugin = (EditorPlugin)exportedTypes[j].CreateInstanceOf();
-								plugin.LoadPlugin();
-								plugins.Add(plugin);
-							}
+							Log.Editor.WriteWarning("Can't find EditorPlugin class. Discarding plugin...");
+							continue;
 						}
+						EditorPlugin plugin = (EditorPlugin)pluginType.CreateInstanceOf();
+						plugin.LoadPlugin();
+						plugins.Add(plugin);
 					}
 					catch (Exception e)
 					{
-						Log.Editor.WriteError("Error loading plugin '{0}'. Exception: {1}", dllPath, Log.Exception(e));
+						Log.Editor.WriteError("Error loading plugin: {0}", Log.Exception(e));
 					}
 					Log.Editor.PopIndent();
 				}
 			}
-
 			Log.Editor.PopIndent();
 		}
 		private static void InitPlugins()
@@ -353,8 +349,18 @@ namespace DualityEditor
 			Log.Editor.PushIndent();
 			foreach (EditorPlugin plugin in plugins)
 			{
-				Log.Editor.Write("'{0}'...", plugin.Id);
-				plugin.InitPlugin(mainForm);
+				Log.Editor.Write("{0}...", plugin.Id);
+				Log.Editor.PushIndent();
+				try
+				{
+					plugin.InitPlugin(mainForm);
+				}
+				catch (Exception e)
+				{
+					Log.Editor.WriteError("Error initializing plugin: {0}", Log.Exception(e));
+					plugins.Remove(plugin);
+				}
+				Log.Editor.PopIndent();
 			}
 			Log.Editor.PopIndent();
 		}
@@ -1188,7 +1194,7 @@ namespace DualityEditor
 					}
 					catch (Exception exception)
 					{
-						Log.Editor.WriteError("An error occured during a core update: {0}", Log.Exception(exception));
+						Log.Editor.WriteError("An error occurred during a core update: {0}", Log.Exception(exception));
 					}
 					OnUpdatingEngine();
 
@@ -1331,7 +1337,6 @@ namespace DualityEditor
 
 		private static void FileEventManager_PluginChanged(object sender, FileSystemEventArgs e)
 		{
-            Log.Editor.Write("FileEventManager_PluginChanged: {0}, {1}", e.FullPath, e.Name);
             string pluginStr = Path.Combine("Plugins", e.Name);
             if (!corePluginReloader.ReloadSchedule.Contains(pluginStr))
             {

@@ -1104,7 +1104,7 @@ namespace Duality.Components.Physics
 		/// The callback that is invoked for each hit on the raycast. Note that the order in which each hit occurs isn't deterministic
 		/// and may appear random. Return -1 to ignore the curret shape, 0 to terminate the raycast, data.Fraction to clip the ray for current hit, or 1 to continue.
 		/// </param>
-		/// <returns>Returns a list of all occured hits, ordered by their Fraction value.</returns>
+		/// <returns>Returns a list of all occurred hits, ordered by their Fraction value.</returns>
 		public static List<RayCastData> RayCast(Vector2 worldCoordA, Vector2 worldCoordB, RayCastCallback callback = null)
 		{
 			if (callback == null) callback = Raycast_DefaultCallback;
@@ -1286,7 +1286,7 @@ namespace Duality.Components.Physics
 			get { return this.normal; }
 		}
 		/// <summary>
-		/// [GET] The fraction (0.0f - 1.0f) of the ray at which the hit occured.
+		/// [GET] The fraction (0.0f - 1.0f) of the ray at which the hit occurred.
 		/// </summary>
 		public float Fraction
 		{

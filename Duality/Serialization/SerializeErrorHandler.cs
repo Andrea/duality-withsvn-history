@@ -24,7 +24,7 @@ namespace Duality.Serialization
 	}
 	
 	/// <summary>
-	/// A serialization error that occured during the resolve operation of a Type.
+	/// A serialization error that occurred during the resolve operation of a Type.
 	/// </summary>
 	public class ResolveTypeError : SerializeError
 	{
@@ -58,7 +58,7 @@ namespace Duality.Serialization
 	}
 	
 	/// <summary>
-	/// A serialization error that occured during the resolve operation of a Member.
+	/// A serialization error that occurred during the resolve operation of a Member.
 	/// </summary>
 	public class ResolveMemberError : SerializeError
 	{
@@ -92,7 +92,7 @@ namespace Duality.Serialization
 	}
 
 	/// <summary>
-	/// A serialization error that occured during the assignment of a Field. Possible causes are the Field not being
+	/// A serialization error that occurred during the assignment of a Field. Possible causes are the Field not being
 	/// available, being flagged as [NonSerialized] or having the wrong FieldType.
 	/// </summary>
 	public class AssignFieldError : SerializeError

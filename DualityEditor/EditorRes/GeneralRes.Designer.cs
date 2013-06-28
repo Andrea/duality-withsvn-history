@@ -677,7 +677,7 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die An error occured while performing task &apos;{0}&apos;: {1}{2} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die An error occurred while performing task &apos;{0}&apos;: {1}{2} ähnelt.
         /// </summary>
         public static string Msg_ErrorPerformBigTask_Desc {
             get {
@@ -695,7 +695,7 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die An error occured reloading Duality core plugins: {0}{1} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die An error occurred reloading Duality core plugins: {0}{1} ähnelt.
         /// </summary>
         public static string Msg_ErrorReloadCorePlugin_Desc {
             get {

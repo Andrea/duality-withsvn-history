@@ -350,29 +350,29 @@ namespace Duality.Serialization
 		}
 
 		/// <summary>
-		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
+		/// Logs an error that occurred during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
 		/// </summary>
 		/// <param name="objId">The object id of the affected object.</param>
 		/// <param name="serializeType">The <see cref="System.Type"/> of the affected object.</param>
-		/// <param name="e">The <see cref="System.Exception"/> that occured.</param>
+		/// <param name="e">The <see cref="System.Exception"/> that occurred.</param>
 		protected void LogCustomSerializationError(uint objId, Type serializeType, Exception e)
 		{
 			this.log.WriteError(
-				"An error occured in custom serialization in object Id {0} of type '{1}': {2}",
+				"An error occurred in custom serialization in object Id {0} of type '{1}': {2}",
 				objId,
 				Log.Type(serializeType),
 				Log.Exception(e));
 		}
 		/// <summary>
-		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom deserialization</see>.
+		/// Logs an error that occurred during <see cref="Duality.Serialization.ISerializable">custom deserialization</see>.
 		/// </summary>
 		/// <param name="objId">The object id of the affected object.</param>
 		/// <param name="serializeType">The <see cref="System.Type"/> of the affected object.</param>
-		/// <param name="e">The <see cref="System.Exception"/> that occured.</param>
+		/// <param name="e">The <see cref="System.Exception"/> that occurred.</param>
 		protected void LogCustomDeserializationError(uint objId, Type serializeType, Exception e)
 		{
 			this.log.WriteError(
-				"An error occured in custom deserialization in object Id {0} of type '{1}': {2}",
+				"An error occurred in custom deserialization in object Id {0} of type '{1}': {2}",
 				objId,
 				Log.Type(serializeType),
 				Log.Exception(e));

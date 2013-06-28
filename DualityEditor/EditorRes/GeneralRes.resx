@@ -317,13 +317,13 @@
     <value>Failed to perform task</value>
   </data>
   <data name="Msg_ErrorPerformBigTask_Desc" xml:space="preserve">
-    <value>An error occured while performing task '{0}': {1}{2}</value>
+    <value>An error occurred while performing task '{0}': {1}{2}</value>
   </data>
   <data name="Msg_ErrorReloadCorePlugin_Caption" xml:space="preserve">
     <value>Can't reload core plugin</value>
   </data>
   <data name="Msg_ErrorReloadCorePlugin_Desc" xml:space="preserve">
-    <value>An error occured reloading Duality core plugins: {0}{1}</value>
+    <value>An error occurred reloading Duality core plugins: {0}{1}</value>
   </data>
   <data name="Msg_ImportConfirmOverwrite_Caption" xml:space="preserve">
     <value>Overwrite file?</value>

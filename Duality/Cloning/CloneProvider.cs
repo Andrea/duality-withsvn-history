@@ -271,7 +271,9 @@ namespace Duality.Cloning
 		}
 		public static void DeepCopyTo<T>(T baseObj, T targetObj, CloneProviderContext context = null)
 		{
+			Type objType = baseObj.GetType();
 			CloneProvider provider = new CloneProvider(context);
+			if (objType.IsClass) provider.RegisterObjectClone(baseObj, targetObj);
 			provider.CopyObjectTo(baseObj, targetObj);
 		}
 

@@ -146,7 +146,7 @@ namespace Duality
 		private	float	tangentMass;
 
 		/// <summary>
-		/// [GET] The position at which the collision occured.
+		/// [GET] The position at which the collision occurred.
 		/// </summary>
 		public Vector2 Pos
 		{
@@ -174,7 +174,7 @@ namespace Duality
 			get { return this.normalMass; }
 		}
 		/// <summary>
-		/// [GET] The speed at which the collision occured along the provided normal vector.
+		/// [GET] The speed at which the collision occurred along the provided normal vector.
 		/// </summary>
 		public float NormalSpeed
 		{
@@ -202,7 +202,7 @@ namespace Duality
 			get { return this.tangentMass; }
 		}
 		/// <summary>
-		/// [GET] The speed at which the collision occured along the provided tangent vector.
+		/// [GET] The speed at which the collision occurred along the provided tangent vector.
 		/// </summary>
 		public float TangentSpeed
 		{

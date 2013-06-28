@@ -477,9 +477,10 @@ namespace Duality
 		/// <summary>
 		/// Performs a single render cycle.
 		/// </summary>
-		public static void Render()
+		/// <param name="camPredicate">Optional predicate to select which Cameras may be rendered and which not.</param>
+		public static void Render(Predicate<Duality.Components.Camera> camPredicate = null)
 		{
-			Scene.Current.Render();
+			Scene.Current.Render(camPredicate);
 		}
 
 		/// <summary>
@@ -780,22 +781,29 @@ namespace Duality
 				string[] pluginDllPaths = Directory.GetFiles("Plugins", "*.core.dll", SearchOption.AllDirectories);
 				foreach (string dllPath in pluginDllPaths)
 				{
-					Log.Core.Write("Loading '{0}'...", dllPath);
+					Log.Core.Write("{0}...", dllPath);
 					Log.Core.PushIndent();
-					Assembly pluginAssembly;
-					if (environment == ExecutionEnvironment.Launcher)
-						pluginAssembly = Assembly.LoadFrom(dllPath);
-					else
-						pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
-					Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
-					if (pluginType == null)
+					try
 					{
-						Log.Core.WriteError("Can't find CorePlugin class. Discarding plugin...");
-						disposedPlugins.Add(pluginAssembly);
-						continue;
+						Assembly pluginAssembly;
+						if (environment == ExecutionEnvironment.Launcher)
+							pluginAssembly = Assembly.LoadFrom(dllPath);
+						else
+							pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
+						Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
+						if (pluginType == null)
+						{
+							Log.Core.WriteWarning("Can't find CorePlugin class. Discarding plugin...");
+							disposedPlugins.Add(pluginAssembly);
+							continue;
+						}
+						CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
+						plugins.Add(plugin.AssemblyName, plugin);
 					}
-					CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
-					plugins.Add(plugin.AssemblyName, plugin);
+					catch (Exception e)
+					{
+						Log.Core.WriteError("Error loading plugin: {0}", Log.Exception(e));
+					}
 					Log.Core.PopIndent();
 				}
 			}
@@ -804,11 +812,25 @@ namespace Duality
 		}
 		private static void InitPlugins()
 		{
+			Log.Core.Write("Initializing core plugins...");
+			Log.Core.PushIndent();
 			foreach (CorePlugin plugin in plugins.Values)
 			{
-				plugin.InitPlugin();
-				OnPluginReady(plugin);
+				Log.Core.Write("{0}...", plugin.AssemblyName);
+				Log.Core.PushIndent();
+				try
+				{
+					plugin.InitPlugin();
+					OnPluginReady(plugin);
+				}
+				catch (Exception e)
+				{
+					Log.Core.WriteError("Error initializing plugin: {0}", Log.Exception(e));
+					UnloadPlugin(plugin);
+				}
+				Log.Core.PopIndent();
 			}
+			Log.Core.PopIndent();
 		}
 		private static void UnloadPlugins()
 		{
@@ -819,6 +841,13 @@ namespace Duality
 			}
 			OnDiscardPluginData(plugins.Values);
 			plugins.Clear();
+		}
+		private static void UnloadPlugin(CorePlugin plugin)
+		{
+			OnDiscardPluginData(new[] { plugin });
+			plugins.Remove(plugin.AssemblyName);
+			disposedPlugins.Add(plugin.PluginAssembly);
+			plugin.Dispose();
 		}
 		internal static void ReloadPlugin(string pluginFileName)
 		{
@@ -1079,10 +1108,10 @@ namespace Duality
 		
 
 		/// <summary>
-		/// Checks for errors that might have occured during audio processing.
+		/// Checks for errors that might have occurred during audio processing.
 		/// </summary>
 		/// <param name="silent">If true, errors aren't logged.</param>
-		/// <returns>True, if an error occured, false if not.</returns>
+		/// <returns>True, if an error occurred, false if not.</returns>
 		public static bool CheckOpenALErrors(bool silent = false)
 		{
 			ALError error;
@@ -1102,11 +1131,11 @@ namespace Duality
 			return found;
 		}
 		/// <summary>
-		/// Checks for errors that might have occured during video processing. You should avoid calling this method due to performance reasons.
+		/// Checks for errors that might have occurred during video processing. You should avoid calling this method due to performance reasons.
 		/// Only use it on suspect.
 		/// </summary>
 		/// <param name="silent">If true, errors aren't logged.</param>
-		/// <returns>True, if an error occured, false if not.</returns>
+		/// <returns>True, if an error occurred, false if not.</returns>
 		public static bool CheckOpenGLErrors(bool silent = false)
 		{
 			ErrorCode error;
