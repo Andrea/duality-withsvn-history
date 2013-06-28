@@ -25,11 +25,23 @@ namespace Duality
 		}
 		public bool this[JoystickButton button]
 		{
-			get { return this.device.Button[button]; }
+			get 
+			{
+				if (this.device.Button.Count > (int)button)
+					return this.device.Button[button];
+				else
+					return false;
+			}
 		}
 		public float this[JoystickAxis axis]
 		{
-			get { return this.device.Axis[axis]; }
+			get 
+			{
+				if (this.device.Axis.Count > (int)axis)
+					return this.device.Axis[axis];
+				else
+					return 0.0f;
+			}
 		}
 
 		public OpenTKJoystickInputSource(JoystickDevice device)
