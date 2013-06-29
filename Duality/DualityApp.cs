@@ -367,12 +367,19 @@ namespace Duality
 			}
 			int highestAALevel = MathF.RoundToInt(MathF.Log(MathF.Max(availModes.Max(m => m.Samples), 1.0f), 2.0f));
 			int targetAALevel = highestAALevel;
-			switch (userData.AntialiasingQuality)
+			if (appData.MultisampleBackBuffer)
 			{
-				case AAQuality.High:	targetAALevel = highestAALevel;		break;
-				case AAQuality.Medium:	targetAALevel = highestAALevel / 2; break;
-				case AAQuality.Low:		targetAALevel = highestAALevel / 4; break;
-				case AAQuality.Off:		targetAALevel = 0;					break;
+				switch (userData.AntialiasingQuality)
+				{
+					case AAQuality.High:	targetAALevel = highestAALevel;		break;
+					case AAQuality.Medium:	targetAALevel = highestAALevel / 2; break;
+					case AAQuality.Low:		targetAALevel = highestAALevel / 4; break;
+					case AAQuality.Off:		targetAALevel = 0;					break;
+				}
+			}
+			else
+			{
+				targetAALevel = 0;
 			}
 			int targetSampleCount = MathF.RoundToInt(MathF.Pow(2.0f, targetAALevel));
 			defaultMode = availModes.LastOrDefault(m => m.Samples <= targetSampleCount) ?? availModes.Last();

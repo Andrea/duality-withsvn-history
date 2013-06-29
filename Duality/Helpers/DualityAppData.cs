@@ -13,17 +13,18 @@ namespace Duality
 	[Serializable]
 	public class DualityAppData
 	{
-		private	string				appName				= "Duality Application";
-		private	string				authorName			= "Unknown";
-		private	string				websiteUrl			= "http://www.fetzenet.de";
-		private	uint				version				= 0;
-		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
-		private	float				speedOfSound		= 360.0f;
-		private	float				soundDopplerFactor	= 1.0f;
-		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
-		private	bool				physicsFixedTime	= false;
-		private	bool				localUserData		= false;
-		private	object				customData			= null;
+		private	string				appName					= "Duality Application";
+		private	string				authorName				= "Unknown";
+		private	string				websiteUrl				= "http://www.fetzenet.de";
+		private	uint				version					= 0;
+		private	ContentRef<Scene>	startScene				= ContentRef<Scene>.Null;
+		private	float				speedOfSound			= 360.0f;
+		private	float				soundDopplerFactor		= 1.0f;
+		private	float				physicsVelThreshold		= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
+		private	bool				physicsFixedTime		= false;
+		private	bool				localUserData			= false;
+		private	bool				multisampleBackBuffer	= true;
+		private	object				customData				= null;
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
@@ -108,6 +109,16 @@ namespace Duality
 		{
 			get { return this.localUserData; }
 			set { this.localUserData = value; }
+		}
+		/// <summary>
+		/// [GET / SET] Determines whether or not the backbuffer uses multisampling based on <see cref="DualityUserData.AntialiasingQuality"/>.
+		/// Set this to false if you don't render to the backbuffer directly, but use a custom <see cref="RenderTarget"/> setup. You'll have to
+		/// apply possible existing user quality settings yourself.
+		/// </summary>
+		public bool MultisampleBackBuffer
+		{
+			get { return this.multisampleBackBuffer; }
+			set { this.multisampleBackBuffer = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Use this property to store custom application data.

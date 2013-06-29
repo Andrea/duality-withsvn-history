@@ -171,7 +171,7 @@ namespace Duality.Resources
 
 		
 		private	List<TargetInfo>	targetInfo		= new List<TargetInfo>();
-		private	bool				multisample		= true;
+		private	AAQuality			multisampling	= AAQuality.Off;
 		[NonSerialized] private	int	samples	= 0;
 		[NonSerialized]	private	int	glFboId;
 		[NonSerialized] private	int	glRboIdDepth;
@@ -180,14 +180,15 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] Whether this RenderTarget is multisampled.
 		/// </summary>
-		public bool Multisampled
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		public AAQuality Multisampling
 		{
-			get { return this.multisample; }
+			get { return this.multisampling; }
 			set
 			{
-				if (this.multisample != value)
+				if (this.multisampling != value)
 				{
-					this.multisample = value;
+					this.multisampling = value;
 					this.FreeOpenGLRes();
 					this.SetupOpenGLRes();
 				}
@@ -241,15 +242,15 @@ namespace Duality.Resources
 		/// <summary>
 		/// Creates a new, empty RenderTarget
 		/// </summary>
-		public RenderTarget() : this(true, null) {}
+		public RenderTarget() : this(AAQuality.Off, null) {}
 		/// <summary>
 		/// Creates a new RenderTarget based on a set of <see cref="Duality.Resources.Texture">Textures</see>
 		/// </summary>
-		/// <param name="multisample">Indicates whether <see cref="Multisampled">Multisampling</see> in reqested.</param>
+		/// <param name="multisampling">The level of multisampling that is requested from this RenderTarget.</param>
 		/// <param name="targets">An array of <see cref="Duality.Resources.Texture">Textures</see> used as data destination.</param>
-		public RenderTarget(bool multisample, params ContentRef<Texture>[] targets)
+		public RenderTarget(AAQuality multisampling, params ContentRef<Texture>[] targets)
 		{
-			this.multisample = multisample;
+			this.multisampling = multisampling;
 			if (targets != null) foreach (var t in targets) this.targetInfo.Add(new TargetInfo(t));
 			this.SetupOpenGLRes();
 		}
@@ -294,8 +295,22 @@ namespace Duality.Resources
 		{
 			DualityApp.GuardSingleThreadState();
 			if (this.targetInfo == null || this.targetInfo.Count == 0) return;
+			
+			int highestAALevel = MathF.RoundToInt(MathF.Log(MathF.Max(MaxRenderTargetSamples, 1.0f), 2.0f));
+			int targetAALevel = highestAALevel;
+			switch (this.multisampling)
+			{
+				case AAQuality.High:	targetAALevel = highestAALevel;		break;
+				case AAQuality.Medium:	targetAALevel = highestAALevel / 2; break;
+				case AAQuality.Low:		targetAALevel = highestAALevel / 4; break;
+				case AAQuality.Off:		targetAALevel = 0;					break;
+			}
+			int targetSampleCount = MathF.RoundToInt(MathF.Pow(2.0f, targetAALevel));
+			OpenTK.Graphics.GraphicsMode sampleMode = 
+				DualityApp.AvailableModes.LastOrDefault(m => m.Samples <= targetSampleCount) ?? 
+				DualityApp.AvailableModes.Last();
 
-			this.samples = this.multisample ? Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples) : 0;
+			this.samples = sampleMode.Samples;
 
 			#region Setup FBO & RBO: Non-multisampled
 			if (this.samples == 0)
@@ -426,7 +441,7 @@ namespace Duality.Resources
 		{
 			base.OnCopyTo(r, provider);
 			RenderTarget c = r as RenderTarget;
-			c.multisample	= this.multisample;
+			c.multisampling	= this.multisampling;
 			c.targetInfo	= new List<TargetInfo>(this.targetInfo);
 			c.SetupOpenGLRes();
 		}

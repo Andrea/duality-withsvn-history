@@ -439,6 +439,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] Reference to a Pixmap that contains the pixel data that is or has been uploaded to the Texture
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public ContentRef<Pixmap> BasePixmap
 		{
 			get { return this.basePixmap; }

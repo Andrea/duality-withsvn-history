@@ -660,7 +660,7 @@ namespace Duality.Components
 				this.pickingTex = new Texture(
 					MathF.RoundToInt(refSize.X), MathF.RoundToInt(refSize.Y), Texture.SizeMode.Default, 
 					TextureMagFilter.Nearest, TextureMinFilter.Nearest);
-				this.pickingRT = new RenderTarget(false, this.pickingTex);
+				this.pickingRT = new RenderTarget(AAQuality.Off, this.pickingTex);
 			}
 		}
 
