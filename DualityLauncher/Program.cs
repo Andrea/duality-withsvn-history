@@ -9,6 +9,7 @@ using Duality.Resources;
 
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Platform.Windows;
 
 namespace DualityLauncher
 {
@@ -17,7 +18,8 @@ namespace DualityLauncher
 		private	static bool	isDebugging			= false;
 		private	static bool	isProfiling			= false;
 		private	static bool	isRunFromEditor		= false;
-		private Stopwatch	frameLimiterWatch	= new Stopwatch();
+		private Stopwatch		frameLimiterWatch	= new Stopwatch();
+		private	WinMMJoystick	mainJoystickDriver	= null;
 
 		public DualityLauncher(int w, int h, GraphicsMode mode, string title, GameWindowFlags flags)
 			: base(w, h, mode, title, flags)
@@ -61,6 +63,7 @@ namespace DualityLauncher
 				}
 				this.frameLimiterWatch.Restart();
 			}
+			this.mainJoystickDriver.Poll();
 			DualityApp.Update();
 		}
 		protected override void OnRenderFrame(FrameEventArgs e)
@@ -136,7 +139,13 @@ namespace DualityLauncher
 				// Input setup
 				DualityApp.Mouse.Source = new OpenTKMouseInputSource(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY);
 				DualityApp.Keyboard.Source = new OpenTKKeyboardInputSource(launcherWindow.Keyboard);
-				DualityApp.Joysticks.AddSource(launcherWindow.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
+				{
+					// Initialize Joystick manually, since launcherWindow.Joysticks doesn't work for some reason
+					launcherWindow.mainJoystickDriver = new OpenTK.Platform.Windows.WinMMJoystick();
+					if (launcherWindow.mainJoystickDriver != null && launcherWindow.mainJoystickDriver.Joysticks != null)
+						DualityApp.Joysticks.AddSource(launcherWindow.mainJoystickDriver.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
+					//DualityApp.Joysticks.AddSource(launcherWindow.Joysticks.Select(j => new OpenTKJoystickInputSource(j)));
+				}
 
 				// Load the starting Scene
 				Scene.Current = DualityApp.AppData.StartScene.Res;

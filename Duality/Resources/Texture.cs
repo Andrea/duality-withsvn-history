@@ -261,6 +261,7 @@ namespace Duality.Resources
 		private	TextureWrapMode			wrapY		= TextureWrapMode.ClampToEdge;
 		private	PixelInternalFormat		pixelformat	= PixelInternalFormat.Rgba;
 		private	bool					sizeRelative	= false;
+		private	bool					anisoFilter		= false;
 		[NonSerialized]	private	int		pxWidth		= 0;
 		[NonSerialized]	private	int		pxHeight	= 0;
 		[NonSerialized]	private	int		glTexId		= 0;
@@ -394,6 +395,14 @@ namespace Duality.Resources
 		{
 			get { return this.filterMin; }
 			set { if (this.filterMin != value) { this.filterMin = value; this.needsReload = true; } }
+		}		//	GS
+		/// <summary>
+		/// [GET / SET] Specifies whether this texture uses anisotropic filtering.
+		/// </summary>
+		public bool AnisotropicFilter
+		{
+			get { return this.anisoFilter; }
+			set { if (this.anisoFilter != value) { this.anisoFilter = value; this.needsReload = true; } }
 		}		//	GS
 		/// <summary>
 		/// [GET / SET] The Textures horizontal wrap mode
@@ -741,7 +750,7 @@ namespace Duality.Resources
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)this.wrapY);
 
 			// Anisotropic filtering
-			//GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName) ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, maxAnisoLevel);
+			GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName) ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, this.anisoFilter ? maxAnisoLevel : 1.0f);
 
 			// If needed, care for Mipmaps
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, this.HasMipmaps ? 1 : 0);

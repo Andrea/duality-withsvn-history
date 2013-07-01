@@ -214,7 +214,7 @@ namespace DualityEditor.Forms
             if (this.state == ReloaderState.WaitForPlugins)
 			{
 				this.waitTime += this.progressTimer.Interval;
-				if (this.waitTime > 1500)
+				if (this.waitTime > 1000)
                     this.State = ReloaderState.ReloadPlugins;
 			}
 			else if (this.state == ReloaderState.ReloadPlugins)
