@@ -226,17 +226,19 @@ namespace Duality
 		/// <param name="values">A pool of values.</param>
 		/// <param name="weights">One weight for each value in the pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, IEnumerable<T> values, IEnumerable<float> weights)
+		public static T OneOfWeighted<T>(this Random r, IEnumerable<T> values, IEnumerable<float> weights)
 		{
 			float totalWeight = weights.Sum();
 			float pickedWeight = r.NextFloat(totalWeight);
 			
-			int index = 0;
+			IEnumerator<T> valEnum = values.GetEnumerator();
+			if (!valEnum.MoveNext()) return default(T);
+
 			foreach (float w in weights)
 			{
 				pickedWeight -= w;
-				if (pickedWeight < 0.0f) return values.ElementAtOrDefault(index);
-				index++;
+				if (pickedWeight < 0.0f) return valEnum.Current;
+				valEnum.MoveNext();
 			}
 
 			return default(T);
@@ -249,9 +251,9 @@ namespace Duality
 		/// <param name="values">A pool of values.</param>
 		/// <param name="weights">One weight for each value in the pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, IEnumerable<T> values, params float[] weights)
+		public static T OneOfWeighted<T>(this Random r, IEnumerable<T> values, params float[] weights)
 		{
-			return WeightedNext<T>(r, values, weights as IEnumerable<float>);
+			return OneOfWeighted<T>(r, values, weights as IEnumerable<float>);
 		}
 		/// <summary>
 		/// Returns a random value from a weighted value pool.
@@ -260,7 +262,7 @@ namespace Duality
 		/// <param name="r">A random number generator.</param>
 		/// <param name="weightedValues">A weighted value pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, IEnumerable<KeyValuePair<T,float>> weightedValues)
+		public static T OneOfWeighted<T>(this Random r, IEnumerable<KeyValuePair<T,float>> weightedValues)
 		{
 			float totalWeight = weightedValues.Sum(v => v.Value);
 			float pickedWeight = r.NextFloat(totalWeight);
@@ -280,9 +282,21 @@ namespace Duality
 		/// <param name="r">A random number generator.</param>
 		/// <param name="weightedValues">A weighted value pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, params KeyValuePair<T,float>[] weightedValues)
+		public static T OneOfWeighted<T>(this Random r, params KeyValuePair<T,float>[] weightedValues)
 		{
-			return WeightedNext<T>(r, weightedValues as IEnumerable<KeyValuePair<T,float>>);
+			return OneOfWeighted<T>(r, weightedValues as IEnumerable<KeyValuePair<T,float>>);
+		}
+		/// <summary>
+		/// Returns a random value from a weighted value pool.
+		/// </summary>
+		/// <typeparam name="T">Type of the random values.</typeparam>
+		/// <param name="r">A random number generator.</param>
+		/// <param name="values">A pool of values.</param>
+		/// <param name="weightFunc">A weight function that provides a weight for each value from the pool.</param>
+		/// <returns></returns>
+		public static T OneOfWeighted<T>(this Random r, IEnumerable<T> values, Func<T,float> weightFunc)
+		{
+			return OneOfWeighted<T>(r, values, values.Select(v => weightFunc(v)));
 		}
 
 		/// <summary>

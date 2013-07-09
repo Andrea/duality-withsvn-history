@@ -205,6 +205,15 @@ namespace Duality
 		public const float DefaultFadeOutTime = 3.0f;
 
 		private	List<SoundBudgetPad>	budgetPads		= new List<SoundBudgetPad>();
+		
+		/// <summary>
+		/// Determines whether there is currently any pad scheduled.
+		/// </summary>
+		/// <returns>True, if there is, false if not.</returns>
+		public bool IsAnyScheduled
+		{
+			get { return this.budgetPads.Any(pad => pad.Sound.FadeTarget > 0.0f); }
+		}
 
 		/// <summary>
 		/// Updates the queue.
@@ -231,15 +240,6 @@ namespace Duality
 				if (!this.budgetPads[i].Weak) nonWeakPassed = true;
 				if (this.budgetPads[i].Disposed) this.budgetPads.RemoveAt(i);
 			}
-		}
-
-		/// <summary>
-		/// Determines whether there is currently any pad scheduled.
-		/// </summary>
-		/// <returns>True, if there is, false if not.</returns>
-		public bool IsAnyScheduled()
-		{
-			return this.budgetPads.Any(pad => pad.Sound.FadeTarget > 0.0f);
 		}
 		
 		/// <summary>
