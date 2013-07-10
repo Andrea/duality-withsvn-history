@@ -566,23 +566,25 @@ namespace Duality
 		{
 			keyboard.Source = source;
 		}
-		/// <summary>
-		/// Adds an extended user input source.
-		/// </summary>
-		/// <param name="source"></param>
-		public static void AddInputSource(IJoystickInputSource source)
-		{
-			foreach (JoystickInput registeredInput in joysticks)
-			{
-				if (registeredInput.Description == source.Description &&
-					registeredInput.Source == null)
-				{
-					registeredInput.Source = source;
-					return;
-				}
-			}
 
-		/// <summary>
+	    /// <summary>
+	    /// Adds an extended user input source.
+	    /// </summary>
+	    /// <param name="source"></param>
+	    public static void AddInputSource(IJoystickInputSource source)
+	    {
+	        foreach (JoystickInput registeredInput in joysticks)
+	        {
+	            if (registeredInput.Description == source.Description &&
+	                registeredInput.Source == null)
+	            {
+	                registeredInput.Source = source;
+	                return;
+	            }
+	        }
+	    }
+
+	    /// <summary>
 		/// Loads all <see cref="Resource">Resources</see> that are located in this DualityApp's data directory and
 		/// saves them again. All loaded content is discarded both before and after this operation. You usually don't
 		/// need this, but it can be useful for migrating persistent game content between different versions through

@@ -26,13 +26,5 @@ namespace Duality
 		/// <param name="key"></param>
 		/// <returns></returns>
 		bool this[Key key] { get; }
-		/// <summary>
-		/// Fired when the keyboard input is no longer available to Duality.
-		/// </summary>
-		event EventHandler LostFocus;
-		/// <summary>
-		/// Fired when the keyboard input becomes available to Duality.
-		/// </summary>
-		event EventHandler GotFocus;
 	}
 }

@@ -213,7 +213,6 @@ namespace EditorBase
 			DataLogOutput.LogEntry logEntry = e.Entry.LogEntry;
 			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
 			bool unseenChanges = false;
-			bool unseenChanges = false;
 
 			if (isHidden)
 			{

@@ -51,7 +51,7 @@ namespace Duality
 		private State currentState = new State();
 		private State lastState = new State();
 		private string description = null;
-		private bool isDummy = false;
+		
 		private	int						axisCount		= 0;
 		private	int						buttonCount		= 0;
 		private	bool					isDummy			= false;
@@ -137,11 +137,6 @@ namespace Duality
 		/// Fired whenever a device axis changes its value.
 		/// </summary>
 		public event EventHandler<JoystickMoveEventArgs> Move;
-
-		internal void Update()
-		{
-			// Memorize last state
-			this.currentState.CopyTo(this.lastState);
 
 		internal JoystickInput(bool dummy = false)
 		{

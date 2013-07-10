@@ -17,6 +17,14 @@ namespace Duality
 		/// </summary>
 		bool IsAvailable { get; }
 		/// <summary>
+		/// [GET] Returns the number of axes.
+		/// </summary>
+		int AxisCount { get; }
+		/// <summary>
+		/// [GET] Returns the number of buttons.
+		/// </summary>
+		int ButtonCount { get; }
+		/// <summary>
 		/// [GET] Returns whether the specified device button is currently pressed.
 		/// </summary>
 		/// <param name="button"></param>
