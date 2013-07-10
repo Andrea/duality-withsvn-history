@@ -114,6 +114,18 @@ namespace OpenTK.Platform.Windows
                         string deviceClass = (string)regkey.GetValue("Class");
                         deviceDesc = deviceDesc.Substring(deviceDesc.LastIndexOf(';') + 1);
 
+                        //Support for no Class regkey in Windows 8
+                        if (String.IsNullOrEmpty(deviceClass))
+                        {
+                            string deviceGUID = (string)regkey.GetValue("ClassGUID");
+
+                            if (deviceGUID != null)
+                            {
+                                RegistryKey GUIDKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\" + deviceGUID);
+                                deviceClass = (string)GUIDKey.GetValue("Class");
+                            }
+                        }
+
                         if (!String.IsNullOrEmpty(deviceClass) && deviceClass.ToLower().Equals("mouse"))
                         {
                             if (!rawids.ContainsKey(new ContextHandle(dev.Device)))
