@@ -52,6 +52,7 @@ namespace Duality.Components.Physics
 		private	float		angularVel		= 0.0f;
 		private	float		revolutions		= 0.0f;
 		private	float		explicitMass	= 0.0f;
+		private bool		isSensor		= false;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= null;
@@ -331,6 +332,17 @@ namespace Duality.Components.Physics
 		internal bool IsFlaggedForSync
 		{
 			get { return this.schedUpdateBody; }
+		}
+
+		public bool IsSensor
+		{
+			get { return body != null && body.FixtureList.All(f => f.IsSensor); }
+			set
+			{
+				if(body != null)
+					body.IsSensor = value;
+				this.isSensor = value;
+			}
 		}
 
 		public RigidBody()
@@ -767,6 +779,7 @@ namespace Duality.Components.Physics
 			}
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
+			this.body.IsSensor = this.isSensor;
 			this.UpdateBodyMass();
 
 			this.AwakeBody();
