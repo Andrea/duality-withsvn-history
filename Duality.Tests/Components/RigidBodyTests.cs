@@ -38,5 +38,16 @@ namespace Duality.Tests.Components
 
 			Assert.IsTrue(_rigidBody.PhysicsBody.FixtureList.All(f => f.IsSensor));
 		}
+
+		[Test]
+		public void When_copied_Then_sensor_value_is_copied()
+		{
+			_rigidBody.IsSensor = true;
+
+			var clone = new RigidBody();
+			_rigidBody.CopyTo(clone);
+
+			Assert.IsTrue(clone.IsSensor);
+		}
 	}
 }

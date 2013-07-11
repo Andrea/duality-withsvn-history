@@ -336,7 +336,7 @@ namespace Duality.Components.Physics
 
 		public bool IsSensor
 		{
-			get { return body != null && body.FixtureList.All(f => f.IsSensor); }
+			get { return this.isSensor; }
 			set
 			{
 				if(body != null)
@@ -1080,6 +1080,7 @@ namespace Duality.Components.Physics
 			c.colCat = this.colCat;
 			c.colWith = this.colWith;
 			c.explicitMass = this.explicitMass;
+			c.isSensor = this.isSensor;
 
 			c.linearVel = this.linearVel;
 			c.angularVel = this.angularVel;
