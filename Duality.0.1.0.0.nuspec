@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
     <metadata>
-        <id>DualityEditor</id>
+        <id>Duality</id>
         <version>0.1.0.0</version>
-        <title>Duality Editor</title>
+        <title>Duality </title>
         <authors>@silverspoon</authors>
         <owners />
         <projectUrl>https://github.com/andrea/duality</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Contains Editor and default pluggins</description>
+        <description>Contains default pluggins</description>
         <language>en-IE</language>
     </metadata>    
     <files>
@@ -16,8 +16,6 @@
         <file src="DualityEditor\bin\Release\CustomPropertyGrid.dll" target="lib\net40\CustomPropertyGrid.dll" />        
         <file src="DualityEditor\bin\Release\Duality.dll" target="lib\net40\Duality.dll" />
         <file src="DualityEditor\bin\Release\Duality.xml" target="lib\net40\Duality.xml" />
-        <file src="DualityEditor\bin\Release\DualityEditor.exe" target="lib\net40\DualityEditor.exe" />
-        <file src="DualityEditor\bin\Release\DualityEditor.xml" target="lib\net40\DualityEditor.xml" />        
         <file src="DualityEditor\bin\Release\FarseerOpenTK.dll" target="lib\net40\FarseerOpenTK.dll" />
         <file src="DualityEditor\bin\Release\FarseerOpenTK.xml" target="lib\net40\FarseerOpenTK.xml" />
         <file src="DualityEditor\bin\Release\Ionic.Zip.dll" target="lib\net40\Ionic.Zip.dll" />        
