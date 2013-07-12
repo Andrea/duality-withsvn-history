@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>DualityEditor</id>
+        <version>0.1.0.0</version>
+        <title>Duality Editor</title>
+        <authors>@silverspoon</authors>
+        <owners />
+        <projectUrl>https://github.com/andrea/duality</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Contains Editor and default pluggins</description>
+        <language>en-IE</language>
+    </metadata>    
+    <files>
+        <file src="DualityEditor\bin\Release\Aga.Controls.dll" target="lib\net40\Aga.Controls.dll" />        
+        <file src="DualityEditor\bin\Release\CustomPropertyGrid.dll" target="lib\net40\CustomPropertyGrid.dll" />        
+        <file src="DualityEditor\bin\Release\Duality.dll" target="lib\net40\Duality.dll" />
+        <file src="DualityEditor\bin\Release\Duality.xml" target="lib\net40\Duality.xml" />
+        <file src="DualityEditor\bin\Release\DualityEditor.exe" target="lib\net40\DualityEditor.exe" />
+        <file src="DualityEditor\bin\Release\DualityEditor.xml" target="lib\net40\DualityEditor.xml" />        
+        <file src="DualityEditor\bin\Release\FarseerOpenTK.dll" target="lib\net40\FarseerOpenTK.dll" />
+        <file src="DualityEditor\bin\Release\FarseerOpenTK.xml" target="lib\net40\FarseerOpenTK.xml" />
+        <file src="DualityEditor\bin\Release\Ionic.Zip.dll" target="lib\net40\Ionic.Zip.dll" />        
+        <file src="DualityEditor\bin\Release\OpenTK.dll" target="lib\net40\OpenTK.dll" />
+        <file src="DualityEditor\bin\Release\OpenTK.GLControl.dll" target="lib\net40\OpenTK.GLControl.dll" />
+        <file src="DualityEditor\bin\Release\OpenTK.GLControl.xml" target="lib\net40\OpenTK.GLControl.xml" />
+        <file src="DualityEditor\bin\Release\OpenTK.xml" target="lib\net40\OpenTK.xml" />        
+        <file src="DualityEditor\bin\Release\WeifenLuo.WinFormsUI.Docking.dll" target="lib\net40\WeifenLuo.WinFormsUI.Docking.dll" />        
+        <file src="DualityEditor\bin\Release\WeifenLuo.WinFormsUI.Docking.pdb" target="lib\net40\WeifenLuo.WinFormsUI.Docking.pdb" />  
+        <file src="DualityEditor\bin\Release\Plugins\EditorBase.editor.dll" target="lib\net40\EditorBase.editor.dll" />        
+    </files>
+</package>
