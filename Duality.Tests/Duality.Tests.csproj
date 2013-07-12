@@ -35,6 +35,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FarseerOpenTK, Version=3.3.4888.25971, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
@@ -50,6 +51,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\RigidBodyTests.cs" />
     <Compile Include="Helpers\GuardTests.cs" />
     <Compile Include="Input\JoystickInputTests.cs" />
     <Compile Include="Log\LogTests.cs" />
