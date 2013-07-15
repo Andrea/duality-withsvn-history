@@ -134,7 +134,6 @@ namespace DualityDebuggingTest
 			_transform.MoveByAbs(added);
 
 			Assert.AreEqual(_expectedPosition + added, _transform.Pos);
-
 		}
 
 		[Test]

@@ -435,7 +435,10 @@ namespace Duality.Components
 		public void MoveBy(Vector3 value)
 		{
 			// Accumulate velocity
-			this.tempVel += value / Time.TimeMult;
+			if (MathF.Abs(Time.TimeMult) > float.Epsilon)
+			{
+				this.tempVel += value / Time.TimeMult;
+			}
 
 			this.pos += value; 
 			this.changes |= DirtyFlags.Pos; 
@@ -456,7 +459,10 @@ namespace Duality.Components
 		public void MoveByAbs(Vector3 value)
 		{
 			// Accumulate velocity
-			this.tempVelAbs += value / Time.TimeMult;
+			if (MathF.Abs(Time.TimeMult) > float.Epsilon)
+			{
+				this.tempVelAbs += value / Time.TimeMult;
+			}
 
 			this.posAbs += value;
 
@@ -528,8 +534,11 @@ namespace Duality.Components
 		public void TurnBy(float value)
 		{
 			// Accumulate velocity
-			this.tempAngleVel += value / Time.TimeMult;
-			this.tempAngleVelAbs += value / Time.TimeMult;
+			if (MathF.Abs(Time.TimeMult) > float.Epsilon)
+			{
+				this.tempAngleVel += value / Time.TimeMult;
+				this.tempAngleVelAbs += value / Time.TimeMult;
+			}
 
 			this.angle = MathF.NormalizeAngle(this.angle + value);
 			this.changes |= DirtyFlags.Angle; 
