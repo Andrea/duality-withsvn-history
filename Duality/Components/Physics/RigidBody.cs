@@ -77,12 +77,31 @@ namespace Duality.Components.Physics
 			{
 				if (this.body != null)
 				{
-					this.body.BodyType = (value == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
+					SetFarseerBodyType(value);
 					this.FlagBodyShape();
 				}
 				this.bodyType = value;
 			}
 		}
+
+		private void SetFarseerBodyType(BodyType value)
+		{
+			switch (value)
+			{
+				case BodyType.Static:
+					this.body.BodyType = FarseerPhysics.Dynamics.BodyType.Static;
+					break;
+
+				case BodyType.Dynamic:
+					this.body.BodyType = FarseerPhysics.Dynamics.BodyType.Dynamic;
+					break;
+
+				case BodyType.Kinematic:
+					this.body.BodyType = FarseerPhysics.Dynamics.BodyType.Kinematic;
+					break;
+			}
+		}
+
 		/// <summary>
 		/// [GET / SET] The damping that is applied to the bodies velocity.
 		/// </summary>
@@ -817,7 +836,7 @@ namespace Duality.Components.Physics
 			Transform t = this.GameObj != null ? this.GameObj.Transform : null;
 
 			this.body = new Body(Scene.PhysicsWorld, this);
-			this.body.BodyType = (this.bodyType == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
+			SetFarseerBodyType(this.bodyType);
 			this.body.LinearDamping = this.linearDamp;
 			this.body.AngularDamping = this.angularDamp;
 			this.body.FixedRotation = this.fixedAngle;
@@ -996,7 +1015,7 @@ namespace Duality.Components.Physics
 				this.angularVel = this.body.AngularVelocity * Time.SPFMult;
 				this.revolutions = this.body.Revolutions;
 				Transform t = this.gameobj.Transform;
-				if (this.bodyType == BodyType.Dynamic)
+				if (this.bodyType == BodyType.Dynamic || this.bodyType == BodyType.Kinematic)
 				{
 					// Make sure we're not overwriting any previously occuring changes
 					t.CommitChanges();
@@ -1245,7 +1264,11 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// A dynamic body. Its movement is determined by physical effects.
 		/// </summary>
-		Dynamic
+		Dynamic,
+		/// <summary>
+		/// A kinemtic body. It won't be affected by forces or collisions but can be moved by directly setting velocity or position.
+		/// </summary>
+		Kinematic
 	}
 
 	/// <summary>

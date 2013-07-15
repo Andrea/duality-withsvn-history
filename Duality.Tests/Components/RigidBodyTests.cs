@@ -49,5 +49,25 @@ namespace Duality.Tests.Components
 
 			Assert.IsTrue(clone.IsSensor);
 		}
+
+		[Test]
+		public void When_BodyType_is_set_to_kinematic_after_init_Then_underlying_body_is_kinematic()
+		{
+			((ICmpInitializable)_rigidBody).OnInit(Component.InitContext.Activate);
+
+			_rigidBody.BodyType = BodyType.Kinematic;
+
+			Assert.AreEqual(FarseerPhysics.Dynamics.BodyType.Kinematic, _rigidBody.PhysicsBody.BodyType);
+		}
+
+		[Test]
+		public void When_BodyType_is_set_to_kinematic_before_init_Then_underlying_body_is_kinematic()
+		{
+			_rigidBody.BodyType = BodyType.Kinematic;
+			
+			((ICmpInitializable)_rigidBody).OnInit(Component.InitContext.Activate);
+
+			Assert.AreEqual(FarseerPhysics.Dynamics.BodyType.Kinematic, _rigidBody.PhysicsBody.BodyType);
+		}
 	}
 }
