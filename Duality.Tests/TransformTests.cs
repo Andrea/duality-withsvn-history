@@ -130,7 +130,7 @@ namespace DualityDebuggingTest
 		{
 			var added = new Vector3(2, 2, 2);
 			CreateTransform(useParent);
-			Time.FrameTick();
+
 			_transform.MoveByAbs(added);
 
 			Assert.AreEqual(_expectedPosition + added, _transform.Pos);
