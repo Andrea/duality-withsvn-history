@@ -21,6 +21,9 @@ namespace Duality.Helpers
 
 			foreach (var receiver in receivers)
 			{
+				if (((Component) receiver).Active == false)
+					continue;
+
 				receiver.HandleMessage(sender, msg);
 			}
 		}

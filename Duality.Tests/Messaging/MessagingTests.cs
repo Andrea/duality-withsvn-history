@@ -38,7 +38,36 @@ namespace Duality.Tests.Messaging
 			Assert.IsTrue(receiver.MessageHandled);
 			Assert.IsFalse(receiver2.MessageHandled);
 		}
-		
+
+		[Test]
+		public void OnlyBroadcastsToActiveGameObjects()
+		{
+			var listener = (TestComponent)RegisterInactiveObject();
+
+			listener.TestBroadcastMessage();
+
+			Assert.IsFalse(listener.MessageHandled);
+		}
+
+		[Test]
+		public void DoesNotBroadcastToInactiveNamedObjects()
+		{
+			var listener = (TestComponent) RegisterInactiveObject();
+			listener.GameObj.Name = "TestGameObject";
+
+			listener.TestBroadcastMessageToNamedGameObject();
+
+			Assert.IsFalse(listener.MessageHandled);
+		}
+
+		private static Component RegisterInactiveObject()
+		{
+			var gameObject = new GameObject {Active = false};
+			var component = gameObject.AddComponent<TestComponent>();
+			Scene.Current.RegisterObj(gameObject);
+			return component;
+		}
+
 		private class TestComponent : Component, ICmpHandlesMessages
 		{
 			public bool MessageHandled { get; set; }
